@@ -1230,7 +1230,7 @@ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(setNavH);
     float displacement=clamp(outerCircle-innerCircle,0.0,1.0);
     float grainStrength=0.3;
     float shade=clamp(displacement-(m+n)-grain*grainStrength,0.0,1.0);
-    fragColor=vec4(shade*u_color*2.0, displacement*u_progress);
+    fragColor=vec4(shade*u_color*2.0, shade*displacement*u_progress);
   }`;
 
   function compile(type,src){
