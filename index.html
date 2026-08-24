@@ -227,36 +227,15 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .tcard p{margin-top:var(--s-4);color:var(--graphite);font-size:var(--t-small);line-height:1.6}
 .thesis__intro{max-width:34ch}
 
-/* Small looping 3D illustrations — a plain cube (a single, simple tool)
-   vs. three overlapping angled facets (an engineered, multi-part
-   structure) — a deliberately loose "origami" pairing, not literal icons. */
-.card-illus{width:clamp(84px,10vw,112px);height:clamp(84px,10vw,112px);flex:none;perspective:340px}
-.card-illus__inner{width:100%;height:100%;position:relative;transform-style:preserve-3d}
-@media (prefers-reduced-motion:reduce){
-  .illus-cube .card-illus__inner{animation:none!important;transform:rotateX(-20deg) rotateY(28deg)!important}
-  .illus-rings .card-illus__inner{animation:none!important;transform:rotateX(58deg) rotateZ(20deg)!important}
-}
+/* Small looping 3D illustrations — real three.js scenes (not CSS 3D),
+   built the way github.com/d3adrabbit/origami builds its grid items:
+   a simple primitive, lit, spun on a GSAP loop. A plain box for the
+   tool user; nested TorusGeometry rings — literally that repo's own
+   Item1 pattern — for the solution builder. --nav-h keyframe below is
+   still used by the level-picker pies; left in place. */
+.card-illus{width:clamp(84px,10vw,112px);height:clamp(84px,10vw,112px);flex:none;border-radius:8px;overflow:hidden}
+.card-illus canvas{display:block;width:100%;height:100%}
 @keyframes illus-cube-spin{from{transform:rotateX(-20deg) rotateY(0)}to{transform:rotateX(-20deg) rotateY(360deg)}}
-.illus-cube .card-illus__inner{animation:illus-cube-spin 10s linear infinite}
-.illus-cube .face{position:absolute;inset:0;border-radius:4px}
-.illus-cube .face--front{transform:translateZ(56px);background:var(--stone)}
-.illus-cube .face--back{transform:rotateY(180deg) translateZ(56px);background:var(--ink-700)}
-.illus-cube .face--right{transform:rotateY(90deg) translateZ(56px);background:var(--graphite)}
-.illus-cube .face--left{transform:rotateY(-90deg) translateZ(56px);background:var(--ink-600)}
-.illus-cube .face--top{transform:rotateX(90deg) translateZ(56px);background:var(--sand)}
-.illus-cube .face--bottom{transform:rotateX(-90deg) translateZ(56px);background:var(--ink-800)}
-
-/* Solution builder: one simple form (a ring), not a pile of shapes —
-   the complexity is in the visual (three orbits crossing a core),
-   closer to the source repo's own torus example than the old
-   three-overlapping-planes version. */
-@keyframes illus-rings-spin{from{transform:rotateX(58deg) rotateZ(0)}to{transform:rotateX(58deg) rotateZ(360deg)}}
-.illus-rings .card-illus__inner{animation:illus-rings-spin 13s linear infinite;transform-style:preserve-3d}
-.illus-rings .ring{position:absolute;inset:0;border-radius:50%;border-style:solid;transform-style:preserve-3d}
-.illus-rings .ring--1{border-width:3px;border-color:var(--coral)}
-.illus-rings .ring--2{inset:11%;border-width:3px;border-color:var(--wine);transform:rotateY(58deg)}
-.illus-rings .ring--3{inset:22%;border-width:3px;border-color:var(--crimson);transform:rotateY(-58deg)}
-.illus-rings .ring__core{position:absolute;inset:40%;border-radius:50%;background:var(--plum)}
 
 /* LADDER — signature ------------------------------------- */
 .ladderwrap{background:var(--surface);border-radius:var(--r-xl);padding:clamp(1.75rem,4vw,3.5rem);box-shadow:var(--lift-1)}
@@ -497,11 +476,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
     <div class="thesis">
       <div class="tcard tcard--a reveal">
-        <div class="card-illus illus-cube" aria-hidden="true"><div class="card-illus__inner">
-          <div class="face face--front"></div><div class="face face--back"></div>
-          <div class="face face--right"></div><div class="face face--left"></div>
-          <div class="face face--top"></div><div class="face face--bottom"></div>
-        </div></div>
+        <div class="card-illus" data-illus="cube" aria-hidden="true"></div>
         <div class="tcard__body">
           <p class="mono">Hvor de fleste er</p>
           <h3>Værktøjsbrugeren</h3>
@@ -509,10 +484,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
         </div>
       </div>
       <div class="tcard tcard--b reveal">
-        <div class="card-illus illus-rings" aria-hidden="true"><div class="card-illus__inner">
-          <div class="ring ring--1"></div><div class="ring ring--2"></div><div class="ring ring--3"></div>
-          <div class="ring__core"></div>
-        </div></div>
+        <div class="card-illus" data-illus="rings" aria-hidden="true"></div>
         <div class="tcard__body">
           <p class="mono">Hvor de færreste er</p>
           <h3>Løsningsbyggeren</h3>
@@ -1352,6 +1324,101 @@ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(setNavH);
   card.addEventListener('mouseenter',()=>{target=1;start()});
   card.addEventListener('mouseleave',()=>{target=0;start()});
 })();
+</script>
+
+<!-- Thesis-card illustrations: real three.js + GSAP (github.com/d3adrabbit/
+     origami's actual stack), loaded on demand for this feature only. -->
+<script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script>
+<script type="module">
+import * as THREE from 'https://unpkg.com/three@0.169.0/build/three.module.js';
+
+const REDUCED_ILLUS = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const illusCss = getComputedStyle(document.documentElement);
+const illusTok = n => illusCss.getPropertyValue(n).trim();
+const hexNum = h => parseInt((h || '#ffffff').replace('#', ''), 16);
+
+function makeIllusScene(container, build) {
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+  container.appendChild(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+  camera.position.set(0, 0, 5);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.75));
+  const key = new THREE.DirectionalLight(0xffffff, 1.6);
+  key.position.set(-3, 4, 5);
+  scene.add(key);
+  const fill = new THREE.DirectionalLight(0xffffff, 0.45);
+  fill.position.set(3, -2, -4);
+  scene.add(fill);
+
+  function resize() {
+    const w = container.clientWidth || 96, h = container.clientHeight || 96;
+    renderer.setSize(w, h);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  addEventListener('resize', resize, { passive: true });
+
+  build(scene);
+
+  let running = false, raf = null;
+  function frame() {
+    renderer.render(scene, camera);
+    if (running) raf = requestAnimationFrame(frame);
+  }
+  function start() { if (running || REDUCED_ILLUS) return; running = true; raf = requestAnimationFrame(frame); }
+  function stop() { running = false; if (raf) cancelAnimationFrame(raf); }
+
+  frame(); // one static frame either way, so reduced-motion still shows the object
+  start();
+  new IntersectionObserver(es => es.forEach(en => en.isIntersecting ? start() : stop()), { threshold: 0 }).observe(container);
+}
+
+// Tool user — a single plain box. Simple object, simple material.
+document.querySelectorAll('[data-illus="cube"]').forEach(el => {
+  makeIllusScene(el, scene => {
+    const mesh = new THREE.Mesh(
+      new THREE.BoxGeometry(1.5, 1.5, 1.5),
+      new THREE.MeshStandardMaterial({ color: hexNum(illusTok('--graphite')), roughness: 0.55, metalness: 0.08 })
+    );
+    mesh.rotation.x = -0.4;
+    scene.add(mesh);
+    if (!REDUCED_ILLUS) gsap.to(mesh.rotation, { y: '+=' + Math.PI * 2, duration: 9, repeat: -1, ease: 'none' });
+  });
+});
+
+// Solution builder — nested TorusGeometry rings around a core, animated
+// with the same staggered-timeline pattern as the repo's own Item1.
+document.querySelectorAll('[data-illus="rings"]').forEach(el => {
+  makeIllusScene(el, scene => {
+    const group = new THREE.Group();
+    const ringColors = ['--coral', '--wine', '--crimson'].map(v => hexNum(illusTok(v)));
+    const rings = ringColors.map((color, i) => {
+      const mesh = new THREE.Mesh(
+        new THREE.TorusGeometry(0.55 + i * 0.35, 0.055, 16, 64),
+        new THREE.MeshStandardMaterial({ color, roughness: 0.35, metalness: 0.25 })
+      );
+      group.add(mesh);
+      return mesh;
+    });
+    group.add(new THREE.Mesh(
+      new THREE.SphereGeometry(0.42, 32, 32),
+      new THREE.MeshStandardMaterial({ color: hexNum(illusTok('--plum')), roughness: 0.5 })
+    ));
+    group.rotation.x = 0.5;
+    scene.add(group);
+    if (!REDUCED_ILLUS) {
+      gsap.timeline({ repeat: -1, repeatDelay: 0.3 }).to(
+        rings.map(r => r.rotation),
+        { y: '+=' + Math.PI * 2, x: '-=' + Math.PI * 2, duration: 2.2, stagger: { each: 0.2 }, ease: 'power1.inOut' }
+      );
+    }
+  });
+});
 </script>
 </body>
 </html>
