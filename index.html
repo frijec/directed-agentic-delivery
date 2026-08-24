@@ -1222,7 +1222,7 @@ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(setNavH);
     float dots=smoothstep(0.1,0.15,n);
     float m=step(0.2,facets)*dots;
     m=1.0-m;
-    float radius=1.5;
+    float radius=u_aspect*0.55;
     float outerProgress=clamp(1.1*u_progress,0.0,1.0);
     float innerProgress=clamp(1.1*u_progress-0.05,0.0,1.0);
     float innerCircle=1.0-smoothstep((innerProgress-0.4)*radius,innerProgress*radius,dist);
@@ -1290,7 +1290,11 @@ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(setNavH);
   function start(){if(running)return;running=true;raf=requestAnimationFrame(frame)}
 
   resize();
-  addEventListener('resize',resize,{passive:true});
+  // A plain window 'resize' listener misses card-height changes from
+  // content reflow (fonts loading, reveal animations, etc.) — that
+  // previously left the canvas sized to a stale rect, which threw off
+  // the aspect-ratio math the hover effect's reach depends on.
+  new ResizeObserver(resize).observe(card);
   card.addEventListener('mouseenter',()=>{target=1;start()});
   card.addEventListener('mouseleave',()=>{target=0;start()});
 })();
