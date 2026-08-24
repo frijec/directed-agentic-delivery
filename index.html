@@ -253,8 +253,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
    Same 3D-disc treatment (perspective + spin, illus-cube-spin reused
    verbatim) as the illustrations above, so the two sections read as
    one visual system. */
-.step__pie{width:clamp(52px,6vw,68px);height:clamp(52px,6vw,68px);flex:none;perspective:220px;transition:transform var(--d-base) var(--ease-spring)}
-.step__pie-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;animation:illus-cube-spin 10s linear infinite}
+.step__pie{display:block;width:clamp(52px,6vw,68px);height:clamp(52px,6vw,68px);flex:none;perspective:220px;transition:transform var(--d-base) var(--ease-spring)}
+.step__pie-inner{display:block;width:100%;height:100%;position:relative;transform-style:preserve-3d;animation:illus-cube-spin 10s linear infinite}
 @media (prefers-reduced-motion:reduce){.step__pie-inner{animation:none!important;transform:rotateX(-20deg) rotateY(28deg)!important}}
 .pie-face{position:absolute;inset:0;border-radius:50%;box-shadow:var(--lift-1);transition:box-shadow var(--d-base) var(--ease-out)}
 .pie-face--front{background:conic-gradient(var(--crimson) 0deg var(--fill,90deg), var(--sand) var(--fill,90deg) 360deg);transform:translateZ(7px)}
