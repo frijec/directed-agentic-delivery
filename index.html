@@ -214,8 +214,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .thesis{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(1rem,2.5vw,2rem);margin-top:clamp(2rem,4vw,3rem);align-items:start}
 @media (max-width:880px){.thesis{grid-template-columns:1fr}}
 /* Static, not clickable — no hover lift, box-shadow stays fixed */
-.tcard{border-radius:var(--r-lg);padding:clamp(1.6rem,3.2vw,2.6rem);box-shadow:var(--lift-1);background:var(--surface)}
+.tcard{
+  border-radius:var(--r-lg);padding:clamp(1.6rem,3.2vw,2.6rem);box-shadow:var(--lift-1);background:var(--surface);
+  display:flex;align-items:center;gap:clamp(1.25rem,3vw,2rem);
+}
+@media (max-width:560px){.tcard{flex-direction:column;align-items:flex-start;text-align:left}}
 .tcard--b{margin-top:clamp(0rem,4vw,3.5rem)}
+.tcard__body{min-width:0}
 .tcard .mono{color:var(--stone)}
 .tcard h3{font-size:clamp(1.5rem,2.4vw,2rem);letter-spacing:-.03em;margin-top:var(--s-3);font-weight:500}
 .tcard--b h3{color:var(--wine)}
@@ -225,24 +230,33 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* Small looping 3D illustrations — a plain cube (a single, simple tool)
    vs. three overlapping angled facets (an engineered, multi-part
    structure) — a deliberately loose "origami" pairing, not literal icons. */
-.card-illus{width:64px;height:64px;margin-bottom:var(--s-5);perspective:280px}
+.card-illus{width:clamp(84px,10vw,112px);height:clamp(84px,10vw,112px);flex:none;perspective:340px}
 .card-illus__inner{width:100%;height:100%;position:relative;transform-style:preserve-3d}
-@media (prefers-reduced-motion:reduce){.card-illus__inner{animation:none!important;transform:rotateX(-20deg) rotateY(28deg)!important}}
+@media (prefers-reduced-motion:reduce){
+  .illus-cube .card-illus__inner{animation:none!important;transform:rotateX(-20deg) rotateY(28deg)!important}
+  .illus-rings .card-illus__inner{animation:none!important;transform:rotateX(58deg) rotateZ(20deg)!important}
+}
 @keyframes illus-cube-spin{from{transform:rotateX(-20deg) rotateY(0)}to{transform:rotateX(-20deg) rotateY(360deg)}}
 .illus-cube .card-illus__inner{animation:illus-cube-spin 10s linear infinite}
-.illus-cube .face{position:absolute;inset:0;border-radius:3px}
-.illus-cube .face--front{transform:translateZ(32px);background:var(--stone)}
-.illus-cube .face--back{transform:rotateY(180deg) translateZ(32px);background:var(--ink-700)}
-.illus-cube .face--right{transform:rotateY(90deg) translateZ(32px);background:var(--graphite)}
-.illus-cube .face--left{transform:rotateY(-90deg) translateZ(32px);background:var(--ink-600)}
-.illus-cube .face--top{transform:rotateX(90deg) translateZ(32px);background:var(--sand)}
-.illus-cube .face--bottom{transform:rotateX(-90deg) translateZ(32px);background:var(--ink-800)}
-@keyframes illus-facets-spin{from{transform:rotateX(-24deg) rotateY(0)}to{transform:rotateX(-24deg) rotateY(360deg)}}
-.illus-facets .card-illus__inner{animation:illus-facets-spin 12s linear infinite}
-.illus-facets .plane{position:absolute;inset:8px;border-radius:6px}
-.illus-facets .plane--1{background:var(--coral);opacity:.9}
-.illus-facets .plane--2{background:var(--wine);opacity:.8;transform:rotateY(62deg)}
-.illus-facets .plane--3{background:var(--crimson);opacity:.7;transform:rotateY(124deg)}
+.illus-cube .face{position:absolute;inset:0;border-radius:4px}
+.illus-cube .face--front{transform:translateZ(56px);background:var(--stone)}
+.illus-cube .face--back{transform:rotateY(180deg) translateZ(56px);background:var(--ink-700)}
+.illus-cube .face--right{transform:rotateY(90deg) translateZ(56px);background:var(--graphite)}
+.illus-cube .face--left{transform:rotateY(-90deg) translateZ(56px);background:var(--ink-600)}
+.illus-cube .face--top{transform:rotateX(90deg) translateZ(56px);background:var(--sand)}
+.illus-cube .face--bottom{transform:rotateX(-90deg) translateZ(56px);background:var(--ink-800)}
+
+/* Solution builder: one simple form (a ring), not a pile of shapes —
+   the complexity is in the visual (three orbits crossing a core),
+   closer to the source repo's own torus example than the old
+   three-overlapping-planes version. */
+@keyframes illus-rings-spin{from{transform:rotateX(58deg) rotateZ(0)}to{transform:rotateX(58deg) rotateZ(360deg)}}
+.illus-rings .card-illus__inner{animation:illus-rings-spin 13s linear infinite;transform-style:preserve-3d}
+.illus-rings .ring{position:absolute;inset:0;border-radius:50%;border-style:solid;transform-style:preserve-3d}
+.illus-rings .ring--1{border-width:3px;border-color:var(--coral)}
+.illus-rings .ring--2{inset:11%;border-width:3px;border-color:var(--wine);transform:rotateY(58deg)}
+.illus-rings .ring--3{inset:22%;border-width:3px;border-color:var(--crimson);transform:rotateY(-58deg)}
+.illus-rings .ring__core{position:absolute;inset:40%;border-radius:50%;background:var(--plum)}
 
 /* LADDER — signature ------------------------------------- */
 .ladderwrap{background:var(--surface);border-radius:var(--r-xl);padding:clamp(1.75rem,4vw,3.5rem);box-shadow:var(--lift-1)}
@@ -256,14 +270,19 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   transition:transform var(--d-base) var(--ease-spring)}
 .step:hover{transform:translateY(-5px)}
 /* One pie per level — the fraction filled (1/4 → 4/4) makes the four
-   levels immediately, visually countable, not just relatively taller. */
-.step__pie{
-  width:clamp(48px,6vw,64px);height:clamp(48px,6vw,64px);border-radius:50%;flex:none;
-  background:conic-gradient(var(--crimson) 0deg var(--fill,90deg), var(--sand) var(--fill,90deg) 360deg);
-  box-shadow:var(--lift-1);transition:box-shadow var(--d-base) var(--ease-out),transform var(--d-base) var(--ease-spring);
-}
-.step:hover .step__pie{box-shadow:var(--lift-2)}
-.step[aria-selected="true"] .step__pie{box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--crimson),var(--lift-2);transform:scale(1.06)}
+   levels immediately, visually countable, not just relatively taller.
+   Same 3D-disc treatment (perspective + spin, illus-cube-spin reused
+   verbatim) as the illustrations above, so the two sections read as
+   one visual system. */
+.step__pie{width:clamp(52px,6vw,68px);height:clamp(52px,6vw,68px);flex:none;perspective:220px;transition:transform var(--d-base) var(--ease-spring)}
+.step__pie-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;animation:illus-cube-spin 10s linear infinite}
+@media (prefers-reduced-motion:reduce){.step__pie-inner{animation:none!important;transform:rotateX(-20deg) rotateY(28deg)!important}}
+.pie-face{position:absolute;inset:0;border-radius:50%;box-shadow:var(--lift-1);transition:box-shadow var(--d-base) var(--ease-out)}
+.pie-face--front{background:conic-gradient(var(--crimson) 0deg var(--fill,90deg), var(--sand) var(--fill,90deg) 360deg);transform:translateZ(7px)}
+.pie-face--back{background:var(--ink-700);transform:rotateY(180deg) translateZ(7px)}
+.step:hover .pie-face{box-shadow:var(--lift-2)}
+.step[aria-selected="true"] .step__pie{transform:scale(1.08)}
+.step[aria-selected="true"] .pie-face--front{box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--crimson),var(--lift-2)}
 .step__meta{padding-inline:var(--s-1)}
 .step__lab{font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.1em;text-transform:uppercase;color:var(--stone);display:block}
 .step__name{font-family:var(--font-display);font-size:clamp(1rem,1.5vw,1.25rem);font-weight:600;letter-spacing:-.028em;display:block;margin-top:var(--s-1);
@@ -483,17 +502,22 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
           <div class="face face--right"></div><div class="face face--left"></div>
           <div class="face face--top"></div><div class="face face--bottom"></div>
         </div></div>
-        <p class="mono">Hvor de fleste er</p>
-        <h3>Værktøjsbrugeren</h3>
-        <p>Folk bruger AI hver dag, hver på sin måde. Output bliver kopieret ind i dokumenter og kode. Det går hurtigere — men resultatet ligner det, I lavede i forvejen.</p>
+        <div class="tcard__body">
+          <p class="mono">Hvor de fleste er</p>
+          <h3>Værktøjsbrugeren</h3>
+          <p>Folk bruger AI hver dag, hver på sin måde. Output bliver kopieret ind i dokumenter og kode. Det går hurtigere — men resultatet ligner det, I lavede i forvejen.</p>
+        </div>
       </div>
       <div class="tcard tcard--b reveal">
-        <div class="card-illus illus-facets" aria-hidden="true"><div class="card-illus__inner">
-          <div class="plane plane--1"></div><div class="plane plane--2"></div><div class="plane plane--3"></div>
+        <div class="card-illus illus-rings" aria-hidden="true"><div class="card-illus__inner">
+          <div class="ring ring--1"></div><div class="ring ring--2"></div><div class="ring ring--3"></div>
+          <div class="ring__core"></div>
         </div></div>
-        <p class="mono">Hvor de færreste er</p>
-        <h3>Løsningsbyggeren</h3>
-        <p>Ikke fordi de har bedre AI. Fordi de har en leverancemodel: arkitektur før agenten starter, specifikationer den arbejder efter, og et menneske ved de beslutninger, der betyder noget.</p>
+        <div class="tcard__body">
+          <p class="mono">Hvor de færreste er</p>
+          <h3>Løsningsbyggeren</h3>
+          <p>Ikke fordi de har bedre AI. Fordi de har en leverancemodel: arkitektur før agenten starter, specifikationer den arbejder efter, og et menneske ved de beslutninger, der betyder noget.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -510,19 +534,31 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
       <div class="steps reveal" role="tablist" aria-label="Niveauer af AI-modenhed">
         <button class="step" role="tab" id="tab-0" aria-controls="panel" aria-selected="true" data-level="0" style="--fill:90deg">
-          <span class="step__pie" aria-hidden="true"></span>
+          <span class="step__pie" aria-hidden="true"><span class="step__pie-inner">
+            <span class="pie-face pie-face--front"></span>
+            <span class="pie-face pie-face--back"></span>
+          </span></span>
           <span class="step__meta"><span class="step__lab">Niveau 0</span><span class="step__name">Værktøjsbruger</span><span class="step__pct">Agenter: 10%</span></span>
         </button>
         <button class="step" role="tab" id="tab-1" aria-controls="panel" aria-selected="false" data-level="1" style="--fill:180deg">
-          <span class="step__pie" aria-hidden="true"></span>
+          <span class="step__pie" aria-hidden="true"><span class="step__pie-inner">
+            <span class="pie-face pie-face--front"></span>
+            <span class="pie-face pie-face--back"></span>
+          </span></span>
           <span class="step__meta"><span class="step__lab">Niveau 1 · M1</span><span class="step__name">Assisteret</span><span class="step__pct">Agenter: 30%</span></span>
         </button>
         <button class="step" role="tab" id="tab-2" aria-controls="panel" aria-selected="false" data-level="2" style="--fill:270deg">
-          <span class="step__pie" aria-hidden="true"></span>
+          <span class="step__pie" aria-hidden="true"><span class="step__pie-inner">
+            <span class="pie-face pie-face--front"></span>
+            <span class="pie-face pie-face--back"></span>
+          </span></span>
           <span class="step__meta"><span class="step__lab">Niveau 2 · M2</span><span class="step__name">Forstærket</span><span class="step__pct">Agenter: 60%</span></span>
         </button>
         <button class="step" role="tab" id="tab-3" aria-controls="panel" aria-selected="false" data-level="3" style="--fill:360deg">
-          <span class="step__pie" aria-hidden="true"></span>
+          <span class="step__pie" aria-hidden="true"><span class="step__pie-inner">
+            <span class="pie-face pie-face--front"></span>
+            <span class="pie-face pie-face--back"></span>
+          </span></span>
           <span class="step__meta"><span class="step__lab">Niveau 3 · M3</span><span class="step__name">Autonom</span><span class="step__pct">Agenter: 85%</span></span>
         </button>
       </div>
