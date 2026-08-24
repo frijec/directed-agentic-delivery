@@ -311,8 +311,16 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .chip[aria-pressed="true"]{background:var(--ink-800);color:#fff}
 
 .rail{display:flex;gap:var(--s-4);overflow-x:auto;scroll-snap-type:x mandatory;
+  scroll-padding-inline:var(--gutter);
   margin-top:var(--s-6);padding:var(--s-3) var(--gutter) var(--s-8);
-  margin-inline:calc(var(--gutter)*-1);scrollbar-width:none}
+  margin-inline:calc(var(--gutter)*-1);scrollbar-width:none;
+  /* scroll-padding above fixes the common case (rest state, per-card
+     arrow steps all land clean) — but the container never evenly
+     divides into whole cards, so the true scroll extremes can still
+     end mid-card. Fading it there reads as intentional, not broken. */
+  mask-image:linear-gradient(to right, transparent 0, #000 var(--gutter), #000 calc(100% - var(--gutter)), transparent 100%);
+  -webkit-mask-image:linear-gradient(to right, transparent 0, #000 var(--gutter), #000 calc(100% - var(--gutter)), transparent 100%);
+}
 .rail::-webkit-scrollbar{display:none}
 .ocard{
   flex:0 0 clamp(260px,26vw,340px);scroll-snap-align:start;
@@ -749,9 +757,30 @@ panel.addEventListener('click',e=>{
   const j=e.target.closest('[data-jump]');
   if(j) applyFilter(j.dataset.jump);
 });
-const scrollBy=d=>rail.scrollBy({left:d*(rail.querySelector('.ocard').offsetWidth+16),behavior:REDUCED?'auto':'smooth'});
-document.getElementById('next').addEventListener('click',()=>scrollBy(1));
-document.getElementById('prev').addEventListener('click',()=>scrollBy(-1));
+// Move by real, measured card positions rather than an assumed fixed
+// step — a fixed increment doesn't evenly divide the actual scrollable
+// width, so repeated clicks eventually clamp against the hard scroll
+// boundary at a position that isn't aligned to any card, leaving one
+// sliced in half. This always lands exactly on a card edge.
+function visibleCards(){return [...rail.querySelectorAll('.ocard')].filter(c=>!c.hidden)}
+function currentCardIndex(){
+  const cards=visibleCards();
+  const railLeft=rail.getBoundingClientRect().left+parseFloat(getComputedStyle(rail).paddingLeft);
+  let idx=0;
+  cards.forEach((c,i)=>{if(c.getBoundingClientRect().left<railLeft-4)idx=i+1});
+  return Math.min(idx,cards.length-1);
+}
+function scrollToCardIndex(i){
+  const cards=visibleCards();
+  const target=Math.max(0,Math.min(cards.length-1,i));
+  const card=cards[target];
+  if(!card)return;
+  const railRect=rail.getBoundingClientRect();
+  const delta=card.getBoundingClientRect().left-railRect.left-parseFloat(getComputedStyle(rail).paddingLeft);
+  rail.scrollTo({left:rail.scrollLeft+delta,behavior:REDUCED?'auto':'smooth'});
+}
+document.getElementById('next').addEventListener('click',()=>scrollToCardIndex(currentCardIndex()+1));
+document.getElementById('prev').addEventListener('click',()=>scrollToCardIndex(currentCardIndex()-1));
 
 /* Marquee */
 const items=['<b>Praktiker-drevet</b> — seniorarkitekter i front','<b>1800+</b> specialister','<b>Teknologi-agnostisk</b>','<b>700+</b> aktive kunder','<b>Arkitektur først</b>','<b>25+</b> år i Norden','<b>Specifikations-drevet</b>','<b>Mennesker</b> ved beslutningerne','<b>EU AI Act</b>-parat'];
