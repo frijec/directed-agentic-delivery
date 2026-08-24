@@ -382,7 +382,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .qa summary::-webkit-details-marker{display:none}
 .qa summary::after{content:"+";margin-left:auto;font-family:var(--font-mono);font-weight:400;color:var(--wine);font-size:1.25rem;
   transition:transform var(--d-base) var(--ease-spring)}
-.qa[open] summary::after{transform:rotate(45deg)}
+.qa[open]:not(.is-closing) summary::after{transform:rotate(45deg)}
 .qa__body{padding:0 clamp(1.25rem,2.4vw,1.85rem) clamp(1.25rem,2.4vw,1.6rem);color:var(--graphite);font-size:var(--t-small);line-height:1.6;max-width:62ch}
 
 /* CTA + FOOTER ------------------------------------------- */
@@ -820,6 +820,40 @@ setNavH();
 addEventListener('resize',setNavH,{passive:true});
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(setNavH);
 
+/* FAQ drawers — animate the native <details> open/close via WAAPI instead
+   of the instant browser default, while keeping <details>/<summary> so
+   keyboard and screen-reader behaviour stays native. Pattern: drive the
+   element's own height between its closed/open measurements; toggling
+   `open` only happens once the animation finishes. */
+document.querySelectorAll('.qa').forEach(details=>{
+  const summary=details.querySelector('summary'), body=details.querySelector('.qa__body');
+  let anim=null, closing=false, expanding=false;
+  function onFinish(open){details.open=open;details.classList.remove('is-closing');anim=null;closing=false;expanding=false;details.style.height=details.style.overflow=''}
+  function shrink(){
+    closing=true; details.style.overflow='hidden'; details.classList.add('is-closing');
+    const start=`${details.offsetHeight}px`, end=`${summary.offsetHeight}px`;
+    if(anim)anim.cancel();
+    anim=details.animate({height:[start,end]},{duration:280,easing:'cubic-bezier(.4,0,.2,1)'});
+    anim.onfinish=()=>onFinish(false);
+    anim.oncancel=()=>closing=false;
+  }
+  function expand(){
+    expanding=true; details.style.overflow='hidden';
+    const start=`${details.offsetHeight}px`, end=`${summary.offsetHeight+body.offsetHeight}px`;
+    if(anim)anim.cancel();
+    anim=details.animate({height:[start,end]},{duration:280,easing:'cubic-bezier(.4,0,.2,1)'});
+    anim.onfinish=()=>onFinish(true);
+    anim.oncancel=()=>expanding=false;
+  }
+  function open(){details.classList.remove('is-closing');details.style.height=`${details.offsetHeight}px`;details.style.overflow='hidden';details.open=true;requestAnimationFrame(expand)}
+  summary.addEventListener('click',e=>{
+    e.preventDefault();
+    if(REDUCED){details.open=!details.open;return}
+    if(closing||!details.open)open();
+    else if(expanding||details.open)shrink();
+  });
+});
+
 /* Hero wave grid — a from-scratch WebGL2 port of franky-adl's
    "3d-wave-grid" (https://github.com/franky-adl/3d-wave-grid).
    Same mechanic: a grid of thin pillars under a near-top-down
@@ -1024,6 +1058,100 @@ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(setNavH);
   gl.enable(gl.BLEND);
   gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
 
+  /* ---- dithering post-process: ordered (Bayer 4x4) dithering, ported
+     from niccolofanton/dithering-shader, run as an offscreen-FBO +
+     fullscreen-quad pass so every 3D element on the page (this grid, the
+     thesis/level-picker three.js scenes, the CTA noise) shares one look. */
+  const DITHER_FS=`#version 300 es
+  precision highp float;
+  in vec2 vUv;
+  uniform sampler2D uScene;
+  uniform vec2 uResolution;
+  uniform float uCellSize;
+  out vec4 fragColor;
+  bool ditherOn(float brightness,vec2 cell){
+    if(brightness>16.0/17.0)return false;
+    if(brightness<1.0/17.0)return true;
+    vec2 p=mod(cell,4.0);
+    int x=int(p.x); int y=int(p.y);
+    if(x==0){
+      if(y==0)return brightness<16.0/17.0;
+      if(y==1)return brightness<5.0/17.0;
+      if(y==2)return brightness<13.0/17.0;
+      return brightness<1.0/17.0;
+    }else if(x==1){
+      if(y==0)return brightness<8.0/17.0;
+      if(y==1)return brightness<12.0/17.0;
+      if(y==2)return brightness<4.0/17.0;
+      return brightness<9.0/17.0;
+    }else if(x==2){
+      if(y==0)return brightness<14.0/17.0;
+      if(y==1)return brightness<2.0/17.0;
+      if(y==2)return brightness<15.0/17.0;
+      return brightness<3.0/17.0;
+    }else{
+      if(y==0)return brightness<6.0/17.0;
+      if(y==1)return brightness<10.0/17.0;
+      if(y==2)return brightness<7.0/17.0;
+      return brightness<11.0/17.0;
+    }
+  }
+  void main(){
+    vec2 fragCoord=vUv*uResolution;
+    vec2 cell=floor(fragCoord/uCellSize);
+    vec3 colorSum=vec3(0.0); float alphaSum=0.0;
+    for(int i=0;i<3;i++){
+      for(int j=0;j<3;j++){
+        vec2 offs=(vec2(float(i),float(j))+0.5)/3.0*uCellSize;
+        vec4 s=texture(uScene,(cell*uCellSize+offs)/uResolution);
+        colorSum+=s.rgb*s.a; alphaSum+=s.a;
+      }
+    }
+    float avgAlpha=alphaSum/9.0;
+    vec3 avgColor=alphaSum>0.001?colorSum/alphaSum:vec3(0.0);
+    float brightness=dot(avgColor,vec3(1.0));
+    vec3 color=ditherOn(brightness,cell)?vec3(0.0):avgColor;
+    fragColor=vec4(color,avgAlpha);
+  }`;
+  const DITHER_VS=`#version 300 es
+  layout(location=0) in vec2 aPos;
+  out vec2 vUv;
+  void main(){ vUv=aPos*0.5+0.5; gl_Position=vec4(aPos,0.0,1.0); }`;
+  const dvs=compile(gl.VERTEX_SHADER,DITHER_VS), dfs=compile(gl.FRAGMENT_SHADER,DITHER_FS);
+  const ditherProg=gl.createProgram();
+  gl.attachShader(ditherProg,dvs);gl.attachShader(ditherProg,dfs);gl.linkProgram(ditherProg);
+  const ditherU={uScene:gl.getUniformLocation(ditherProg,'uScene'),uResolution:gl.getUniformLocation(ditherProg,'uResolution'),uCellSize:gl.getUniformLocation(ditherProg,'uCellSize')};
+  const quadBuf=gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER,quadBuf);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1, 3,-1, -1,3]),gl.STATIC_DRAW);
+  const quadVao=gl.createVertexArray();
+  gl.bindVertexArray(quadVao);
+  gl.bindBuffer(gl.ARRAY_BUFFER,quadBuf);
+  gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
+  gl.bindVertexArray(null);
+  let sceneTex=null, sceneFbo=null, fboW=0, fboH=0;
+  function ensureFbo(w,h){
+    if(sceneFbo && fboW===w && fboH===h)return;
+    fboW=w;fboH=h;
+    if(sceneTex)gl.deleteTexture(sceneTex);
+    if(sceneFbo)gl.deleteFramebuffer(sceneFbo);
+    sceneTex=gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D,sceneTex);
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA8,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,null);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+    sceneFbo=gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER,sceneFbo);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,sceneTex,0);
+    const depthRb=gl.createRenderbuffer();
+    gl.bindRenderbuffer(gl.RENDERBUFFER,depthRb);
+    gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT16,w,h);
+    gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.RENDERBUFFER,depthRb);
+    gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+  }
+
   /* ---- pointer trail (JS-side ray/plane intersection, no matrix invert needed:
      view-space ray direction from the symmetric FOV, rotated by the camera's own
      basis vectors which we already build for the view matrix). ---- */
@@ -1077,6 +1205,7 @@ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(setNavH);
     canvas.width=Math.max(1,Math.round(w*dpr));canvas.height=Math.max(1,Math.round(h*dpr));
     canvas.style.width=w+'px';canvas.style.height=h+'px';
     gl.viewport(0,0,canvas.width,canvas.height);
+    ensureFbo(canvas.width,canvas.height);
   }
 
   const trailFloats=new Float32Array(MAX_TRAIL*4);
@@ -1110,6 +1239,9 @@ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(setNavH);
       trailFloats[o]=p.x;trailFloats[o+1]=p.z;trailFloats[o+2]=p.age;trailFloats[o+3]=p.distDelta;
     }
 
+    gl.bindFramebuffer(gl.FRAMEBUFFER,sceneFbo);
+    gl.viewport(0,0,fboW,fboH);
+    gl.enable(gl.DEPTH_TEST);
     gl.clearColor(0,0,0,0);
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
     gl.useProgram(prog);
@@ -1131,6 +1263,22 @@ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(setNavH);
 
     gl.bindVertexArray(vao);
     gl.drawArraysInstanced(gl.TRIANGLES,0,vertCount,instCount);
+    gl.bindVertexArray(null);
+
+    // dithering pass: FBO texture -> screen, through the Bayer post-process
+    gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+    gl.viewport(0,0,canvas.width,canvas.height);
+    gl.disable(gl.DEPTH_TEST);
+    gl.clearColor(0,0,0,0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.useProgram(ditherProg);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D,sceneTex);
+    gl.uniform1i(ditherU.uScene,0);
+    gl.uniform2f(ditherU.uResolution,fboW,fboH);
+    gl.uniform1f(ditherU.uCellSize,3*dpr);
+    gl.bindVertexArray(quadVao);
+    gl.drawArrays(gl.TRIANGLES,0,3);
     gl.bindVertexArray(null);
 
     if(running)raf=requestAnimationFrame(frame);
@@ -1340,6 +1488,74 @@ const illusCss = getComputedStyle(document.documentElement);
 const illusTok = n => illusCss.getPropertyValue(n).trim();
 const hexNum = h => parseInt((h || '#ffffff').replace('#', ''), 16);
 
+// Ordered (Bayer 4x4) dithering post-process, ported from the
+// niccolofanton/dithering-shader effect — run as a fullscreen pass over
+// each scene's render so every 3D element reads as one coherent material.
+const DITHER_FRAG = `
+uniform sampler2D uScene;
+uniform vec2 uResolution;
+uniform float uCellSize;
+varying vec2 vUv;
+
+bool ditherOn(float brightness, vec2 cell) {
+  if (brightness > 16.0 / 17.0) return false;
+  if (brightness < 1.0 / 17.0) return true;
+  vec2 p = mod(cell, 4.0);
+  int x = int(p.x);
+  int y = int(p.y);
+  if (x == 0) {
+    if (y == 0) return brightness < 16.0 / 17.0;
+    if (y == 1) return brightness < 5.0 / 17.0;
+    if (y == 2) return brightness < 13.0 / 17.0;
+    return brightness < 1.0 / 17.0;
+  } else if (x == 1) {
+    if (y == 0) return brightness < 8.0 / 17.0;
+    if (y == 1) return brightness < 12.0 / 17.0;
+    if (y == 2) return brightness < 4.0 / 17.0;
+    return brightness < 9.0 / 17.0;
+  } else if (x == 2) {
+    if (y == 0) return brightness < 14.0 / 17.0;
+    if (y == 1) return brightness < 2.0 / 17.0;
+    if (y == 2) return brightness < 15.0 / 17.0;
+    return brightness < 3.0 / 17.0;
+  } else {
+    if (y == 0) return brightness < 6.0 / 17.0;
+    if (y == 1) return brightness < 10.0 / 17.0;
+    if (y == 2) return brightness < 7.0 / 17.0;
+    return brightness < 11.0 / 17.0;
+  }
+}
+
+void main() {
+  vec2 fragCoord = vUv * uResolution;
+  vec2 cell = floor(fragCoord / uCellSize);
+  // Box-average each cell (not a single point sample) so thin geometry
+  // (the rings illustration's slim tori) doesn't vanish between samples.
+  vec3 colorSum = vec3(0.0);
+  float alphaSum = 0.0;
+  for (int i = 0; i < 3; i++) {
+    for (int j = 0; j < 3; j++) {
+      vec2 offs = (vec2(float(i), float(j)) + 0.5) / 3.0 * uCellSize;
+      vec4 s = texture2D(uScene, (cell * uCellSize + offs) / uResolution);
+      colorSum += s.rgb * s.a;
+      alphaSum += s.a;
+    }
+  }
+  float avgAlpha = alphaSum / 9.0;
+  vec3 avgColor = alphaSum > 0.001 ? colorSum / alphaSum : vec3(0.0);
+  float brightness = dot(avgColor, vec3(1.0));
+  vec3 color = ditherOn(brightness, cell) ? vec3(0.0) : avgColor;
+  gl_FragColor = vec4(color, avgAlpha);
+}
+`;
+const DITHER_VERT = `
+varying vec2 vUv;
+void main() {
+  vUv = uv;
+  gl_Position = vec4(position.xy, 0.0, 1.0);
+}
+`;
+
 function makeIllusScene(container, build) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
@@ -1357,9 +1573,28 @@ function makeIllusScene(container, build) {
   fill.position.set(3, -2, -4);
   scene.add(fill);
 
+  let target = new THREE.WebGLRenderTarget(1, 1, { colorSpace: THREE.SRGBColorSpace });
+  const ditherScene = new THREE.Scene();
+  const ditherCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  const ditherMat = new THREE.ShaderMaterial({
+    vertexShader: DITHER_VERT,
+    fragmentShader: DITHER_FRAG,
+    uniforms: {
+      uScene: { value: target.texture },
+      uResolution: { value: new THREE.Vector2(1, 1) },
+      uCellSize: { value: 3 }
+    },
+    transparent: true
+  });
+  ditherScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), ditherMat));
+
   function resize() {
     const w = container.clientWidth || 96, h = container.clientHeight || 96;
+    const dpr = renderer.getPixelRatio();
     renderer.setSize(w, h);
+    target.setSize(w * dpr, h * dpr);
+    ditherMat.uniforms.uResolution.value.set(w * dpr, h * dpr);
+    ditherMat.uniforms.uCellSize.value = 3 * dpr;
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
   }
@@ -1370,7 +1605,12 @@ function makeIllusScene(container, build) {
 
   let running = false, raf = null;
   function frame() {
+    renderer.setRenderTarget(target);
+    renderer.setClearColor(0x000000, 0);
+    renderer.clear();
     renderer.render(scene, camera);
+    renderer.setRenderTarget(null);
+    renderer.render(ditherScene, ditherCamera);
     if (running) raf = requestAnimationFrame(frame);
   }
   function start() { if (running || REDUCED_ILLUS) return; running = true; raf = requestAnimationFrame(frame); }
