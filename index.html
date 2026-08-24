@@ -1062,7 +1062,7 @@ document.querySelectorAll('.qa').forEach(details=>{
      from niccolofanton/dithering-shader, run as an offscreen-FBO +
      fullscreen-quad pass so every 3D element on the page (this grid, the
      thesis/level-picker three.js scenes, the CTA noise) shares one look. */
-  const DITHER_GRID=6, DITHER_PIXEL_RATIO=2, DITHER_GAIN=1.2;
+  const DITHER_GRID=3, DITHER_PIXEL_RATIO=2, DITHER_GAIN=1.2;
   const DITHER_FS=`#version 300 es
   precision highp float;
   in vec2 vUv;
@@ -1499,7 +1499,7 @@ const REDUCED_ILLUS = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // bright or dark enough to hit the shader's clean solid-black/solid-color
 // zones on their own, so everything reads as one uniform muddy speckle —
 // stretching brightness before the dither threshold restores that range.
-const DITHER_GRID = 6, DITHER_PIXEL_RATIO = 1, DITHER_GAIN = 1.35, DITHER_BIAS = 0.15;
+const DITHER_GRID = 3, DITHER_PIXEL_RATIO = 1, DITHER_GAIN = 1.35, DITHER_BIAS = 0.15;
 const illusCss = getComputedStyle(document.documentElement);
 const illusTok = n => illusCss.getPropertyValue(n).trim();
 const hexNum = h => parseInt((h || '#ffffff').replace('#', ''), 16);
