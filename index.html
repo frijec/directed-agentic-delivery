@@ -1062,7 +1062,7 @@ document.querySelectorAll('.qa').forEach(details=>{
      from niccolofanton/dithering-shader, run as an offscreen-FBO +
      fullscreen-quad pass so every 3D element on the page (this grid, the
      thesis/level-picker three.js scenes, the CTA noise) shares one look. */
-  const DITHER_GRID=6, DITHER_PIXEL_RATIO=2;
+  const DITHER_GRID=6, DITHER_PIXEL_RATIO=2, DITHER_GAIN=1.2;
   const DITHER_FS=`#version 300 es
   precision highp float;
   in vec2 vUv;
@@ -1070,6 +1070,7 @@ document.querySelectorAll('.qa').forEach(details=>{
   uniform vec2 uResolution;
   uniform float uGridSize;
   uniform float uPixelSize;
+  uniform float uGain;
   out vec4 fragColor;
   bool ditherOn(float brightness,vec2 cell){
     if(brightness>16.0/17.0)return false;
@@ -1112,7 +1113,7 @@ document.querySelectorAll('.qa').forEach(details=>{
     }
     float avgAlpha=alphaSum/9.0;
     vec3 avgColor=alphaSum>0.001?colorSum/alphaSum:vec3(0.0);
-    float brightness=dot(avgColor,vec3(1.0));
+    float brightness=clamp(dot(avgColor,vec3(1.0))*uGain,0.0,1.0);
     vec3 color=ditherOn(brightness,ditherCell)?vec3(0.0):avgColor;
     fragColor=vec4(color,avgAlpha);
   }`;
@@ -1123,7 +1124,7 @@ document.querySelectorAll('.qa').forEach(details=>{
   const dvs=compile(gl.VERTEX_SHADER,DITHER_VS), dfs=compile(gl.FRAGMENT_SHADER,DITHER_FS);
   const ditherProg=gl.createProgram();
   gl.attachShader(ditherProg,dvs);gl.attachShader(ditherProg,dfs);gl.linkProgram(ditherProg);
-  const ditherU={uScene:gl.getUniformLocation(ditherProg,'uScene'),uResolution:gl.getUniformLocation(ditherProg,'uResolution'),uGridSize:gl.getUniformLocation(ditherProg,'uGridSize'),uPixelSize:gl.getUniformLocation(ditherProg,'uPixelSize')};
+  const ditherU={uScene:gl.getUniformLocation(ditherProg,'uScene'),uResolution:gl.getUniformLocation(ditherProg,'uResolution'),uGridSize:gl.getUniformLocation(ditherProg,'uGridSize'),uPixelSize:gl.getUniformLocation(ditherProg,'uPixelSize'),uGain:gl.getUniformLocation(ditherProg,'uGain')};
   const quadBuf=gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER,quadBuf);
   gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1, 3,-1, -1,3]),gl.STATIC_DRAW);
@@ -1141,8 +1142,8 @@ document.querySelectorAll('.qa').forEach(details=>{
     sceneTex=gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D,sceneTex);
     gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA8,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,null);
-    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
     sceneFbo=gl.createFramebuffer();
@@ -1281,6 +1282,7 @@ document.querySelectorAll('.qa').forEach(details=>{
     gl.uniform2f(ditherU.uResolution,fboW,fboH);
     gl.uniform1f(ditherU.uGridSize,DITHER_GRID*dpr);
     gl.uniform1f(ditherU.uPixelSize,DITHER_GRID*DITHER_PIXEL_RATIO*dpr);
+    gl.uniform1f(ditherU.uGain,DITHER_GAIN);
     gl.bindVertexArray(quadVao);
     gl.drawArrays(gl.TRIANGLES,0,3);
     gl.bindVertexArray(null);
@@ -1490,7 +1492,14 @@ import * as THREE from 'https://unpkg.com/three@0.169.0/build/three.module.js';
 const REDUCED_ILLUS = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // Dithering post-process tuning (Effect Resolution / Pixelation from the
 // source repo's own demo controls) — shared with the hero grid's copy below.
-const DITHER_GRID = 6, DITHER_PIXEL_RATIO = 2;
+// Grid/pixelation sized for these small (56-96px) icons — the same
+// absolute block size the hero canvas uses would leave only ~6 blocks
+// across an icon, too coarse to read as a ring. Bias+gain is a levels
+// stretch: our darker brand reds (crimson/wine), once lit, never render
+// bright or dark enough to hit the shader's clean solid-black/solid-color
+// zones on their own, so everything reads as one uniform muddy speckle —
+// stretching brightness before the dither threshold restores that range.
+const DITHER_GRID = 6, DITHER_PIXEL_RATIO = 1, DITHER_GAIN = 1.35, DITHER_BIAS = 0.15;
 const illusCss = getComputedStyle(document.documentElement);
 const illusTok = n => illusCss.getPropertyValue(n).trim();
 const hexNum = h => parseInt((h || '#ffffff').replace('#', ''), 16);
@@ -1503,6 +1512,8 @@ uniform sampler2D uScene;
 uniform vec2 uResolution;
 uniform float uGridSize;
 uniform float uPixelSize;
+uniform float uGain;
+uniform float uBias;
 varying vec2 vUv;
 
 bool ditherOn(float brightness, vec2 cell) {
@@ -1555,7 +1566,11 @@ void main() {
   }
   float avgAlpha = alphaSum / 9.0;
   vec3 avgColor = alphaSum > 0.001 ? colorSum / alphaSum : vec3(0.0);
-  float brightness = dot(avgColor, vec3(1.0));
+  // Levels stretch (bias then gain) pushes lit faces into clean pass-through
+  // and shaded faces toward black, so the Bayer pattern only has to do work
+  // in the transition band instead of speckling the whole (fairly dark)
+  // brand palette at a uniform density.
+  float brightness = clamp((dot(avgColor, vec3(1.0)) - uBias) * uGain, 0.0, 1.0);
   vec3 color = ditherOn(brightness, ditherCell) ? vec3(0.0) : avgColor;
   gl_FragColor = vec4(color, avgAlpha);
 }
@@ -1585,7 +1600,7 @@ function makeIllusScene(container, build) {
   fill.position.set(3, -2, -4);
   scene.add(fill);
 
-  let target = new THREE.WebGLRenderTarget(1, 1, { colorSpace: THREE.SRGBColorSpace });
+  let target = new THREE.WebGLRenderTarget(1, 1, { colorSpace: THREE.SRGBColorSpace, minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter });
   const ditherScene = new THREE.Scene();
   const ditherCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
   const ditherMat = new THREE.ShaderMaterial({
@@ -1595,7 +1610,9 @@ function makeIllusScene(container, build) {
       uScene: { value: target.texture },
       uResolution: { value: new THREE.Vector2(1, 1) },
       uGridSize: { value: DITHER_GRID },
-      uPixelSize: { value: DITHER_GRID * DITHER_PIXEL_RATIO }
+      uPixelSize: { value: DITHER_GRID * DITHER_PIXEL_RATIO },
+      uGain: { value: DITHER_GAIN },
+      uBias: { value: DITHER_BIAS }
     },
     transparent: true
   });
