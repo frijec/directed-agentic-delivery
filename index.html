@@ -1062,12 +1062,14 @@ document.querySelectorAll('.qa').forEach(details=>{
      from niccolofanton/dithering-shader, run as an offscreen-FBO +
      fullscreen-quad pass so every 3D element on the page (this grid, the
      thesis/level-picker three.js scenes, the CTA noise) shares one look. */
+  const DITHER_GRID=6, DITHER_PIXEL_RATIO=2;
   const DITHER_FS=`#version 300 es
   precision highp float;
   in vec2 vUv;
   uniform sampler2D uScene;
   uniform vec2 uResolution;
-  uniform float uCellSize;
+  uniform float uGridSize;
+  uniform float uPixelSize;
   out vec4 fragColor;
   bool ditherOn(float brightness,vec2 cell){
     if(brightness>16.0/17.0)return false;
@@ -1098,19 +1100,20 @@ document.querySelectorAll('.qa').forEach(details=>{
   }
   void main(){
     vec2 fragCoord=vUv*uResolution;
-    vec2 cell=floor(fragCoord/uCellSize);
+    vec2 pixelCell=floor(fragCoord/uPixelSize);
+    vec2 ditherCell=floor(fragCoord/uGridSize);
     vec3 colorSum=vec3(0.0); float alphaSum=0.0;
     for(int i=0;i<3;i++){
       for(int j=0;j<3;j++){
-        vec2 offs=(vec2(float(i),float(j))+0.5)/3.0*uCellSize;
-        vec4 s=texture(uScene,(cell*uCellSize+offs)/uResolution);
+        vec2 offs=(vec2(float(i),float(j))+0.5)/3.0*uPixelSize;
+        vec4 s=texture(uScene,(pixelCell*uPixelSize+offs)/uResolution);
         colorSum+=s.rgb*s.a; alphaSum+=s.a;
       }
     }
     float avgAlpha=alphaSum/9.0;
     vec3 avgColor=alphaSum>0.001?colorSum/alphaSum:vec3(0.0);
     float brightness=dot(avgColor,vec3(1.0));
-    vec3 color=ditherOn(brightness,cell)?vec3(0.0):avgColor;
+    vec3 color=ditherOn(brightness,ditherCell)?vec3(0.0):avgColor;
     fragColor=vec4(color,avgAlpha);
   }`;
   const DITHER_VS=`#version 300 es
@@ -1120,7 +1123,7 @@ document.querySelectorAll('.qa').forEach(details=>{
   const dvs=compile(gl.VERTEX_SHADER,DITHER_VS), dfs=compile(gl.FRAGMENT_SHADER,DITHER_FS);
   const ditherProg=gl.createProgram();
   gl.attachShader(ditherProg,dvs);gl.attachShader(ditherProg,dfs);gl.linkProgram(ditherProg);
-  const ditherU={uScene:gl.getUniformLocation(ditherProg,'uScene'),uResolution:gl.getUniformLocation(ditherProg,'uResolution'),uCellSize:gl.getUniformLocation(ditherProg,'uCellSize')};
+  const ditherU={uScene:gl.getUniformLocation(ditherProg,'uScene'),uResolution:gl.getUniformLocation(ditherProg,'uResolution'),uGridSize:gl.getUniformLocation(ditherProg,'uGridSize'),uPixelSize:gl.getUniformLocation(ditherProg,'uPixelSize')};
   const quadBuf=gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER,quadBuf);
   gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1, 3,-1, -1,3]),gl.STATIC_DRAW);
@@ -1276,7 +1279,8 @@ document.querySelectorAll('.qa').forEach(details=>{
     gl.bindTexture(gl.TEXTURE_2D,sceneTex);
     gl.uniform1i(ditherU.uScene,0);
     gl.uniform2f(ditherU.uResolution,fboW,fboH);
-    gl.uniform1f(ditherU.uCellSize,3*dpr);
+    gl.uniform1f(ditherU.uGridSize,DITHER_GRID*dpr);
+    gl.uniform1f(ditherU.uPixelSize,DITHER_GRID*DITHER_PIXEL_RATIO*dpr);
     gl.bindVertexArray(quadVao);
     gl.drawArrays(gl.TRIANGLES,0,3);
     gl.bindVertexArray(null);
@@ -1484,6 +1488,9 @@ document.querySelectorAll('.qa').forEach(details=>{
 import * as THREE from 'https://unpkg.com/three@0.169.0/build/three.module.js';
 
 const REDUCED_ILLUS = matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Dithering post-process tuning (Effect Resolution / Pixelation from the
+// source repo's own demo controls) — shared with the hero grid's copy below.
+const DITHER_GRID = 6, DITHER_PIXEL_RATIO = 2;
 const illusCss = getComputedStyle(document.documentElement);
 const illusTok = n => illusCss.getPropertyValue(n).trim();
 const hexNum = h => parseInt((h || '#ffffff').replace('#', ''), 16);
@@ -1494,7 +1501,8 @@ const hexNum = h => parseInt((h || '#ffffff').replace('#', ''), 16);
 const DITHER_FRAG = `
 uniform sampler2D uScene;
 uniform vec2 uResolution;
-uniform float uCellSize;
+uniform float uGridSize;
+uniform float uPixelSize;
 varying vec2 vUv;
 
 bool ditherOn(float brightness, vec2 cell) {
@@ -1528,15 +1536,19 @@ bool ditherOn(float brightness, vec2 cell) {
 
 void main() {
   vec2 fragCoord = vUv * uResolution;
-  vec2 cell = floor(fragCoord / uCellSize);
-  // Box-average each cell (not a single point sample) so thin geometry
-  // (the rings illustration's slim tori) doesn't vanish between samples.
+  // Pixelation block (gridSize * pixelRatio) — the flat-color patch size —
+  // is independent of the Bayer matrix pitch (gridSize alone), so a single
+  // pixelated block can still show internal dither texture.
+  vec2 pixelCell = floor(fragCoord / uPixelSize);
+  vec2 ditherCell = floor(fragCoord / uGridSize);
+  // Box-average each pixelation block (not a single point sample) so thin
+  // geometry (the rings illustration's slim tori) doesn't vanish between samples.
   vec3 colorSum = vec3(0.0);
   float alphaSum = 0.0;
   for (int i = 0; i < 3; i++) {
     for (int j = 0; j < 3; j++) {
-      vec2 offs = (vec2(float(i), float(j)) + 0.5) / 3.0 * uCellSize;
-      vec4 s = texture2D(uScene, (cell * uCellSize + offs) / uResolution);
+      vec2 offs = (vec2(float(i), float(j)) + 0.5) / 3.0 * uPixelSize;
+      vec4 s = texture2D(uScene, (pixelCell * uPixelSize + offs) / uResolution);
       colorSum += s.rgb * s.a;
       alphaSum += s.a;
     }
@@ -1544,7 +1556,7 @@ void main() {
   float avgAlpha = alphaSum / 9.0;
   vec3 avgColor = alphaSum > 0.001 ? colorSum / alphaSum : vec3(0.0);
   float brightness = dot(avgColor, vec3(1.0));
-  vec3 color = ditherOn(brightness, cell) ? vec3(0.0) : avgColor;
+  vec3 color = ditherOn(brightness, ditherCell) ? vec3(0.0) : avgColor;
   gl_FragColor = vec4(color, avgAlpha);
 }
 `;
@@ -1582,7 +1594,8 @@ function makeIllusScene(container, build) {
     uniforms: {
       uScene: { value: target.texture },
       uResolution: { value: new THREE.Vector2(1, 1) },
-      uCellSize: { value: 3 }
+      uGridSize: { value: DITHER_GRID },
+      uPixelSize: { value: DITHER_GRID * DITHER_PIXEL_RATIO }
     },
     transparent: true
   });
@@ -1594,7 +1607,8 @@ function makeIllusScene(container, build) {
     renderer.setSize(w, h);
     target.setSize(w * dpr, h * dpr);
     ditherMat.uniforms.uResolution.value.set(w * dpr, h * dpr);
-    ditherMat.uniforms.uCellSize.value = 3 * dpr;
+    ditherMat.uniforms.uGridSize.value = DITHER_GRID * dpr;
+    ditherMat.uniforms.uPixelSize.value = DITHER_GRID * DITHER_PIXEL_RATIO * dpr;
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
   }
