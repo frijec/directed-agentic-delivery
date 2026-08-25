@@ -183,15 +183,15 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .hero h1 .pill{transform:rotate(-1.4deg)}
 .hero h1 .soft{transform:rotate(1deg)}
 
-/* lead+CTA and stat cards, sitting close to the bottom of the viewport */
+/* lead+CTA card, sitting close to the bottom of the viewport. Alone now
+   that the stats card has moved out — centered and given a deliberate
+   measure rather than stretching to the full hero width. */
 .hero__cards{position:relative;z-index:1;padding-bottom:clamp(1.5rem,4vw,3rem)}
-.hero__grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,26rem);gap:clamp(1.25rem,3vw,2rem)}
-@media (max-width:900px){.hero__grid{grid-template-columns:1fr}}
-.hero__leadcard{display:flex;flex-direction:column;justify-content:center;gap:var(--s-5)}
+.hero__leadcard{display:flex;flex-direction:column;justify-content:center;gap:var(--s-5);
+  max-width:52rem;margin-inline:auto}
 .hero__leadcard .lead{color:rgba(255,255,255,.78);max-width:none}
 .hero__cta{display:flex;flex-wrap:wrap;gap:var(--s-3)}
 
-/* floating stat cluster */
 .statcard{background:var(--plum);color:#fff;border-radius:var(--r-lg);padding:clamp(1.5rem,3vw,2rem);box-shadow:var(--lift-2)}
 .statcard .mono{color:rgba(255,255,255,.45)}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-5);margin-top:var(--s-5)}
@@ -200,15 +200,36 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 /* MARQUEE ------------------------------------------------ */
 .marquee{overflow:hidden;padding-block:var(--s-5);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
-.marquee__track{display:flex;gap:var(--s-3);width:max-content;animation:slide 44s linear infinite}
+.marquee__track{display:flex;gap:var(--s-4);width:max-content;animation:slide 44s linear infinite}
 .marquee:hover .marquee__track{animation-play-state:paused}
 @keyframes slide{to{transform:translateX(-50%)}}
 .mchip{
-  background:var(--surface);border-radius:var(--r-pill);padding:.6rem 1.15rem;
-  font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.06em;
+  background:var(--surface);border-radius:var(--r-pill);padding:.85rem 1.5rem;
+  font-family:var(--font-mono);font-size:var(--t-small);letter-spacing:.05em;
   color:var(--graphite);white-space:nowrap;box-shadow:var(--lift-1)
 }
 .mchip b{color:var(--ink-800);font-weight:500}
+
+/* TALLY — stats + marquee, moved out of the hero into their own card just
+   before the closing CTA, so they read as a "before you go" proof point
+   rather than competing with the headline for a first-second read. Coral
+   is a type-only accent everywhere else on the site; this is the one
+   surface use, which is why text follows the same dark-on-coral pairing
+   as the h1's own coral chips rather than the hero cards' white-on-plum. */
+.tally{background:var(--coral);border-radius:var(--r-lg);
+  padding:clamp(2rem,4vw,3rem) clamp(1.5rem,3vw,2.5rem) clamp(1.5rem,3vw,2rem);
+  box-shadow:var(--lift-2);overflow:hidden}
+/* This is the section's only heading, so it's a real h2 for the document
+   outline — .mono already overrides h2's size/tracking, just not its
+   700 weight, which would read too heavy for a small eyebrow label. */
+.tally__lab{color:rgba(20,17,18,.55);font-weight:400}
+.tally .stats{margin-top:clamp(1.5rem,3vw,2.25rem)}
+.tally .stat__num{font-size:clamp(2.4rem,5vw,3.75rem);color:var(--ink-900)}
+.tally .stat__lab{color:rgba(20,17,18,.6)}
+.tally__marquee{margin:clamp(1.75rem,3.5vw,2.5rem) calc(clamp(1.5rem,3vw,2.5rem)*-1) calc(clamp(1.5rem,3vw,2rem)*-1);
+  padding-block:clamp(1rem,2vw,1.5rem);
+  mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
+@media (max-width:640px){.tally .stats{grid-template-columns:1fr 1fr}}
 
 /* THESIS ------------------------------------------------- */
 .thesis{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(1rem,2.5vw,2rem);margin-top:clamp(2rem,4vw,3rem);align-items:start}
@@ -462,30 +483,15 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   </div>
 
   <div class="hero__cards wrap">
-    <div class="hero__grid">
-      <div class="statcard hero__leadcard reveal">
-        <p class="lead">De fleste organisationer begynder som værktøjsbrugere. Opgaverne går hurtigere, men fundamentet er det samme — og fart uden retning giver bare mere af det, der var i forvejen. Vi bygger fundamentet først. Så sætter vi farten op.</p>
-        <div class="hero__cta">
-          <a class="btn btn--primary" href="#niveau">Find jeres niveau <span class="arw">→</span></a>
-          <a class="btn btn--soft" href="#ydelser">Se hvad vi tilbyder</a>
-        </div>
-      </div>
-      <div class="statcard reveal">
-        <p class="mono">Consid i tal</p>
-        <div class="stats">
-          <div><div class="stat__num" data-count="1800" data-suffix="+">0</div><div class="stat__lab">Specialister</div></div>
-          <div><div class="stat__num" data-count="700" data-suffix="+">0</div><div class="stat__lab">Aktive kunder</div></div>
-          <div><div class="stat__num" data-count="25" data-suffix="+">0</div><div class="stat__lab">År i Norden</div></div>
-          <div><div class="stat__num" data-count="3" data-suffix="">0</div><div class="stat__lab">Leveranceniveauer</div></div>
-        </div>
+    <div class="statcard hero__leadcard reveal">
+      <p class="lead">De fleste organisationer begynder som værktøjsbrugere. Opgaverne går hurtigere, men fundamentet er det samme — og fart uden retning giver bare mere af det, der var i forvejen. Vi bygger fundamentet først. Så sætter vi farten op.</p>
+      <div class="hero__cta">
+        <a class="btn btn--primary" href="#niveau">Find jeres niveau <span class="arw">→</span></a>
+        <a class="btn btn--soft" href="#ydelser">Se hvad vi tilbyder</a>
       </div>
     </div>
   </div>
 </header>
-
-<div class="marquee" aria-hidden="true">
-  <div class="marquee__track" id="track"></div>
-</div>
 
 <!-- 01 THESIS -->
 <section class="stack">
@@ -636,6 +642,24 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       <details class="qa reveal"><summary>Hvor lang tid tager det at komme fra niveau 1 til niveau 2?</summary><div class="qa__body">Det afhænger mere af jeres dokumentation end af jeres teknologi. Har I opdateret arkitektur og klare specifikationer, er det måneder. Skal det bygges fra bunden, er det længere — og det er præcis det, en Agentic Development Review sætter tal på.</div></details>
       <details class="qa reveal"><summary>Skal vi vælge en bestemt model eller platform?</summary><div class="qa__body">Nej. Leverancemodellen er det, der holder — modellerne skiftes ud. Vi arbejder med det, I har, og bygger så I kan skifte uden at starte forfra.</div></details>
       <details class="qa reveal"><summary>Hvordan forholder det sig til EU AI Act?</summary><div class="qa__body">Styring og compliance er den samme øvelse set fra to sider. Når beslutninger, ejerskab og specifikationer er skrevet ned, kan I svare på hvem, hvad og hvorfor — også bagudrettet. Det er indholdet i vores AI Compliance Review.</div></details>
+    </div>
+  </div>
+</section>
+
+<!-- STATS + MARQUEE -->
+<section class="stack" style="padding-top:0">
+  <div class="wrap">
+    <div class="tally reveal">
+      <h2 class="mono tally__lab">Consid i tal</h2>
+      <div class="stats">
+        <div><div class="stat__num" data-count="1800" data-suffix="+">0</div><div class="stat__lab">Specialister</div></div>
+        <div><div class="stat__num" data-count="700" data-suffix="+">0</div><div class="stat__lab">Aktive kunder</div></div>
+        <div><div class="stat__num" data-count="25" data-suffix="+">0</div><div class="stat__lab">År i Norden</div></div>
+        <div><div class="stat__num" data-count="3" data-suffix="">0</div><div class="stat__lab">Leveranceniveauer</div></div>
+      </div>
+      <div class="marquee tally__marquee" aria-hidden="true">
+        <div class="marquee__track" id="track"></div>
+      </div>
     </div>
   </div>
 </section>
