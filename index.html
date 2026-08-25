@@ -219,11 +219,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .tally{background:var(--coral);border-radius:var(--r-lg);
   padding:clamp(2rem,4vw,3rem) clamp(1.5rem,3vw,2.5rem) clamp(1.5rem,3vw,2rem);
   box-shadow:var(--lift-2);overflow:hidden}
-/* This is the section's only heading, so it's a real h2 for the document
-   outline — .mono already overrides h2's size/tracking, just not its
-   700 weight, which would read too heavy for a small eyebrow label. */
-.tally__lab{color:rgba(20,17,18,.55);font-weight:400}
-.tally .stats{margin-top:clamp(1.5rem,3vw,2.25rem)}
+/* This is the section's only heading, so it's a plain <h2> for the
+   document outline — full display size, same weight as every other
+   section title, not a shrunken eyebrow label. */
+.tally h2{color:var(--ink-900)}
+.tally .stats{margin-top:clamp(2rem,3.5vw,2.75rem)}
 .tally .stat__num{font-size:clamp(2.4rem,5vw,3.75rem);color:var(--ink-900)}
 .tally .stat__lab{color:rgba(20,17,18,.6)}
 .tally__marquee{margin:clamp(1.75rem,3.5vw,2.5rem) calc(clamp(1.5rem,3vw,2.5rem)*-1) calc(clamp(1.5rem,3vw,2rem)*-1);
@@ -416,19 +416,29 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .person__contact:hover{color:#fff;text-decoration:underline;text-underline-offset:3px}
 
 /* FAQ ---------------------------------------------------- */
-.faq{display:flex;flex-direction:column;gap:var(--s-3);margin-top:clamp(2rem,4vw,3rem);max-width:56rem}
-.qa{background:var(--surface);border-radius:var(--r-md);box-shadow:var(--lift-1);overflow:hidden;
-  transition:box-shadow var(--d-base) var(--ease-out)}
-.qa:not([open]):hover{box-shadow:var(--lift-2)}
-.qa[open]{box-shadow:var(--lift-2)}
-.qa summary{list-style:none;cursor:pointer;padding:clamp(1.1rem,2.2vw,1.5rem) clamp(1.25rem,2.4vw,1.85rem);
-  display:flex;gap:var(--s-4);align-items:center;font-family:var(--font-display);font-weight:600;
-  font-size:clamp(1rem,1.6vw,1.15rem);letter-spacing:-.022em}
-.qa summary::-webkit-details-marker{display:none}
-.qa summary::after{content:"+";margin-left:auto;font-family:var(--font-mono);font-weight:400;color:var(--wine);font-size:1.25rem;
-  transition:transform var(--d-base) var(--ease-spring)}
-.qa[open]:not(.is-closing) summary::after{transform:rotate(45deg)}
-.qa__body{padding:0 clamp(1.25rem,2.4vw,1.85rem) clamp(1.25rem,2.4vw,1.6rem);color:var(--graphite);font-size:var(--t-small);line-height:1.6;max-width:62ch}
+/* Small always-open cards in a loose grid, each nudged a couple of
+   degrees off true — reads like a scattered stack of index cards rather
+   than a form. The tilt is a per-card custom property (not a nth-child
+   pattern repeated in one direction) so neighbours lean different ways. */
+.faq{display:grid;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr));
+  gap:clamp(1.5rem,3vw,2.25rem);margin-top:clamp(2.5rem,5vw,3.5rem)}
+.qa{background:var(--surface);border-radius:var(--r-md);box-shadow:var(--lift-1);
+  padding:clamp(1.4rem,2.4vw,1.85rem);
+  transition:transform var(--d-base) var(--ease-spring),box-shadow var(--d-base) var(--ease-out)}
+.qa:hover{box-shadow:var(--lift-2);transform:rotate(var(--tilt,0deg)) translateY(-4px)}
+/* .reveal's own end state is a blanket transform:none (shared by every
+   other .reveal element on the page), which would otherwise straighten
+   these back out the moment their scroll-in animation finishes. */
+.qa.reveal{transform:translateY(16px) rotate(var(--tilt,0deg))}
+.qa.reveal.is-in{transform:rotate(var(--tilt,0deg))}
+.qa:nth-child(1){--tilt:-1.6deg}
+.qa:nth-child(2){--tilt:1.3deg}
+.qa:nth-child(3){--tilt:-1deg}
+.qa:nth-child(4){--tilt:1.8deg}
+.qa:nth-child(5){--tilt:-1.4deg}
+.qa__q{font-family:var(--font-display);font-weight:600;font-size:clamp(1rem,1.5vw,1.1rem);
+  letter-spacing:-.02em;line-height:1.3}
+.qa__body{margin-top:var(--s-3);color:var(--graphite);font-size:var(--t-small);line-height:1.6}
 
 /* CTA + FOOTER ------------------------------------------- */
 .ctacard{
@@ -637,11 +647,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <p class="eyebrow reveal"><i></i> Spørgsmål, vi får ofte</p>
     <h2 class="reveal" style="margin-top:var(--s-5);max-width:16ch">Det, I nok tænker lige nu.</h2>
     <div class="faq">
-      <details class="qa reveal"><summary>Vi har ikke styr på arkitekturen. Er vi for sent på den?</summary><div class="qa__body">Nej. De fleste starter præcis der. Pointen med niveauerne er, at I ikke skal have styr på alt, før I begynder — I skal bare vide, hvilket ét skridt der giver mening som det næste.</div></details>
-      <details class="qa reveal"><summary>Vores udviklere bruger allerede AI uden fælles regler. Skal vi stoppe dem?</summary><div class="qa__body">Nej. At forbyde det flytter bare brugen ud af syne. Vi lægger rammer omkring det, der allerede sker: arkitektur-checkpoints, specifikationer at bygge efter og faste steder, hvor et menneske siger god for retningen.</div></details>
-      <details class="qa reveal"><summary>Hvor lang tid tager det at komme fra niveau 1 til niveau 2?</summary><div class="qa__body">Det afhænger mere af jeres dokumentation end af jeres teknologi. Har I opdateret arkitektur og klare specifikationer, er det måneder. Skal det bygges fra bunden, er det længere — og det er præcis det, en Agentic Development Review sætter tal på.</div></details>
-      <details class="qa reveal"><summary>Skal vi vælge en bestemt model eller platform?</summary><div class="qa__body">Nej. Leverancemodellen er det, der holder — modellerne skiftes ud. Vi arbejder med det, I har, og bygger så I kan skifte uden at starte forfra.</div></details>
-      <details class="qa reveal"><summary>Hvordan forholder det sig til EU AI Act?</summary><div class="qa__body">Styring og compliance er den samme øvelse set fra to sider. Når beslutninger, ejerskab og specifikationer er skrevet ned, kan I svare på hvem, hvad og hvorfor — også bagudrettet. Det er indholdet i vores AI Compliance Review.</div></details>
+      <div class="qa reveal"><p class="qa__q">Vi har ikke styr på arkitekturen. Er vi for sent på den?</p><p class="qa__body">Nej. De fleste starter præcis der. Pointen med niveauerne er, at I ikke skal have styr på alt, før I begynder — I skal bare vide, hvilket ét skridt der giver mening som det næste.</p></div>
+      <div class="qa reveal"><p class="qa__q">Vores udviklere bruger allerede AI uden fælles regler. Skal vi stoppe dem?</p><p class="qa__body">Nej. At forbyde det flytter bare brugen ud af syne. Vi lægger rammer omkring det, der allerede sker: arkitektur-checkpoints, specifikationer at bygge efter og faste steder, hvor et menneske siger god for retningen.</p></div>
+      <div class="qa reveal"><p class="qa__q">Hvor lang tid tager det at komme fra niveau 1 til niveau 2?</p><p class="qa__body">Det afhænger mere af jeres dokumentation end af jeres teknologi. Har I opdateret arkitektur og klare specifikationer, er det måneder. Skal det bygges fra bunden, er det længere — og det er præcis det, en Agentic Development Review sætter tal på.</p></div>
+      <div class="qa reveal"><p class="qa__q">Skal vi vælge en bestemt model eller platform?</p><p class="qa__body">Nej. Leverancemodellen er det, der holder — modellerne skiftes ud. Vi arbejder med det, I har, og bygger så I kan skifte uden at starte forfra.</p></div>
+      <div class="qa reveal"><p class="qa__q">Hvordan forholder det sig til EU AI Act?</p><p class="qa__body">Styring og compliance er den samme øvelse set fra to sider. Når beslutninger, ejerskab og specifikationer er skrevet ned, kan I svare på hvem, hvad og hvorfor — også bagudrettet. Det er indholdet i vores AI Compliance Review.</p></div>
     </div>
   </div>
 </section>
@@ -650,7 +660,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 <section class="stack" style="padding-top:0">
   <div class="wrap">
     <div class="tally reveal">
-      <h2 class="mono tally__lab">Consid i tal</h2>
+      <h2>Consid i tal</h2>
       <div class="stats">
         <div><div class="stat__num" data-count="1800" data-suffix="+">0</div><div class="stat__lab">Specialister</div></div>
         <div><div class="stat__num" data-count="700" data-suffix="+">0</div><div class="stat__lab">Aktive kunder</div></div>
@@ -867,40 +877,6 @@ const setNavH=()=>document.documentElement.style.setProperty('--nav-h',nav.offse
 setNavH();
 addEventListener('resize',setNavH,{passive:true});
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(setNavH);
-
-/* FAQ drawers — animate the native <details> open/close via WAAPI instead
-   of the instant browser default, while keeping <details>/<summary> so
-   keyboard and screen-reader behaviour stays native. Pattern: drive the
-   element's own height between its closed/open measurements; toggling
-   `open` only happens once the animation finishes. */
-document.querySelectorAll('.qa').forEach(details=>{
-  const summary=details.querySelector('summary'), body=details.querySelector('.qa__body');
-  let anim=null, closing=false, expanding=false;
-  function onFinish(open){details.open=open;details.classList.remove('is-closing');anim=null;closing=false;expanding=false;details.style.height=details.style.overflow=''}
-  function shrink(){
-    closing=true; details.style.overflow='hidden'; details.classList.add('is-closing');
-    const start=`${details.offsetHeight}px`, end=`${summary.offsetHeight}px`;
-    if(anim)anim.cancel();
-    anim=details.animate({height:[start,end]},{duration:280,easing:'cubic-bezier(.4,0,.2,1)'});
-    anim.onfinish=()=>onFinish(false);
-    anim.oncancel=()=>closing=false;
-  }
-  function expand(){
-    expanding=true; details.style.overflow='hidden';
-    const start=`${details.offsetHeight}px`, end=`${summary.offsetHeight+body.offsetHeight}px`;
-    if(anim)anim.cancel();
-    anim=details.animate({height:[start,end]},{duration:280,easing:'cubic-bezier(.4,0,.2,1)'});
-    anim.onfinish=()=>onFinish(true);
-    anim.oncancel=()=>expanding=false;
-  }
-  function open(){details.classList.remove('is-closing');details.style.height=`${details.offsetHeight}px`;details.style.overflow='hidden';details.open=true;requestAnimationFrame(expand)}
-  summary.addEventListener('click',e=>{
-    e.preventDefault();
-    if(REDUCED){details.open=!details.open;return}
-    if(closing||!details.open)open();
-    else if(expanding||details.open)shrink();
-  });
-});
 
 /* Hero wave grid — a from-scratch WebGL2 port of franky-adl's
    "3d-wave-grid" (https://github.com/franky-adl/3d-wave-grid).
