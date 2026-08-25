@@ -1153,7 +1153,9 @@ document.querySelectorAll('.qa').forEach(details=>{
   const ditherU={};
   ['uScene','uResolution','uGridSize','uPixelSize','uGain','uBias','uGamma','uInk']
     .forEach(n=>ditherU[n]=gl.getUniformLocation(ditherProg,n));
-  const DITHER_INK=hexToRgb01(tok('--crimson')||'#90263B');
+  // Neutral grey, not crimson: this is backdrop behind the headline, so it
+  // stays greyscale and lets the crimson-inked 3D models carry the colour.
+  const DITHER_INK=hexToRgb01(tok('--graphite')||'#636166');
   const quadBuf=gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER,quadBuf);
   gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1, 3,-1, -1,3]),gl.STATIC_DRAW);
