@@ -242,26 +242,40 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .ladder__head h2{max-width:20ch}
 .ladder__hint{font-size:var(--t-small);color:var(--graphite);max-width:52ch}
 
-.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(.75rem,1.4vw,1.25rem);
-  margin-top:clamp(2.25rem,4.5vw,3.25rem);align-items:start}
-.step{display:flex;flex-direction:column;align-items:flex-start;gap:var(--s-4);text-align:left;padding:0;background:none;border-radius:var(--r-md);
+/* Level picker — a real tab strip rather than four loose cards. The inset
+   tinted trough is what binds them into one control: each tab then only
+   has to earn its own background, so hover reads as a lift out of the
+   trough and the selected tab as a raised white card on top of it. */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(.25rem,.5vw,.4rem);
+  margin-top:clamp(2.25rem,4.5vw,3.25rem);align-items:stretch;
+  padding:clamp(.3rem,.55vw,.45rem);background:var(--air);
+  border:1px solid var(--hairline);border-radius:calc(var(--r-md) + .35rem)}
+.step{position:relative;display:flex;flex-direction:column;align-items:flex-start;
+  gap:clamp(.6rem,1.1vw,.9rem);text-align:left;
+  padding:clamp(.7rem,1.25vw,1rem) clamp(.7rem,1.25vw,1rem) clamp(.85rem,1.5vw,1.15rem);
+  background:transparent;border:0;border-radius:var(--r-md);cursor:pointer;
+  transition:background var(--d-base) var(--ease-out),box-shadow var(--d-base) var(--ease-out)}
+.step:hover{background:rgba(255,255,255,.66)}
+.step[aria-selected="true"]{background:var(--surface);box-shadow:var(--lift-1)}
+.step:focus-visible{outline:2px solid var(--crimson);outline-offset:2px}
+/* Selected marker sits under the label block, so the eye picks up the
+   active tab even when several are tinted by a stray hover. */
+.step::after{content:"";position:absolute;left:clamp(.7rem,1.25vw,1rem);bottom:clamp(.4rem,.7vw,.55rem);
+  width:1.5rem;height:2px;border-radius:2px;background:var(--crimson);
+  opacity:0;transform:scaleX(.3);transform-origin:left;
+  transition:opacity var(--d-base) var(--ease-out),transform var(--d-base) var(--ease-spring)}
+.step[aria-selected="true"]::after{opacity:1;transform:scaleX(1)}
+.step__model{width:clamp(68px,8vw,92px);height:clamp(68px,8vw,92px);flex:none;border-radius:8px;overflow:hidden;
   transition:transform var(--d-base) var(--ease-spring)}
-.step:hover{transform:translateY(-5px)}
-/* One pie per level — the fraction filled (1/4 → 4/4) makes the four
-   levels immediately, visually countable. Real three.js now: the exact
-   wedge geometry from github.com/d3adrabbit/origami's Item10 (an
-   annular-sector Shape, extruded), instanced 4× per level, N coloured. */
-.step__model{width:clamp(76px,9vw,104px);height:clamp(76px,9vw,104px);flex:none;border-radius:8px;overflow:hidden;transition:transform var(--d-base) var(--ease-spring)}
 .step__model canvas{display:block;width:100%;height:100%}
 .step:hover .step__model{transform:translateY(-2px)}
-.step[aria-selected="true"] .step__model{transform:scale(1.08)}
-.step__meta{padding-inline:var(--s-1)}
+.step[aria-selected="true"] .step__model{transform:scale(1.06)}
 .step__lab{font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.1em;text-transform:uppercase;color:var(--stone);display:block}
 .step__name{font-family:var(--font-display);font-size:clamp(1rem,1.5vw,1.25rem);font-weight:600;letter-spacing:-.028em;display:block;margin-top:var(--s-1);
   transition:color var(--d-base) var(--ease-out)}
 .step[aria-selected="true"] .step__name{color:var(--crimson)}
 .step__pct{font-family:var(--font-mono);font-size:var(--t-micro);color:var(--stone);margin-top:var(--s-2);display:block;font-variant-numeric:tabular-nums}
-@media (max-width:760px){.steps{grid-template-columns:repeat(2,1fr);gap:var(--s-5)}}
+@media (max-width:760px){.steps{grid-template-columns:repeat(2,1fr)}}
 
 .panel{margin-top:clamp(1.75rem,3.5vw,2.75rem)}
 .panel__quote{font-family:var(--font-display);font-size:clamp(1.6rem,3.4vw,2.7rem);font-weight:500;letter-spacing:-.035em;line-height:1.08;max-width:20ch}
@@ -1062,7 +1076,14 @@ document.querySelectorAll('.qa').forEach(details=>{
      from niccolofanton/dithering-shader, run as an offscreen-FBO +
      fullscreen-quad pass so every 3D element on the page (this grid, the
      thesis/level-picker three.js scenes, the CTA noise) shares one look. */
-  const DITHER_GRID=3, DITHER_PIXEL_RATIO=2, DITHER_GAIN=1.2;
+  // Same dot pitch as the 3D models, so the whole page shares one screen.
+  // The levels values have to differ though: this grid is drawn in
+  // near-white --air lifted by a 0.62..1.13 lighting term, so its luminance
+  // only ever occupies roughly 0.42..1.05. Fed to the Bayer thresholds raw
+  // it reads as "all highlight" and dithers away to nothing, so the range
+  // is stretched back out to 0..1 before thresholding.
+  const DITHER_GRID=2, DITHER_PIXEL_RATIO=1;
+  const DITHER_BIAS=0.47, DITHER_GAIN=1.85, DITHER_GAMMA=0.9;
   const DITHER_FS=`#version 300 es
   precision highp float;
   in vec2 vUv;
@@ -1071,6 +1092,9 @@ document.querySelectorAll('.qa').forEach(details=>{
   uniform float uGridSize;
   uniform float uPixelSize;
   uniform float uGain;
+  uniform float uBias;
+  uniform float uGamma;
+  uniform vec3 uInk;
   out vec4 fragColor;
   bool ditherOn(float brightness,vec2 cell){
     if(brightness>16.0/17.0)return false;
@@ -1113,9 +1137,11 @@ document.querySelectorAll('.qa').forEach(details=>{
     }
     float avgAlpha=alphaSum/9.0;
     vec3 avgColor=alphaSum>0.001?colorSum/alphaSum:vec3(0.0);
-    float brightness=clamp(dot(avgColor,vec3(1.0))*uGain,0.0,1.0);
-    vec3 color=ditherOn(brightness,ditherCell)?vec3(0.0):avgColor;
-    fragColor=vec4(color,avgAlpha);
+    float lum=dot(avgColor,vec3(0.2126,0.7152,0.0722));
+    float brightness=pow(clamp((lum-uBias)*uGain,0.0,1.0),uGamma);
+    // 1-bit, same as the models: ink or bare page, tone from dot density.
+    bool on=ditherOn(brightness,ditherCell);
+    fragColor=on?vec4(uInk,min(1.0,avgAlpha*1.7)):vec4(0.0);
   }`;
   const DITHER_VS=`#version 300 es
   layout(location=0) in vec2 aPos;
@@ -1124,7 +1150,10 @@ document.querySelectorAll('.qa').forEach(details=>{
   const dvs=compile(gl.VERTEX_SHADER,DITHER_VS), dfs=compile(gl.FRAGMENT_SHADER,DITHER_FS);
   const ditherProg=gl.createProgram();
   gl.attachShader(ditherProg,dvs);gl.attachShader(ditherProg,dfs);gl.linkProgram(ditherProg);
-  const ditherU={uScene:gl.getUniformLocation(ditherProg,'uScene'),uResolution:gl.getUniformLocation(ditherProg,'uResolution'),uGridSize:gl.getUniformLocation(ditherProg,'uGridSize'),uPixelSize:gl.getUniformLocation(ditherProg,'uPixelSize'),uGain:gl.getUniformLocation(ditherProg,'uGain')};
+  const ditherU={};
+  ['uScene','uResolution','uGridSize','uPixelSize','uGain','uBias','uGamma','uInk']
+    .forEach(n=>ditherU[n]=gl.getUniformLocation(ditherProg,n));
+  const DITHER_INK=hexToRgb01(tok('--crimson')||'#90263B');
   const quadBuf=gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER,quadBuf);
   gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1, 3,-1, -1,3]),gl.STATIC_DRAW);
@@ -1283,6 +1312,9 @@ document.querySelectorAll('.qa').forEach(details=>{
     gl.uniform1f(ditherU.uGridSize,DITHER_GRID*dpr);
     gl.uniform1f(ditherU.uPixelSize,DITHER_GRID*DITHER_PIXEL_RATIO*dpr);
     gl.uniform1f(ditherU.uGain,DITHER_GAIN);
+    gl.uniform1f(ditherU.uBias,DITHER_BIAS);
+    gl.uniform1f(ditherU.uGamma,DITHER_GAMMA);
+    gl.uniform3fv(ditherU.uInk,DITHER_INK);
     gl.bindVertexArray(quadVao);
     gl.drawArrays(gl.TRIANGLES,0,3);
     gl.bindVertexArray(null);
@@ -1700,7 +1732,7 @@ function makeIllusScene(container, build, zoom) {
       uBias: { value: DITHER_BIAS },
       uGamma: { value: DITHER_GAMMA },
       uGrayscale: { value: DITHER_GRAYSCALE },
-      uInk: { value: new THREE.Color(illusTok('--ink-900') || '#141416') }
+      uInk: { value: new THREE.Color(illusTok('--crimson') || '#90263B') }
     },
     transparent: true
   });
