@@ -155,7 +155,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 /* HERO --------------------------------------------------- */
 .hero{
-  padding-block:clamp(3rem,8vw,6rem) clamp(2rem,4vw,3rem);position:relative;overflow:hidden;
+  padding-block:clamp(3rem,8vw,6rem) 0;position:relative;overflow:hidden;
   min-height:100vh;margin-top:calc(-1 * var(--nav-h, 76px));
   display:flex;flex-direction:column;gap:var(--s-6);
 }
@@ -185,11 +185,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 /* lead+CTA card, sitting close to the bottom of the viewport. Alone now
    that the stats card has moved out — centered and given a deliberate
-   measure rather than stretching to the full hero width. */
-.hero__cards{position:relative;z-index:1;padding-bottom:clamp(1.5rem,4vw,3rem)}
+   measure rather than stretching to the full hero width. The 10vh gap
+   below it is exact (not a clamp), per request — .hero's own bottom
+   padding is zeroed above so this is the only source of that gap. */
+.hero__cards{position:relative;z-index:1;padding-bottom:10vh}
 .hero__leadcard{display:flex;flex-direction:column;justify-content:center;gap:var(--s-5);
   max-width:52rem;margin-inline:auto}
-.hero__leadcard .lead{color:rgba(255,255,255,.78);max-width:none}
+.hero__leadcard .lead{color:rgba(255,255,255,.78);max-width:none;font-size:var(--t-body)}
 .hero__cta{display:flex;flex-wrap:wrap;gap:var(--s-3)}
 
 .statcard{background:var(--plum);color:#fff;border-radius:var(--r-lg);padding:clamp(1.5rem,3vw,2rem);box-shadow:var(--lift-2)}
