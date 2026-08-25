@@ -257,6 +257,41 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .card-illus{width:clamp(112px,13vw,152px);height:clamp(112px,13vw,152px);flex:none;border-radius:8px;overflow:hidden}
 .card-illus canvas{display:block;width:100%;height:100%}
 
+/* PULSE / DAD — tightly-coupled disc-per-fact list ------- */
+/* .pulse__model and the 5 rows are siblings of ONE grid (.pulse__list is
+   display:contents), and .pulse__model spans grid-row:1/6 — its rendered
+   height is therefore forced to exactly equal the 5 row tracks summed,
+   by construction. No row-gap is set (only column-gap), which the JS
+   camera-zoom math depends on. */
+.pulse__grid{
+  --pulse-row:clamp(4.75rem,9vw,6.5rem);
+  margin-top:clamp(2rem,4vw,3rem);
+  display:grid;
+  grid-template-columns:clamp(5rem,14vw,9rem) 1fr;
+  grid-template-rows:repeat(5,var(--pulse-row));
+  column-gap:var(--s-6);
+}
+.pulse__model{grid-column:1;grid-row:1/6}
+.pulse__model canvas{display:block;width:100%;height:100%}
+.pulse__list{display:contents}
+.pulse__row{
+  grid-column:2;display:flex;align-items:center;
+  border-radius:var(--r-md);padding-inline:clamp(1rem,2vw,1.5rem);
+  transition:background-color var(--d-base) var(--ease-out),box-shadow var(--d-base) var(--ease-out);
+}
+.pulse__row:nth-child(1){grid-row:1}
+.pulse__row:nth-child(2){grid-row:2}
+.pulse__row:nth-child(3){grid-row:3}
+.pulse__row:nth-child(4){grid-row:4}
+.pulse__row:nth-child(5){grid-row:5}
+.pulse__row p{
+  font-family:var(--font-display);font-size:var(--t-h3);font-weight:500;
+  letter-spacing:-.02em;line-height:1.35;color:var(--graphite);
+  transition:color var(--d-base) var(--ease-out);
+}
+.pulse__row.is-active{background:var(--blush);box-shadow:var(--lift-1)}
+.pulse__row.is-active p{color:var(--ink-900)}
+
 /* LADDER — signature ------------------------------------- */
 .ladderwrap{background:var(--surface);border-radius:var(--r-xl);padding:clamp(1.75rem,4vw,3.5rem);box-shadow:var(--lift-1)}
 .ladder__head{display:flex;flex-direction:column;gap:var(--s-4)}
@@ -526,6 +561,25 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
           <p>Ikke fordi de har bedre AI. Fordi de har en leverancemodel: arkitektur før agenten starter, specifikationer den arbejder efter, og et menneske ved de beslutninger, der betyder noget.</p>
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- 01B DAD PULSE -->
+<section class="stack" style="padding-top:0">
+  <div class="wrap">
+    <h2 class="reveal" style="max-width:22ch">Directed Agentic Delivery</h2>
+    <p class="lead reveal" style="margin-top:var(--s-5)">Eller DAD, er Consids model for retning med AI.</p>
+
+    <div class="pulse__grid reveal">
+      <div class="pulse__model" data-illus="pulse" aria-hidden="true"></div>
+      <ul class="pulse__list" role="list">
+        <li class="pulse__row is-active"><p>I er i kontrol ved de vigtige beslutninger.</p></li>
+        <li class="pulse__row"><p>Fundamentet står klart, før agenten starter.</p></li>
+        <li class="pulse__row"><p>Specifikationer, den arbejder efter.</p></li>
+        <li class="pulse__row"><p>I er i kontrol ved hver beslutning, der tæller.</p></li>
+        <li class="pulse__row"><p>Vi starter, hvor I står, på jeres niveau.</p></li>
+      </ul>
     </div>
   </div>
 </section>
@@ -1594,6 +1648,15 @@ const DITHER_GRAYSCALE = 1;
 // units, Rubik's tumbling cube only ~1.7), and one global value either
 // clips the big ones or leaves the small ones marooned in white space.
 const MODEL_ZOOM = { loop: 1.62, coins: 1.42, ring: 1.62, core: 1.55, rubiks: 1.95, arrows: 1.3 };
+// Pulse (Item9, adapted) — unlike the other six models' zoom values,
+// this one isn't just aesthetic framing: it's the exact constant that
+// makes the 5 discs' vertical spacing land on the 5 CSS row centres (see
+// the `pulse` builder below). If row count or spacing ever changes,
+// retune PULSE_BAND/PULSE_ROWS and let this formula recompute the zoom —
+// don't nudge the zoom number in isolation.
+const PULSE_ROWS = 5, PULSE_BAND = 0.5;      // world units between disc centres
+const PULSE_FOV = 75, PULSE_DIST = 5;        // must match makeIllusScene's camera (fov, position.z)
+MODEL_ZOOM.pulse = (2 * PULSE_DIST * Math.tan(PULSE_FOV * Math.PI / 360)) / (PULSE_BAND * PULSE_ROWS);
 const illusCss = getComputedStyle(document.documentElement);
 const illusTok = n => illusCss.getPropertyValue(n).trim();
 
@@ -1803,6 +1866,14 @@ function makeIllusScene(container, build, zoom) {
 const mat = () => new THREE.MeshMatcapMaterial({ matcap: matcapTex });
 const eulers = objs => objs.map(o => o.rotation);
 
+// Populated by the `pulse` builder below; read by the row-highlight
+// IntersectionObserver after the registry wiring runs. A plain
+// module-scope handle rather than reusing the builder's optional
+// per-frame-update return value (that channel is a function, used only
+// by `coins`; overloading it to "hand out mesh references" would change
+// its meaning for no benefit — pulse doesn't need a per-frame update fn).
+let pulseDiscs = [];
+
 const MODEL_BUILDERS = {
   // Loop (Item2) — 20 slabs on a ring; each spins on its own Y while the
   // whole ring turns slowly about Z.
@@ -1981,12 +2052,93 @@ const MODEL_BUILDERS = {
       });
       gsap.to(root.rotation, { z: Math.PI * 2, duration: 10, repeat: -1, ease: 'none' });
     }
+  },
+
+  // Pulse (Item9, adapted 10→5 instances, un-tilted) — a column of flat
+  // discs, each pulsing (scale.x/z 1→0.3→1, yoyo, sine.inOut, 1s) with a
+  // 0.25s stagger per disc, exactly as the original. The original also
+  // nests the stack in two Z rotations (π/4 then π/2 = 135° total) and
+  // wraps it in <Center>; both dropped here because this section pins
+  // each disc beside its own fact row via a shared CSS grid, which only
+  // works if the discs form a plain vertical column on screen. Radius/
+  // height shrunk from the original's (1, 0.2) to (0.2, 0.055) because
+  // this model's container is a narrow, tall column, unlike the other
+  // six models' roughly-square icons.
+  pulse: scene => {
+    const N = 5, BAND = PULSE_BAND, DISC_R = 0.2, DISC_H = 0.055;
+    const geo = new THREE.CylinderGeometry(DISC_R, DISC_R, DISC_H, 64);
+    pulseDiscs = [];
+    for (let i = 0; i < N; i++) {
+      const m = new THREE.Mesh(geo, mat());
+      // i=0 is fact 1 (top row) → +Y; i=N-1 is fact 5 (bottom row) → -Y.
+      m.position.set(0, ((N - 1) / 2 - i) * BAND, 0);
+      scene.add(m);
+      pulseDiscs.push(m);
+    }
+    if (!REDUCED_ILLUS) {
+      pulseDiscs.forEach((m, i) => {
+        gsap.to(m.scale, { x: 0.3, z: 0.3, delay: 0.25 * i, repeat: -1, yoyo: true, ease: 'sine.inOut', duration: 1 });
+      });
+    }
   }
 };
 
 Object.entries(MODEL_BUILDERS).forEach(([name, build]) => {
   document.querySelectorAll(`[data-illus="${name}"]`).forEach(el => makeIllusScene(el, build, MODEL_ZOOM[name]));
 });
+
+/* PULSE — row/disc highlight -----------------------------
+   Row/disc *positions* are already guaranteed to line up by the CSS
+   grid — this only decides which single row/disc pair is "current" as
+   the user scrolls, by picking whichever row is measurably closest to
+   true viewport centre.
+   First attempt used an IntersectionObserver with a thin centred
+   rootMargin band, recomputing only on threshold-crossing callbacks —
+   that had two real bugs, both confirmed live: (1) when two adjacent
+   rows briefly both intersected the band in one callback batch, blindly
+   activating "the last intersecting entry" picked whichever row was
+   observed later in DOM order, not whichever was actually more centred
+   (scrolling to row 2 lit up row 3); (2) crossing-only firing means the
+   LAST row's final crossing can happen before it's fully centred, so
+   continuing to scroll it the rest of the way into place triggers no
+   further callback and the highlight goes stale. A plain scroll
+   listener — recomputing on every tick, like this file's own nav
+   scroll-stuck handler — has neither failure mode, since it doesn't
+   depend on catching a crossing at the right moment. Gated to only run
+   while the section is actually in view, via the same visibility-gated
+   start/stop idiom the 3D render loops already use, so it costs nothing
+   the rest of the time.
+   Reduced motion: the class toggle (background/colour only) runs
+   unconditionally — that's not motion prefers-reduced-motion targets.
+   Only the GSAP scale.y nudge on the matching disc is gated behind
+   REDUCED_ILLUS. scale.y is free to use here because the pulse tween
+   above only ever touches scale.x/scale.z. */
+const pulseRows = [...document.querySelectorAll('.pulse__row')];
+const pulseSection = document.querySelector('.pulse__grid');
+if (pulseRows.length && pulseSection) {
+  const activate = i => {
+    pulseRows.forEach((row, idx) => row.classList.toggle('is-active', idx === i));
+    if (!REDUCED_ILLUS) {
+      pulseDiscs.forEach((m, idx) => {
+        gsap.to(m.scale, { y: idx === i ? 1.7 : 1, duration: 0.4, ease: 'power2.out', overwrite: 'auto' });
+      });
+    }
+  };
+  const activateClosestToCenter = () => {
+    const mid = innerHeight / 2;
+    let best = 0, bestDist = Infinity;
+    pulseRows.forEach((row, idx) => {
+      const r = row.getBoundingClientRect();
+      const dist = Math.abs((r.top + r.bottom) / 2 - mid);
+      if (dist < bestDist) { bestDist = dist; best = idx; }
+    });
+    activate(best);
+  };
+  new IntersectionObserver(es => {
+    es.forEach(en => en.isIntersecting ? addEventListener('scroll', activateClosestToCenter, { passive: true }) : removeEventListener('scroll', activateClosestToCenter));
+    if (es.some(en => en.isIntersecting)) activateClosestToCenter();
+  }, { threshold: 0 }).observe(pulseSection);
+}
 </script>
 </body>
 </html>
