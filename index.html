@@ -1388,13 +1388,47 @@ document.querySelectorAll('.qa').forEach(details=>{
     return 2.2*n_xyzw;
   }`;
 
+  // Dot pitch in CSS px, matched to the 3D illustrations so the hover's
+  // screen is the same physical size as theirs (DPR-scaled at use site).
+  const DITHER_GRID=2;
+  const BAYER_GLSL=`
+  bool ditherOn(float brightness,vec2 cell){
+    if(brightness>16.0/17.0)return false;
+    if(brightness<1.0/17.0)return true;
+    vec2 p=mod(cell,4.0);
+    int x=int(p.x); int y=int(p.y);
+    if(x==0){
+      if(y==0)return brightness<16.0/17.0;
+      if(y==1)return brightness<5.0/17.0;
+      if(y==2)return brightness<13.0/17.0;
+      return brightness<1.0/17.0;
+    }else if(x==1){
+      if(y==0)return brightness<8.0/17.0;
+      if(y==1)return brightness<12.0/17.0;
+      if(y==2)return brightness<4.0/17.0;
+      return brightness<9.0/17.0;
+    }else if(x==2){
+      if(y==0)return brightness<14.0/17.0;
+      if(y==1)return brightness<2.0/17.0;
+      if(y==2)return brightness<15.0/17.0;
+      return brightness<3.0/17.0;
+    }else{
+      if(y==0)return brightness<6.0/17.0;
+      if(y==1)return brightness<10.0/17.0;
+      if(y==2)return brightness<7.0/17.0;
+      return brightness<11.0/17.0;
+    }
+  }`;
+
   const FRAG_SRC=`#version 300 es
   precision highp float;
   in vec2 vUv;
-  uniform float u_time,u_progress,u_aspect;
+  uniform float u_time,u_progress,u_aspect,u_gridSize;
+  uniform vec2 u_resolution;
   uniform vec3 u_color;
   out vec4 fragColor;
   ${NOISE_GLSL}
+  ${BAYER_GLSL}
   void main(){
     vec2 newUv=(vUv-vec2(0.5))*vec2(u_aspect,1.0);
     float dist=length(newUv);
@@ -1413,7 +1447,14 @@ document.querySelectorAll('.qa').forEach(details=>{
     float displacement=clamp(outerCircle-innerCircle,0.0,1.0);
     float grainStrength=0.3;
     float shade=clamp(displacement-(m+n)-grain*grainStrength,0.0,1.0);
-    fragColor=vec4(shade*u_color*2.0, shade*displacement*u_progress);
+    // Same 1-bit Bayer screen as the 3D models, so the hover reads as the
+    // same material. Inverted in role: this card is dark, so the "ink" is
+    // the accent and bare paper is the card itself showing through.
+    // Intensity is fed in as (1 - intensity) because ditherOn() marks the
+    // dark end of the range, and here it's the strong end we want dotted.
+    float intensity=clamp(shade*displacement*u_progress*1.35,0.0,1.0);
+    vec2 cell=floor((vUv*u_resolution)/u_gridSize);
+    fragColor=ditherOn(1.0-intensity,cell)?vec4(u_color,1.0):vec4(0.0);
   }`;
 
   function compile(type,src){
@@ -1436,7 +1477,7 @@ document.querySelectorAll('.qa').forEach(details=>{
   gl.bindVertexArray(null);
 
   const U={};
-  ['u_time','u_progress','u_aspect','u_color'].forEach(n=>U[n]=gl.getUniformLocation(prog,n));
+  ['u_time','u_progress','u_aspect','u_color','u_gridSize','u_resolution'].forEach(n=>U[n]=gl.getUniformLocation(prog,n));
   gl.enable(gl.BLEND);
   gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
 
@@ -1465,6 +1506,8 @@ document.querySelectorAll('.qa').forEach(details=>{
     gl.uniform1f(U.u_progress,progress);
     gl.uniform1f(U.u_aspect,w/Math.max(1,h));
     gl.uniform3fv(U.u_color,NOISE_COLOR);
+    gl.uniform1f(U.u_gridSize,DITHER_GRID*dpr);
+    gl.uniform2f(U.u_resolution,canvas.width,canvas.height);
     gl.bindVertexArray(vao);
     gl.drawArrays(gl.TRIANGLES,0,3);
     gl.bindVertexArray(null);
