@@ -147,6 +147,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   background:var(--surface);box-shadow:var(--lift-1);
   transition:color var(--d-fast) var(--ease-out),background-color var(--d-fast) var(--ease-out),transform var(--d-fast) var(--ease-spring)}
 .chip:hover{color:var(--ink-800);transform:translateY(-2px)}
+.chip:active{transform:scale(.97)}
 .chip[aria-pressed="true"]{background:var(--ink-800);color:#fff}
 
 .rail{display:flex;gap:var(--s-4);overflow-x:auto;scroll-snap-type:x mandatory;
@@ -162,9 +163,17 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   background:var(--surface);border-radius:var(--r-lg);padding:clamp(1.4rem,2.6vw,1.9rem);
   display:flex;flex-direction:column;gap:var(--s-3);text-decoration:none;min-height:290px;
   box-shadow:var(--lift-1);
-  transition:transform var(--d-base) var(--ease-out),box-shadow var(--d-base) var(--ease-out);
+  transition:transform var(--d-base) var(--ease-out),box-shadow var(--d-base) var(--ease-out),opacity var(--d-base) var(--ease-out);
 }
 .ocard:hover{transform:translateY(-6px);box-shadow:var(--lift-2)}
+.ocard:active{transform:scale(.97)}
+/* Filter-driven show/hide (initRail's applyFilter) — fade+scale instead
+   of the bare [hidden] teleport. .is-entering has no transition of its
+   own so the first paint lands at this reduced state instantly, then
+   removing the class on the next frame animates it in via the rule
+   above. */
+.ocard.is-leaving{opacity:0;transform:scale(.96)}
+.ocard.is-entering{opacity:0;transform:scale(.96);transition:none}
 .ocard:nth-child(3n+2){background:var(--sand)}
 .ocard:nth-child(5n+4){background:var(--blush)}
 .ocard__tag{font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.09em;text-transform:uppercase;color:var(--stone)}
@@ -183,6 +192,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .rbtn{width:2.75rem;height:2.75rem;border-radius:50%;background:var(--surface);box-shadow:var(--lift-1);
   display:grid;place-items:center;transition:transform var(--d-fast) var(--ease-spring),box-shadow var(--d-fast) var(--ease-out)}
 .rbtn:hover{transform:translateY(-2px);box-shadow:var(--lift-2)}
+.rbtn:active{transform:scale(.94)}
 
 /* Viden — plain white cards. Niveau doesn't apply to this content
    (articles/whitepapers aren't leveled the way services are), so
@@ -285,7 +295,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   display:grid;grid-template-columns:1fr 1fr;gap:var(--s-8);align-items:start;
 }
 .leadcard h3{font-size:clamp(1.3rem,2.2vw,1.7rem)}
-.leadform{display:flex;flex-direction:column;gap:var(--s-4)}
+.leadform{display:flex;flex-direction:column;gap:var(--s-4);transition:opacity var(--d-base) var(--ease-out)}
+.leadform.is-leaving{opacity:0}
 .leadform .field{display:flex;flex-direction:column;gap:.4rem;width:75%}
 .leadform label{font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.08em;text-transform:uppercase;color:var(--graphite)}
 .leadform input{
@@ -295,4 +306,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .leadform input:focus-visible{outline:2px solid var(--crimson);outline-offset:1px}
 .leadform button{align-self:flex-end}
 @media (max-width:880px){.leadcard{grid-template-columns:1fr}}
-#lf-status{margin-top:var(--s-4);font-size:var(--t-small);color:var(--wine)}
+#lf-status{
+  margin-top:var(--s-4);font-size:var(--t-small);color:var(--wine);
+  opacity:0;transform:translateY(6px);
+  transition:opacity var(--d-slow) var(--ease-out),transform var(--d-slow) var(--ease-out);
+}
+#lf-status.is-in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.leadform,#lf-status{transition:none}}

@@ -433,6 +433,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   background:var(--surface);box-shadow:var(--lift-1);
   transition:color var(--d-fast) var(--ease-out),background-color var(--d-fast) var(--ease-out),transform var(--d-fast) var(--ease-spring)}
 .chip:hover{color:var(--ink-800);transform:translateY(-2px)}
+.chip:active{transform:scale(.97)}
 .chip[aria-pressed="true"]{background:var(--ink-800);color:#fff}
 
 .rail{display:flex;gap:var(--s-4);overflow-x:auto;scroll-snap-type:x mandatory;
@@ -452,9 +453,17 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   background:var(--surface);border-radius:var(--r-lg);padding:clamp(1.4rem,2.6vw,1.9rem);
   display:flex;flex-direction:column;gap:var(--s-3);text-decoration:none;min-height:290px;
   box-shadow:var(--lift-1);
-  transition:transform var(--d-base) var(--ease-out),box-shadow var(--d-base) var(--ease-out);
+  transition:transform var(--d-base) var(--ease-out),box-shadow var(--d-base) var(--ease-out),opacity var(--d-base) var(--ease-out);
 }
 .ocard:hover{transform:translateY(-6px);box-shadow:var(--lift-2)}
+.ocard:active{transform:scale(.97)}
+/* Filter-driven show/hide (initRail's applyFilter) — fade+scale instead
+   of the bare [hidden] teleport. .is-entering has no transition of its
+   own so the first paint lands at this reduced state instantly, then
+   removing the class on the next frame animates it in via the rule
+   above. */
+.ocard.is-leaving{opacity:0;transform:scale(.96)}
+.ocard.is-entering{opacity:0;transform:scale(.96);transition:none}
 .ocard:nth-child(3n+2){background:var(--sand)}
 .ocard:nth-child(5n+4){background:var(--blush)}
 .ocard__tag{font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.09em;text-transform:uppercase;color:var(--stone)}
@@ -476,6 +485,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .rbtn{width:2.75rem;height:2.75rem;border-radius:50%;background:var(--surface);box-shadow:var(--lift-1);
   display:grid;place-items:center;transition:transform var(--d-fast) var(--ease-spring),box-shadow var(--d-fast) var(--ease-out)}
 .rbtn:hover{transform:translateY(-2px);box-shadow:var(--lift-2)}
+.rbtn:active{transform:scale(.94)}
 
 /* VIDEN — same rail/card system as Ydelser above. Niveau doesn't apply
    to this content (articles and whitepapers aren't leveled the way
@@ -997,7 +1007,21 @@ function initRail({items,container,filtersEl,prevBtn,nextBtn,renderCard,matchFil
     if(!filtersEl) return;
     filtersEl.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',String(c.dataset.filter===f)));
     const cards=[...container.querySelectorAll('.ocard')];
-    cards.forEach((c,i)=>{c.hidden=!matchFilter(items[i],f)});
+    // Cards that change visibility fade+scale rather than teleporting via
+    // the bare [hidden] toggle — REDUCED skips straight to the end state.
+    cards.forEach((c,i)=>{
+      const show=matchFilter(items[i],f);
+      if(show===!c.hidden) return;
+      if(REDUCED){c.hidden=!show;return}
+      if(show){
+        c.hidden=false;
+        c.classList.add('is-entering');
+        requestAnimationFrame(()=>requestAnimationFrame(()=>c.classList.remove('is-entering')));
+      }else{
+        c.classList.add('is-leaving');
+        setTimeout(()=>{c.hidden=true;c.classList.remove('is-leaving')},260);
+      }
+    });
     if(prevBtn&&nextBtn) container.scrollTo({left:0,behavior:REDUCED?'auto':'smooth'});
   }
   if(filtersEl) filtersEl.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>applyFilter(c.dataset.filter)));
@@ -1033,7 +1057,7 @@ function initRail({items,container,filtersEl,prevBtn,nextBtn,renderCard,matchFil
 }
 
 const offeringCardHtml=o=>`
- <a class="ocard" href="#" data-lv="${o.lv.join(',')}">
+ <a class="ocard reveal" href="#" data-lv="${o.lv.join(',')}">
    <span class="ocard__tag">${o.tag}</span>
    <h3>${o.t}</h3>
    <p>${o.d}</p>
@@ -1067,7 +1091,7 @@ const videnCardHtml=v=>{
   const tagAttr=v.comingSoon?'':` href="viden/${v.slug}.html"`;
   const tagName=v.comingSoon?'div':'a';
   return `
- <${tagName} class="ocard vcard${v.comingSoon?' is-soon':''}"${tagAttr}>
+ <${tagName} class="ocard vcard reveal${v.comingSoon?' is-soon':''}"${tagAttr}>
    <span class="ocard__tag">${kind}${v.comingSoon?' · Kommer snart':''}</span>
    <h3>${v.t}</h3>
    <p>${v.d}</p>

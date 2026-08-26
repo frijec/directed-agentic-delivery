@@ -22,15 +22,22 @@ document.querySelectorAll('[data-calendly]').forEach(a => {
   });
 });
 
-/* Reveal-on-scroll */
-if (!REDUCED) {
-  const io = new IntersectionObserver(es => {
-    es.forEach((en, i) => { if (en.isIntersecting) { setTimeout(() => en.target.classList.add('is-in'), i * 80); io.unobserve(en.target) } });
-  }, { rootMargin: '0px 0px -6% 0px', threshold: .1 });
-  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-} else {
-  document.querySelectorAll('.reveal').forEach(el => el.classList.add('is-in'));
-}
+/* Reveal-on-scroll — deferred to DOMContentLoaded rather than run
+   inline: this script loads before some pages' own trailing inline
+   <script> populates cards (initRail) with their own .reveal elements,
+   and a one-time querySelectorAll here would run too early to see
+   them. DOMContentLoaded fires only once every synchronous script on
+   the page — including that later one — has finished. */
+document.addEventListener('DOMContentLoaded', () => {
+  if (!REDUCED) {
+    const io = new IntersectionObserver(es => {
+      es.forEach((en, i) => { if (en.isIntersecting) { setTimeout(() => en.target.classList.add('is-in'), i * 80); io.unobserve(en.target) } });
+    }, { rootMargin: '0px 0px -6% 0px', threshold: .1 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  } else {
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('is-in'));
+  }
+});
 
 /* Nav sticky state */
 const navEl = document.getElementById('nav');
@@ -56,7 +63,21 @@ function initRail({ items, container, filtersEl, prevBtn, nextBtn, renderCard, m
     if (!filtersEl) return;
     filtersEl.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c.dataset.filter === f)));
     const cards = [...container.querySelectorAll('.ocard')];
-    cards.forEach((c, i) => { c.hidden = !matchFilter(items[i], f) });
+    // Cards that change visibility fade+scale rather than teleporting via
+    // the bare [hidden] toggle — REDUCED skips straight to the end state.
+    cards.forEach((c, i) => {
+      const show = matchFilter(items[i], f);
+      if (show === !c.hidden) return;
+      if (REDUCED) { c.hidden = !show; return; }
+      if (show) {
+        c.hidden = false;
+        c.classList.add('is-entering');
+        requestAnimationFrame(() => requestAnimationFrame(() => c.classList.remove('is-entering')));
+      } else {
+        c.classList.add('is-leaving');
+        setTimeout(() => { c.hidden = true; c.classList.remove('is-leaving'); }, 260);
+      }
+    });
     if (prevBtn && nextBtn) container.scrollTo({ left: 0, behavior: REDUCED ? 'auto' : 'smooth' });
   }
   if (filtersEl) filtersEl.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => applyFilter(c.dataset.filter)));
@@ -310,9 +331,17 @@ function initRail({ items, container, filtersEl, prevBtn, nextBtn, renderCard, m
    the user's behalf). */
 const leadform = document.getElementById('leadform');
 if (leadform) {
+  const status = document.getElementById('lf-status');
+  // Fades the status message in regardless of outcome; on success the
+  // form fades out first and only then swaps — the one true conversion
+  // moment on the site deserves more than a hard cut.
+  const showStatus = text => {
+    status.textContent = text;
+    status.hidden = false;
+    requestAnimationFrame(() => requestAnimationFrame(() => status.classList.add('is-in')));
+  };
   leadform.addEventListener('submit', async e => {
     e.preventDefault();
-    const status = document.getElementById('lf-status');
     const submitBtn = leadform.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
     try {
@@ -322,17 +351,14 @@ if (leadform) {
         headers: { Accept: 'application/json' }
       });
       if (res.ok) {
-        leadform.hidden = true;
-        status.hidden = false;
-        status.textContent = 'Tak! Vi sender playbooket, så snart det er klar.';
+        const finish = () => { leadform.hidden = true; showStatus('Tak! Vi sender playbooket, så snart det er klar.'); };
+        if (REDUCED) { finish(); } else { leadform.classList.add('is-leaving'); setTimeout(finish, 260); }
       } else {
-        status.hidden = false;
-        status.textContent = 'Noget gik galt — prøv igen, eller skriv til os direkte.';
+        showStatus('Noget gik galt — prøv igen, eller skriv til os direkte.');
         submitBtn.disabled = false;
       }
     } catch {
-      status.hidden = false;
-      status.textContent = 'Noget gik galt — prøv igen, eller skriv til os direkte.';
+      showStatus('Noget gik galt — prøv igen, eller skriv til os direkte.');
       submitBtn.disabled = false;
     }
   });

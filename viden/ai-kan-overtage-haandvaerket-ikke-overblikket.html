@@ -43,7 +43,7 @@
     <p>Det er blevet billigt at få AI til at skrive kode. Det er ikke længere noget der kræver ti års erfaring fra et udviklingsteam. En person med en god idé og et kreditkort kan på en weekend bygge noget der virker. Det er en reel demokratisering, og den vil ændre meget.</p>
     <p>Men der er et hul i den fortælling. Det er nemt at få AI til at skrive kode der ser rigtig ud. Det er sværere at få AI til at skrive kode der også er rigtig. Forskellen mærker man ikke på dag ét. Man mærker den den dag noget går galt i produktion, og brugerne bliver påvirket.</p>
     <p>Det fag der løser den slags hedder arkitektur, og det handler ikke om at bygge. Det handler om at forudse. At se hvor systemet knækker når noget uventet sker, hvor sikkerheden er svag, hvor en god beslutning i dag bliver en dyr beslutning om to år. AI kan overtage håndværket. Men ikke overblikket.</p>
-    <div class="section-break" data-illus="blobA" aria-hidden="true"></div>
+    <div class="section-break reveal" data-illus="blobA" aria-hidden="true"></div>
     <h2>To agenter, to perspektiver</h2>
     <p>Det var præcis det problem jeg sad med. Jeg kunne bygge appen med Lovable, men jeg kunne ikke selv vurdere om de arkitekturvalg den foreslog, var fornuftige på den lange bane. Selvom vi har dygtige arkitekter i huset, gav det ikke mening at trække en af dem ind på et gratis fritidsprojekt.</p>
     <p>Det jeg endte med at gøre, var at sætte to AI-agenter op til at vurdere arkitekturen i appen sammen.</p>
@@ -55,12 +55,12 @@
     <p>Den eksterne agent foreslog at en bestemt funktion i appen blev ændret, fordi den ifølge agenten ville skjule en konkurrence for brugerne hvis der opstod en teknisk fejl. Det lød rimeligt. Men da den interne agent læste koden, viste det sig at funktionen var designet til at gøre det stik modsatte. Hvis der opstod fejl, blev konkurrencen vist, ikke skjult. Det var et bevidst valg, dokumenteret i koden. Den eksterne agent havde simpelthen læst koden forkert og bygget en hel anbefaling oven på en fejlantagelse. Efter at have set kodeuddraget trak den anbefalingen tilbage.</p>
     <p>I et andet tilfælde foreslog den eksterne agent en større omkalfatring af datamodellen. Teknisk set en bedre løsning. Men appen var i drift med 150 brugere, og sæsonen var i fuld gang. Den interne agent pegede på at en fejl midt i sæsonen ville påvirke brugerne direkte. Den eksterne agent gav sig, da den så tidsplanen, og foreslog i stedet en faseopdelt løsning hvor det kritiske blev rettet nu, og det strukturelle udskudt til efter sæson.</p>
     <p>Begge eksempler peger på det samme. AI-agenter har høj selvtillid og lav fornemmelse for kontekst. Den ene tog fejl af koden. Den anden tog fejl af risikoen. En af dem alene ville have leveret en plan der så fornuftig ud, men som ville have skabt problemer i drift.</p>
-    <div class="section-break" data-illus="blobB" aria-hidden="true"></div>
+    <div class="section-break reveal" data-illus="blobB" aria-hidden="true"></div>
     <h2>Hvorfor det virkede</h2>
     <p>Det er fristende at konkludere at to AI-agenter er bedre end én. Det er ikke konklusionen.</p>
     <p>Det virkede fordi tre ting var på plads. Den ene agent havde adgang til virkeligheden. Den anden agent fulgte en struktureret metode. Og der sad et menneske i midten med vetoret. Det sidste lag bliver i AI-debatten ofte kaldt human in the loop, og det er nemt at sige. Det er sværere at gøre rigtigt. Det kræver at mennesket faktisk har autoritet og kompetence til at sige nej, ikke bare en knap der hedder "godkend". Tag ét af de tre lag væk, og det falder fra hinanden. To AI-agenter uden ramme er bare to selvsikre stemmer der modsiger hinanden. En struktureret metode uden kodeadgang er en velformuleret anbefaling baseret på antagelser. Og uden mennesket i midten er der ingen til at afgøre hvilke uenigheder der betyder noget, og hvilke der er støj.</p>
     <p>Det er stilladset omkring AI'en der gør forskellen, ikke modellen.</p>
-    <blockquote class="pullquote">Det er stilladset omkring AI'en der gør forskellen, ikke modellen.</blockquote>
+    <blockquote class="pullquote reveal">Det er stilladset omkring AI'en der gør forskellen, ikke modellen.</blockquote>
     <h2>Hvad det betyder for andre</h2>
     <p>Mange virksomheder eksperimenterer lige nu med AI-udviklingsværktøjer. Det er en god udvikling. Men der ligger en antagelse under begejstringen, som jeg synes fortjener mere opmærksomhed. Antagelsen er at hvis man kan bygge med AI, så kan man også vurdere det AI bygger.</p>
     <p>Det kan man ikke nødvendigvis. At producere kode med AI er ikke det samme som at vurdere om koden er god. Det er to forskellige discipliner. At AI har gjort den ene billig, betyder ikke at den anden er fulgt med.</p>
@@ -71,19 +71,19 @@
 <section class="wrap related">
   <h3>Relaterede artikler</h3>
   <div class="vgrid">
-   <a class="ocard vcard" href="ai-goer-udvikling-lettere-kompleksiteten-flytter.html">
+   <a class="ocard vcard reveal" href="ai-goer-udvikling-lettere-kompleksiteten-flytter.html">
    <span class="ocard__tag">Artikel</span>
    <h3>AI gør udvikling lettere. Men kompleksiteten flytter.</h3>
    <p>Når udviklingsarbejdet bliver lettere, forsvinder kompleksiteten ikke — den flytter ind i organisationen, og flaskehalsen flytter fra udviklingskapacitet til prioritering og integration.</p>
    <span class="ocard__foot"><span style="margin-left:auto">Læs mere <span class="arw">→</span></span></span>
  </a>
-   <a class="ocard vcard" href="arbejde-i-bredden-ai-hjaelper-med-dybden.html">
+   <a class="ocard vcard reveal" href="arbejde-i-bredden-ai-hjaelper-med-dybden.html">
    <span class="ocard__tag">Artikel</span>
    <h3>Jeg har altid været god til at arbejde i bredden. AI hjælper mig til at arbejde i dybden.</h3>
    <p>Tre eksempler fra hverdagen som direktør — økonomi, kundepræsentationer og rekruttering — på hvordan AI ikke giver færre opgaver, men mulighed for at gå markant mere i dybden med hver af dem.</p>
    <span class="ocard__foot"><span style="margin-left:auto">Læs mere <span class="arw">→</span></span></span>
  </a>
-   <a class="ocard vcard" href="health-os-hvad-et-aar-med-data-laerte-mig.html">
+   <a class="ocard vcard reveal" href="health-os-hvad-et-aar-med-data-laerte-mig.html">
    <span class="ocard__tag">Artikel</span>
    <h3>Health OS: hvad et år med data lærte mig om min egen krop</h3>
    <p>Et år med Tanita-scanninger, Garmin- og Lifesum-data samlet i et AI-bygget analysesystem — og hvad det afslørede om protein, muskelmasse og hvad data faktisk fanger.</p>

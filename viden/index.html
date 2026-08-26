@@ -68,7 +68,7 @@ const videnGridCardHtml = v => {
   const href = coming ? '' : ` href="${v.slug}.html"`;
   const foot = coming ? 'Kommer snart' : 'Læs mere <span class="arw">→</span>';
   const tagText = kind + (coming ? ' · Kommer snart' : '');
-  return `<${tagName} class="ocard vcard${coming ? ' is-soon' : ''}"${href}>
+  return `<${tagName} class="ocard vcard reveal${coming ? ' is-soon' : ''}"${href}>
    <span class="ocard__tag">${tagText}</span>
    <h3>${v.t}</h3>
    <p>${v.d}</p>
