@@ -1684,12 +1684,11 @@ const DITHER_GRAYSCALE = 1;
 const MODEL_ZOOM = {
   loop: 1.62, coins: 1.42, ring: 1.62, core: 1.55, rubiks: 1.95, arrows: 1.3,
   // Stat icons sit in a much smaller container than any other model on
-  // the page (~52-72px vs. the next-smallest at 68-92px), so they need a
-  // tighter frame just to have enough pixels for the dither to resolve —
-  // computed from each shape's real extent at zoom = 2*5*tan(37.5°) /
-  // (extent/0.55) targeting ~55% frame fill, not eyeballed, then checked
-  // live.
-  expert: 3.3, customers: 2.2, clock: 3.55, levels: 4.2
+  // the page. First pass targeted ~55% frame fill (matching the other
+  // models' rough ballpark) but read as small next to the bold stat
+  // numbers beside them — measured actual ink bounding boxes (44-59% of
+  // canvas) and rescaled each by 85%/measured to land ~85% fill instead.
+  expert: 5.18, customers: 3.45, clock: 5.33, levels: 6.05
 };
 // Pulse (Item9, adapted) — unlike the other six models' zoom values,
 // this one isn't just aesthetic framing: it's the exact constant that
