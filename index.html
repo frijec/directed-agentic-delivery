@@ -389,13 +389,15 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .pcell p{margin-top:var(--s-3);font-size:var(--t-small);line-height:1.6;color:var(--graphite)}
 /* This is the payoff of picking a level, not a footnote, so it gets a
    filled card and a primary (not soft) button — the same visual weight
-   as the hero's own "next step" CTAs. */
+   as the hero's own "next step" CTAs. Plum (not blush) for the strongest
+   contrast on the page short of the CTA card itself; text recolored to
+   match, same dark-card pairing already used on .whycard. */
 .panel__foot{display:flex;flex-wrap:wrap;gap:var(--s-5);align-items:center;justify-content:space-between;
   margin-top:var(--s-6);padding:clamp(1.25rem,2.4vw,1.75rem) clamp(1.5rem,2.8vw,2rem);
-  background:var(--blush);border-radius:var(--r-md)}
+  background:var(--plum);border-radius:var(--r-md)}
 .panel__next{display:flex;flex-direction:column;gap:.3rem}
-.panel__next-lab{font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.1em;text-transform:uppercase;color:var(--wine)}
-.panel__next b{font-family:var(--font-display);font-size:clamp(1.05rem,1.9vw,1.4rem);font-weight:600;letter-spacing:-.02em;color:var(--ink-900)}
+.panel__next-lab{font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.1em;text-transform:uppercase;color:var(--coral)}
+.panel__next b{font-family:var(--font-display);font-size:clamp(1.05rem,1.9vw,1.4rem);font-weight:600;letter-spacing:-.02em;color:#fff}
 .fade-swap{animation:fadeSwap var(--d-slow) var(--ease-out)}
 @keyframes fadeSwap{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .ladder__note{margin-top:var(--s-6);font-size:var(--t-small);color:var(--stone);max-width:58ch}
@@ -2163,7 +2165,7 @@ const MODEL_BUILDERS = {
   // library. All four share the same slow-spin idiom for a consistent,
   // unobtrusive read at this small size.
   expert: scene => {
-    const g = buildPerson();
+    const g = buildPerson(0.9);
     // The bust is a surface of revolution around its own Y axis (sphere +
     // tapered cylinder), so spinning it around world Y alone is
     // motionless to the eye — every frame looks identical. A small
@@ -2223,7 +2225,12 @@ const MODEL_BUILDERS = {
     const pin = new THREE.Mesh(new THREE.SphereGeometry(0.055, 12, 12), mat());
     pin.position.z = 0.09;
     g.add(face, rim, crown, hourHand, minuteHand, pin);
+    g.scale.setScalar(0.9);
     scene.add(g);
+    // Verified empirically (tracked the crown's on-screen angle across
+    // 6 frames) rather than assumed from handedness rules: negative Z
+    // here actually rendered counter-clockwise, so positive is what
+    // turns clockwise on this camera setup.
     if (!REDUCED_ILLUS) gsap.to(g.rotation, { z: '+=' + Math.PI * 2, duration: 11, repeat: -1, ease: 'none' });
   },
 
