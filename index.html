@@ -197,6 +197,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .statcard{background:var(--plum);color:#fff;border-radius:var(--r-lg);padding:clamp(1.5rem,3vw,2rem);box-shadow:var(--lift-2)}
 .statcard .mono{color:rgba(255,255,255,.45)}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-5);margin-top:var(--s-5)}
+.stat{display:flex;align-items:center;gap:var(--s-4)}
+.stat__model{flex:none;width:clamp(3.25rem,5vw,4.5rem);height:clamp(3.25rem,5vw,4.5rem)}
+.stat__model canvas{display:block;width:100%;height:100%}
 .stat__num{font-family:var(--font-display);font-size:clamp(1.5rem,2.4vw,2.1rem);font-weight:900;letter-spacing:-.035em;font-variant-numeric:tabular-nums}
 .stat__lab{font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:var(--s-1)}
 
@@ -718,10 +721,22 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <div class="tally reveal">
       <h2>Consid i tal</h2>
       <div class="stats">
-        <div><div class="stat__num" data-count="1800" data-suffix="+">0</div><div class="stat__lab">Specialister</div></div>
-        <div><div class="stat__num" data-count="700" data-suffix="+">0</div><div class="stat__lab">Aktive kunder</div></div>
-        <div><div class="stat__num" data-count="25" data-suffix="+">0</div><div class="stat__lab">År i Norden</div></div>
-        <div><div class="stat__num" data-count="3" data-suffix="">0</div><div class="stat__lab">Leveranceniveauer</div></div>
+        <div class="stat">
+          <div class="stat__model" data-illus="expert" aria-hidden="true"></div>
+          <div class="stat__text"><div class="stat__num" data-count="1800" data-suffix="+">0</div><div class="stat__lab">Specialister</div></div>
+        </div>
+        <div class="stat">
+          <div class="stat__model" data-illus="customers" aria-hidden="true"></div>
+          <div class="stat__text"><div class="stat__num" data-count="700" data-suffix="+">0</div><div class="stat__lab">Aktive kunder</div></div>
+        </div>
+        <div class="stat">
+          <div class="stat__model" data-illus="calendar" aria-hidden="true"></div>
+          <div class="stat__text"><div class="stat__num" data-count="25" data-suffix="+">0</div><div class="stat__lab">År i Norden</div></div>
+        </div>
+        <div class="stat">
+          <div class="stat__model" data-illus="levels" aria-hidden="true"></div>
+          <div class="stat__text"><div class="stat__num" data-count="3" data-suffix="">0</div><div class="stat__lab">Leveranceniveauer</div></div>
+        </div>
       </div>
       <div class="marquee tally__marquee" aria-hidden="true">
         <div class="marquee__track" id="track"></div>
@@ -1649,7 +1664,16 @@ const DITHER_GRAYSCALE = 1;
 // six have quite different reach (Arrows' tails swing out to ~2.8 world
 // units, Rubik's tumbling cube only ~1.7), and one global value either
 // clips the big ones or leaves the small ones marooned in white space.
-const MODEL_ZOOM = { loop: 1.62, coins: 1.42, ring: 1.62, core: 1.55, rubiks: 1.95, arrows: 1.3 };
+const MODEL_ZOOM = {
+  loop: 1.62, coins: 1.42, ring: 1.62, core: 1.55, rubiks: 1.95, arrows: 1.3,
+  // Stat icons sit in a much smaller container than any other model on
+  // the page (~52-72px vs. the next-smallest at 68-92px), so they need a
+  // tighter frame just to have enough pixels for the dither to resolve —
+  // computed from each shape's real extent at zoom = 2*5*tan(37.5°) /
+  // (extent/0.55) targeting ~55% frame fill, not eyeballed, then checked
+  // live.
+  expert: 3.3, customers: 2.2, calendar: 3.6, levels: 4.2
+};
 // Pulse (Item9, adapted) — unlike the other six models' zoom values,
 // this one isn't just aesthetic framing: it's the exact constant that
 // makes the 5 discs' vertical spacing land on the 5 CSS row centres (see
@@ -1867,6 +1891,21 @@ function makeIllusScene(container, build, zoom) {
    that is the whole lighting model, which is why the scene has no lights. */
 const mat = () => new THREE.MeshMatcapMaterial({ matcap: matcapTex });
 const eulers = objs => objs.map(o => o.rotation);
+// Shared by the "expert" and "customers" stat icons below — a minimal
+// bust (sphere head + tapered-cylinder shoulders), not sourced from the
+// origami library like the other models on this page.
+const buildPerson = (scale = 1) => {
+  const g = new THREE.Group();
+  // Head top (0.94) to torso bottom (-0.325) spans 1.265; shift both by
+  // -0.3075 so the bust is centred on its own origin, not riding high.
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.32, 24, 24), mat());
+  head.position.y = 0.62 - 0.3075;
+  const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.5, 0.75, 32), mat());
+  torso.position.y = 0.05 - 0.3075;
+  g.add(head, torso);
+  g.scale.setScalar(scale);
+  return g;
+};
 
 // Populated by the `pulse` builder below; read by the row-highlight
 // IntersectionObserver after the registry wiring runs. A plain
@@ -2082,6 +2121,58 @@ const MODEL_BUILDERS = {
         gsap.to(m.scale, { x: 0.3, z: 0.3, delay: 0.25 * i, repeat: -1, yoyo: true, ease: 'sine.inOut', duration: 1 });
       });
     }
+  },
+
+  // Stat icons (Consid i tal) — hand-rolled, not sourced from the origami
+  // library. All four share the same slow-spin idiom for a consistent,
+  // unobtrusive read at this small size.
+  expert: scene => {
+    const g = buildPerson();
+    scene.add(g);
+    if (!REDUCED_ILLUS) gsap.to(g.rotation, { y: '+=' + Math.PI * 2, duration: 10, repeat: -1, ease: 'none' });
+  },
+
+  customers: scene => {
+    const g = new THREE.Group();
+    const front = buildPerson(1.0); front.position.set(0, -0.12, 0.35);
+    const left = buildPerson(0.78); left.position.set(-0.55, -0.05, -0.15);
+    const right = buildPerson(0.78); right.position.set(0.55, -0.05, -0.15);
+    g.add(left, right, front);
+    scene.add(g);
+    if (!REDUCED_ILLUS) gsap.to(g.rotation, { y: '+=' + Math.PI * 2, duration: 12, repeat: -1, ease: 'none' });
+  },
+
+  calendar: scene => {
+    const g = new THREE.Group();
+    const page = new THREE.Mesh(new THREE.BoxGeometry(0.9, 1.05, 0.08), mat());
+    const header = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.22, 0.06), mat());
+    header.position.set(0, 0.415, 0.07);
+    const ringGeo = new THREE.TorusGeometry(0.075, 0.028, 8, 16);
+    const ring1 = new THREE.Mesh(ringGeo, mat()); ring1.position.set(-0.28, 0.58, 0); ring1.rotation.x = Math.PI / 2;
+    const ring2 = new THREE.Mesh(ringGeo, mat()); ring2.position.set(0.28, 0.58, 0); ring2.rotation.x = Math.PI / 2;
+    g.add(page, header, ring1, ring2);
+    scene.add(g);
+    // Unlike the other stat icons, this is a flat, thin object (a page)
+    // rather than a roughly round one — spinning it around Y like the
+    // others periodically turns its thin edge toward the camera,
+    // rendering as an illegible dark sliver mid-spin (confirmed live).
+    // Spinning around Z instead — the axis perpendicular to its flat
+    // face, same fix already used by the "arrows" model for its flat
+    // extruded shapes — keeps the face (and the calendar silhouette)
+    // toward the camera through the whole rotation.
+    if (!REDUCED_ILLUS) gsap.to(g.rotation, { z: '+=' + Math.PI * 2, duration: 11, repeat: -1, ease: 'none' });
+  },
+
+  // Three stacked, progressively narrower boxes — a stepped pyramid, one
+  // tier per delivery level.
+  levels: scene => {
+    const g = new THREE.Group();
+    const l1 = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.26, 1.0), mat()); l1.position.y = -0.33;
+    const l2 = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.26, 0.68), mat()); l2.position.y = -0.03;
+    const l3 = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.26, 0.38), mat()); l3.position.y = 0.27;
+    g.add(l1, l2, l3);
+    scene.add(g);
+    if (!REDUCED_ILLUS) gsap.to(g.rotation, { y: '+=' + Math.PI * 2, duration: 9, repeat: -1, ease: 'none' });
   }
 };
 
