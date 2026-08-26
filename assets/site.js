@@ -9,6 +9,19 @@
    ============================================================ */
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+/* Calendly popup — the widget script loads async, so [data-calendly]
+   links keep a real href to calendly.com as a fallback: if someone
+   clicks before the script arrives, the link just navigates normally
+   instead of silently doing nothing. */
+const CALENDLY_URL = 'https://calendly.com/consid-dad?background_color=fdfcfb&text_color=141416&primary_color=90263b';
+document.querySelectorAll('[data-calendly]').forEach(a => {
+  a.addEventListener('click', e => {
+    if (!window.Calendly) return;
+    e.preventDefault();
+    Calendly.initPopupWidget({ url: CALENDLY_URL });
+  });
+});
+
 /* Reveal-on-scroll */
 if (!REDUCED) {
   const io = new IntersectionObserver(es => {

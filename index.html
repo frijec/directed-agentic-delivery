@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;900&family=EB+Garamond:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
 <style>
 /* ============================================================
    CONSID · DIRECTED AGENTIC DELIVERY — v0.3 "light"
@@ -575,7 +576,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       <a class="nav__link" href="#principper">Sådan arbejder vi</a>
       <a class="nav__link" href="#ydelser">Ydelser</a>
       <a class="nav__link" href="#viden">Viden</a>
-      <a class="btn btn--primary" href="#kontakt">Book en session <span class="arw">→</span></a>
+      <a class="btn btn--primary" href="https://calendly.com/consid-dad" data-calendly>Book en session <span class="arw">→</span></a>
     </div>
   </div>
 </nav>
@@ -832,7 +833,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
         <h2 class="reveal">Dirigér jeres næste program med agenterne. Ikke udenom dem.</h2>
         <p class="lead reveal">45 minutters arbejdssession med en af vores AI-praktikere. Vi kortlægger, hvor Directed Agentic Delivery giver mening hos jer — og hvor I starter.</p>
         <div class="ctacard__actions reveal">
-          <a class="btn btn--primary" href="https://calendly.com/consid-dad" target="_blank" rel="noopener">Book en session <span class="arw">→</span></a>
+          <a class="btn btn--primary" href="https://calendly.com/consid-dad" data-calendly>Book en session <span class="arw">→</span></a>
           <a class="btn btn--soft" href="viden/">Læs whitepapers</a>
         </div>
       </div>
@@ -847,8 +848,22 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   </div>
 </footer>
 
+<script src="https://assets.calendly.com/assets/external/widget.js" async></script>
 <script>
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* Calendly popup — the widget script loads async, so [data-calendly]
+   links keep a real href to calendly.com as a fallback: if someone
+   clicks before the script arrives, the link just navigates normally
+   instead of silently doing nothing. */
+const CALENDLY_URL = 'https://calendly.com/consid-dad?background_color=fdfcfb&text_color=141416&primary_color=90263b';
+document.querySelectorAll('[data-calendly]').forEach(a => {
+  a.addEventListener('click', e => {
+    if (!window.Calendly) return;
+    e.preventDefault();
+    Calendly.initPopupWidget({ url: CALENDLY_URL });
+  });
+});
 
 const LEVELS=[
  {quote:'I bruger AI. Den bruger ikke jer endnu.',
