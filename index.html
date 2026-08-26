@@ -37,16 +37,6 @@
   --coral:#F49E88;        /* Consid brand coral — reserved accent, type colour only */
   --hairline:rgba(27,27,29,.08);
 
-  /* Viden card tints — niveau 0-3 + niveau-less "Videndeling" content.
-     Reuses --sand/--blush where they already fit; three new pale tints
-     round out the ramp. Exact hex tuned visually, same as everywhere
-     else in this file. */
-  --niveau-0:var(--sand);
-  --niveau-1:#EAF0EC;
-  --niveau-2:var(--blush);
-  --niveau-3:#EFE9F1;
-  --videndeling:#F6F1E4;
-
   /* Type */
   --font-display:"Onest","Helvetica Neue",Helvetica,Arial,sans-serif;
   --font-body:"Onest","Helvetica Neue",Helvetica,Arial,sans-serif;
@@ -486,23 +476,21 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   display:grid;place-items:center;transition:transform var(--d-fast) var(--ease-spring),box-shadow var(--d-fast) var(--ease-out)}
 .rbtn:hover{transform:translateY(-2px);box-shadow:var(--lift-2)}
 
-/* VIDEN — same rail/card system as Ydelser above, just with a
-   niveau-keyed background instead of the plain nth-child alternation.
-   The attribute selector out-specifies .ocard:nth-child(...) without
-   touching it, so Ydelser's own cards (never carry data-niveau) render
-   exactly as before. */
-.vcard[data-niveau="0"]{background:var(--niveau-0)}
-.vcard[data-niveau="1"]{background:var(--niveau-1)}
-.vcard[data-niveau="2"]{background:var(--niveau-2)}
-.vcard[data-niveau="3"]{background:var(--niveau-3)}
-.vcard[data-niveau=""]{background:var(--videndeling)}
+/* VIDEN — same rail/card system as Ydelser above. Niveau doesn't apply
+   to this content (articles and whitepapers aren't leveled the way
+   services are), so cards stay plain white rather than picking up
+   Ydelser's nth-child sand/blush alternation — .ocard.vcard is the
+   same specificity as that rule, so source order (this comes later)
+   decides it without needing !important. */
+.ocard.vcard{background:var(--surface)}
 .vcard.is-soon{cursor:default}
 .vcard.is-soon:hover{transform:none;box-shadow:var(--lift-1)}
-.vcard .ocard__tag b{color:var(--wine);font-weight:600}
 
 /* Standalone grid overview page reuses this same rule too. */
-.vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--s-4);margin-top:var(--s-6)}
+.vgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-4);margin-top:var(--s-6)}
 .vgrid .ocard{flex:none;min-height:260px}
+@media (max-width:880px){.vgrid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:640px){.vgrid{grid-template-columns:1fr}}
 
 /* WHY ---------------------------------------------------- */
 .whycard{background:var(--plum);color:#fff;border-radius:var(--r-xl);padding:clamp(1.75rem,4.5vw,4rem);box-shadow:var(--lift-2)}
@@ -742,15 +730,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
         <button class="rbtn" id="viden-next" aria-label="Næste viden"><span class="arw">→</span></button>
       </div>
     </div>
-    <p class="lead reveal" style="margin-top:var(--s-5)">Artikler og whitepapers om retning, fundament og de fire niveauer. Sorteret, så I kan finde jeres udgangspunkt.</p>
-    <div class="filters reveal" id="viden-filters" role="group" aria-label="Filtrér viden efter niveau">
-      <button class="chip" data-filter="all" aria-pressed="true">Alle</button>
-      <button class="chip" data-filter="0" aria-pressed="false">Niveau 0</button>
-      <button class="chip" data-filter="1" aria-pressed="false">Niveau 1</button>
-      <button class="chip" data-filter="2" aria-pressed="false">Niveau 2</button>
-      <button class="chip" data-filter="3" aria-pressed="false">Niveau 3</button>
-      <button class="chip" data-filter="none" aria-pressed="false">Videndeling</button>
-    </div>
+    <p class="lead reveal" style="margin-top:var(--s-5)">Artikler og whitepapers om retning og fundament for AI-arbejdet.</p>
   </div>
   <div class="wrap"><div class="rail" id="viden-rail"></div></div>
 </section>
@@ -909,18 +889,18 @@ const OFFERINGS=[
    belongs to at most one niveau. `tags` drives the related-content
    block on each article page. */
 const VIDEN=[
- {t:'AI bliver brugt som forklaring på meget – også det, teknologien ikke gør',d:'"AI washing" er blevet standardforklaringen på komplekse beslutninger med mange årsager. Hvorfor for enkle forklaringer fører til forkerte investeringer og forklaringer der ikke holder.',lv:null,tags:['Kommunikation','AI-strategi'],type:'artikel',slug:'ai-bliver-brugt-som-forklaring-paa-meget',author:'Michael Lund-Andersen',date:'2026-05-05',comingSoon:false},
- {t:'AI gør udvikling lettere. Men kompleksiteten flytter.',d:'Når udviklingsarbejdet bliver lettere, forsvinder kompleksiteten ikke — den flytter ind i organisationen, og flaskehalsen flytter fra udviklingskapacitet til prioritering og integration.',lv:null,tags:['Organisation','Udvikling'],type:'artikel',slug:'ai-goer-udvikling-lettere-kompleksiteten-flytter',author:'Michael Lund-Andersen',date:'2026-05-19',comingSoon:false},
- {t:'AI kan overtage håndværket, men ikke overblikket.',d:"Da jeg byggede en app til Rørvig Sejlklub med Lovable, satte jeg to AI-agenter til at vurdere arkitekturen mod hinanden — med mig selv som vetoret i midten. Om hvorfor stilladset omkring AI'en gør forskellen.",lv:null,tags:['Praksis','Udvikling'],type:'artikel',slug:'ai-kan-overtage-haandvaerket-ikke-overblikket',author:'Michael Lund-Andersen',date:'2026-05-27',comingSoon:false},
- {t:'Regeringen lover et AI-sikkerhedsnet i skolen. Men mod hvad?',d:'En national AI-strategi for uddannelse bør værne mod at produktion forveksles med forståelse — ikke mod teknologien selv.',lv:null,tags:['Uddannelse','AI-strategi'],type:'artikel',slug:'ai-sikkerhedsnet-i-skolen-men-mod-hvad',author:'Michael Lund-Andersen',date:'2026-06-09',comingSoon:false},
- {t:'Jeg har altid været god til at arbejde i bredden. AI hjælper mig til at arbejde i dybden.',d:'Tre eksempler fra hverdagen som direktør — økonomi, kundepræsentationer og rekruttering — på hvordan AI ikke giver færre opgaver, men mulighed for at gå markant mere i dybden med hver af dem.',lv:null,tags:['Praksis','Ledelse'],type:'artikel',slug:'arbejde-i-bredden-ai-hjaelper-med-dybden',author:'Michael Lund-Andersen',date:'2026-06-02',comingSoon:false},
- {t:'Health OS: hvad et år med data lærte mig om min egen krop',d:'Et år med Tanita-scanninger, Garmin- og Lifesum-data samlet i et AI-bygget analysesystem — og hvad det afslørede om protein, muskelmasse og hvad data faktisk fanger.',lv:null,tags:['Praksis','Data'],type:'artikel',slug:'health-os-hvad-et-aar-med-data-laerte-mig',author:'Michael Lund-Andersen',date:'2026-07-03',comingSoon:false},
- {t:'Tre lag. Ét system. Sådan bruger jeg AI til at drive økonomifunktionen i Consid Denmark.',d:'Et dybdedyk i hvordan en driftsmodel, en dataarkitektur og en rutinestruktur tilsammen gør det muligt at drive en CFO-funktion med AI — og genbruge samme setup til salg.',lv:null,tags:['Praksis','Organisation','Ledelse'],type:'artikel',slug:'tre-lag-et-system-oekonomifunktionen-i-consid',author:'Michael Lund-Andersen',date:'2026-06-17',comingSoon:false},
- {t:'Velformuleret er ikke længere et kvalitetstegn',d:'Når AI gør det let at producere fagligt overbevisende indhold uden selv at forstå det, bliver mødet den egentlige eksamen — og vurdering kræver et menneske med viden om det, der bliver vurderet.',lv:null,tags:['Kommunikation','Vurdering'],type:'artikel',slug:'velformuleret-er-ikke-laengere-et-kvalitetstegn',author:'Michael Lund-Andersen',date:'2026-05-13',comingSoon:false},
- {t:'Playbook: Kom i gang med Directed Agentic Delivery',d:'Et samlet whitepaper er på vej — den praktiske vej fra værktøjsbruger til et fundament, agenter kan arbejde ud fra.',lv:0,tags:[],type:'whitepaper',slug:null,author:null,date:null,comingSoon:true},
- {t:'Playbook: Governance for AI-teams',d:'Et samlet whitepaper er på vej — rammer, checkpoints og beslutningspunkter for team, der allerede bygger med AI.',lv:1,tags:[],type:'whitepaper',slug:null,author:null,date:null,comingSoon:true},
- {t:'Playbook: Arkitektur som fundament',d:'Et samlet whitepaper er på vej — hvordan kortlagt arkitektur bliver det, agenter kan bygge videre på.',lv:2,tags:[],type:'whitepaper',slug:null,author:null,date:null,comingSoon:true},
- {t:'Playbook: Skalér Directed Agentic Delivery',d:'Et samlet whitepaper er på vej — governance og arkitekturstyring for organisationer, der dirigerer agenter i skala.',lv:3,tags:[],type:'whitepaper',slug:null,author:null,date:null,comingSoon:true}
+ {t:'AI bliver brugt som forklaring på meget – også det, teknologien ikke gør',d:'"AI washing" er blevet standardforklaringen på komplekse beslutninger med mange årsager. Hvorfor for enkle forklaringer fører til forkerte investeringer og forklaringer der ikke holder.',tags:['Kommunikation','AI-strategi'],type:'artikel',slug:'ai-bliver-brugt-som-forklaring-paa-meget',author:'Michael Lund-Andersen',date:'2026-05-05',comingSoon:false},
+ {t:'AI gør udvikling lettere. Men kompleksiteten flytter.',d:'Når udviklingsarbejdet bliver lettere, forsvinder kompleksiteten ikke — den flytter ind i organisationen, og flaskehalsen flytter fra udviklingskapacitet til prioritering og integration.',tags:['Organisation','Udvikling'],type:'artikel',slug:'ai-goer-udvikling-lettere-kompleksiteten-flytter',author:'Michael Lund-Andersen',date:'2026-05-19',comingSoon:false},
+ {t:'AI kan overtage håndværket, men ikke overblikket.',d:"Da jeg byggede en app til Rørvig Sejlklub med Lovable, satte jeg to AI-agenter til at vurdere arkitekturen mod hinanden — med mig selv som vetoret i midten. Om hvorfor stilladset omkring AI'en gør forskellen.",tags:['Praksis','Udvikling'],type:'artikel',slug:'ai-kan-overtage-haandvaerket-ikke-overblikket',author:'Michael Lund-Andersen',date:'2026-05-27',comingSoon:false},
+ {t:'Regeringen lover et AI-sikkerhedsnet i skolen. Men mod hvad?',d:'En national AI-strategi for uddannelse bør værne mod at produktion forveksles med forståelse — ikke mod teknologien selv.',tags:['Uddannelse','AI-strategi'],type:'artikel',slug:'ai-sikkerhedsnet-i-skolen-men-mod-hvad',author:'Michael Lund-Andersen',date:'2026-06-09',comingSoon:false},
+ {t:'Jeg har altid været god til at arbejde i bredden. AI hjælper mig til at arbejde i dybden.',d:'Tre eksempler fra hverdagen som direktør — økonomi, kundepræsentationer og rekruttering — på hvordan AI ikke giver færre opgaver, men mulighed for at gå markant mere i dybden med hver af dem.',tags:['Praksis','Ledelse'],type:'artikel',slug:'arbejde-i-bredden-ai-hjaelper-med-dybden',author:'Michael Lund-Andersen',date:'2026-06-02',comingSoon:false},
+ {t:'Health OS: hvad et år med data lærte mig om min egen krop',d:'Et år med Tanita-scanninger, Garmin- og Lifesum-data samlet i et AI-bygget analysesystem — og hvad det afslørede om protein, muskelmasse og hvad data faktisk fanger.',tags:['Praksis','Data'],type:'artikel',slug:'health-os-hvad-et-aar-med-data-laerte-mig',author:'Michael Lund-Andersen',date:'2026-07-03',comingSoon:false},
+ {t:'Tre lag. Ét system. Sådan bruger jeg AI til at drive økonomifunktionen i Consid Denmark.',d:'Et dybdedyk i hvordan en driftsmodel, en dataarkitektur og en rutinestruktur tilsammen gør det muligt at drive en CFO-funktion med AI — og genbruge samme setup til salg.',tags:['Praksis','Organisation','Ledelse'],type:'artikel',slug:'tre-lag-et-system-oekonomifunktionen-i-consid',author:'Michael Lund-Andersen',date:'2026-06-17',comingSoon:false},
+ {t:'Velformuleret er ikke længere et kvalitetstegn',d:'Når AI gør det let at producere fagligt overbevisende indhold uden selv at forstå det, bliver mødet den egentlige eksamen — og vurdering kræver et menneske med viden om det, der bliver vurderet.',tags:['Kommunikation','Vurdering'],type:'artikel',slug:'velformuleret-er-ikke-laengere-et-kvalitetstegn',author:'Michael Lund-Andersen',date:'2026-05-13',comingSoon:false},
+ {t:'Playbook: Kom i gang med Directed Agentic Delivery',d:'Et samlet whitepaper er på vej — den praktiske vej fra værktøjsbruger til et fundament, agenter kan arbejde ud fra.',tags:[],type:'whitepaper',slug:null,author:null,date:null,comingSoon:true},
+ {t:'Playbook: Governance for AI-teams',d:'Et samlet whitepaper er på vej — rammer, checkpoints og beslutningspunkter for team, der allerede bygger med AI.',tags:[],type:'whitepaper',slug:null,author:null,date:null,comingSoon:true},
+ {t:'Playbook: Arkitektur som fundament',d:'Et samlet whitepaper er på vej — hvordan kortlagt arkitektur bliver det, agenter kan bygge videre på.',tags:[],type:'whitepaper',slug:null,author:null,date:null,comingSoon:true},
+ {t:'Playbook: Skalér Directed Agentic Delivery',d:'Et samlet whitepaper er på vej — governance og arkitekturstyring for organisationer, der dirigerer agenter i skala.',tags:[],type:'whitepaper',slug:null,author:null,date:null,comingSoon:true}
 ];
 
 /* Headline word-split */
@@ -990,13 +970,17 @@ renderPanel(0);
 function initRail({items,container,filtersEl,prevBtn,nextBtn,renderCard,matchFilter}){
   container.innerHTML=items.map(renderCard).join('')+'<div class="rail__spacer" aria-hidden="true"></div>';
 
+  // filtersEl/matchFilter are optional — Viden has no filter UI (niveau
+  // doesn't apply to its content, and a type toggle isn't warranted yet
+  // at this library size), so its initRail calls just render and stop.
   function applyFilter(f){
+    if(!filtersEl) return;
     filtersEl.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',String(c.dataset.filter===f)));
     const cards=[...container.querySelectorAll('.ocard')];
     cards.forEach((c,i)=>{c.hidden=!matchFilter(items[i],f)});
     if(prevBtn&&nextBtn) container.scrollTo({left:0,behavior:REDUCED?'auto':'smooth'});
   }
-  filtersEl.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>applyFilter(c.dataset.filter)));
+  if(filtersEl) filtersEl.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>applyFilter(c.dataset.filter)));
 
   if(prevBtn&&nextBtn){
     // Move by real, measured card positions rather than an assumed
@@ -1052,21 +1036,19 @@ panel.addEventListener('click',e=>{
   if(j) ydelserRail.applyFilter(j.dataset.jump);
 });
 
-/* Viden — 8 real articles + whitepaper placeholders. Whitepaper cards
-   (comingSoon:true) render as non-interactive: no href, "Kommer snart"
-   instead of a working "Læs mere". */
-const videnTag=v=>{
-  const kind=v.type==='whitepaper'?'Whitepaper':'Artikel';
-  const lvl=v.lv===null?'Videndeling':'Niveau '+v.lv;
-  return `${kind} · ${lvl}`;
-};
+/* Viden — 8 real articles + whitepaper placeholders. No niveau here:
+   articles and whitepapers aren't leveled the way services are. No
+   filter UI either — not enough real variety yet to warrant one (7
+   articles vs. a handful of coming-soon placeholders). Whitepaper
+   cards (comingSoon:true) render as non-interactive: no href,
+   "Kommer snart" instead of a working "Læs mere". */
 const videnCardHtml=v=>{
-  const niveau=v.lv===null?'':String(v.lv);
+  const kind=v.type==='whitepaper'?'Whitepaper':'Artikel';
   const tagAttr=v.comingSoon?'':` href="viden/${v.slug}.html"`;
   const tagName=v.comingSoon?'div':'a';
   return `
- <${tagName} class="ocard vcard${v.comingSoon?' is-soon':''}"${tagAttr} data-lv="${niveau}" data-niveau="${niveau}">
-   <span class="ocard__tag">${videnTag(v)}</span>
+ <${tagName} class="ocard vcard${v.comingSoon?' is-soon':''}"${tagAttr}>
+   <span class="ocard__tag">${kind}${v.comingSoon?' · Kommer snart':''}</span>
    <h3>${v.t}</h3>
    <p>${v.d}</p>
    <span class="ocard__foot">
@@ -1077,11 +1059,9 @@ const videnCardHtml=v=>{
 initRail({
   items:VIDEN,
   container:document.getElementById('viden-rail'),
-  filtersEl:document.getElementById('viden-filters'),
   prevBtn:document.getElementById('viden-prev'),
   nextBtn:document.getElementById('viden-next'),
-  renderCard:videnCardHtml,
-  matchFilter:(v,f)=>f==='all'||(f==='none'?v.lv===null:v.lv===+f)
+  renderCard:videnCardHtml
 });
 
 /* Marquee */

@@ -37,13 +37,16 @@ if (navEl) {
 function initRail({ items, container, filtersEl, prevBtn, nextBtn, renderCard, matchFilter }) {
   container.innerHTML = items.map(renderCard).join('') + '<div class="rail__spacer" aria-hidden="true"></div>';
 
+  // filtersEl/matchFilter are optional — a page can render a plain,
+  // unfiltered rail/grid by omitting them.
   function applyFilter(f) {
+    if (!filtersEl) return;
     filtersEl.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c.dataset.filter === f)));
     const cards = [...container.querySelectorAll('.ocard')];
     cards.forEach((c, i) => { c.hidden = !matchFilter(items[i], f) });
     if (prevBtn && nextBtn) container.scrollTo({ left: 0, behavior: REDUCED ? 'auto' : 'smooth' });
   }
-  filtersEl.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => applyFilter(c.dataset.filter)));
+  if (filtersEl) filtersEl.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => applyFilter(c.dataset.filter)));
 
   if (prevBtn && nextBtn) {
     // Move by real, measured card positions — see index.html's own

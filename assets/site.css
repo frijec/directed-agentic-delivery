@@ -25,15 +25,6 @@
   --coral:#F49E88;
   --hairline:rgba(27,27,29,.08);
 
-  /* Viden card tints — niveau 0-3 + niveau-less "Videndeling".
-     Reuses --sand/--blush where they already fit; three new pale
-     tints round out the ramp. Exact hex tuned visually. */
-  --niveau-0:var(--sand);
-  --niveau-1:#EAF0EC;
-  --niveau-2:var(--blush);
-  --niveau-3:#EFE9F1;
-  --videndeling:#F6F1E4;
-
   --font-display:"Onest","Helvetica Neue",Helvetica,Arial,sans-serif;
   --font-body:"Onest","Helvetica Neue",Helvetica,Arial,sans-serif;
   --font-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
@@ -193,23 +184,22 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   display:grid;place-items:center;transition:transform var(--d-fast) var(--ease-spring),box-shadow var(--d-fast) var(--ease-out)}
 .rbtn:hover{transform:translateY(-2px);box-shadow:var(--lift-2)}
 
-/* Viden — background tint keyed off niveau, out-specifying the plain
-   .ocard nth-child alternation above via the attribute selector so
-   Ydelser's own cards (never carry data-niveau) are untouched. */
-.vcard[data-niveau="0"]{background:var(--niveau-0)}
-.vcard[data-niveau="1"]{background:var(--niveau-1)}
-.vcard[data-niveau="2"]{background:var(--niveau-2)}
-.vcard[data-niveau="3"]{background:var(--niveau-3)}
-.vcard[data-niveau=""]{background:var(--videndeling)}
+/* Viden — plain white cards. Niveau doesn't apply to this content
+   (articles/whitepapers aren't leveled the way services are), so
+   .ocard.vcard stays at the same specificity as the nth-child
+   alternation above and wins on source order, keeping Viden cards
+   white instead of picking up Ydelser's sand/blush alternation. */
+.ocard.vcard{background:var(--surface)}
 .vcard.is-soon{cursor:default}
 .vcard.is-soon:hover{transform:none;box-shadow:var(--lift-1)}
 .vcard.is-soon h3{color:inherit}
 .vcard .ocard__tag{display:flex;align-items:center;gap:.5em}
-.vcard .ocard__tag b{color:var(--wine);font-weight:600}
 
 /* Grid overview page — same cards, no rail/scroll/mask, just a grid. */
-.vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--s-4);margin-top:var(--s-6)}
+.vgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-4);margin-top:var(--s-6)}
 .vgrid .ocard{flex:none;min-height:260px}
+@media (max-width:880px){.vgrid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:640px){.vgrid{grid-template-columns:1fr}}
 
 /* CTA + FOOTER --------------------------------------------- */
 .ctacard{
