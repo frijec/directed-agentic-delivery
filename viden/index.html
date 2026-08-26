@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<title>Viden — Consid</title>
+<meta name="description" content="Artikler og whitepapers om retning, fundament og de fire niveauer.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;900&family=EB+Garamond:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+<nav class="nav" id="nav">
+  <div class="nav__in">
+    <a class="brand" href="../#top"><img class="brand__mark" src="../assets/brand-mark.png" alt="Consid"><span class="brand__sub">Directed Agentic Delivery</span></a>
+    <div class="nav__links">
+      <a class="nav__link" href="../#niveau">Jeres niveau</a>
+      <a class="nav__link" href="../#principper">Sådan arbejder vi</a>
+      <a class="nav__link" href="../#ydelser">Ydelser</a>
+      <a class="nav__link" href="../viden/">Viden</a>
+      <a class="btn btn--primary" href="../#kontakt">Book en session <span class="arw">→</span></a>
+    </div>
+  </div>
+</nav>
+
+<section class="stack">
+  <div class="wrap">
+    <h1 style="font-size:var(--t-h2);max-width:20ch" class="reveal">Fra teori til fundament</h1>
+    <p class="lead reveal" style="margin-top:var(--s-5)">Artikler og whitepapers om retning, fundament og de fire niveauer. Sorteret, så I kan finde jeres udgangspunkt.</p>
+    <div class="filters reveal" id="viden-filters" role="group" aria-label="Filtrér viden efter niveau">
+      <button class="chip" data-filter="all" aria-pressed="true">Alle</button>
+      <button class="chip" data-filter="0" aria-pressed="false">Niveau 0</button>
+      <button class="chip" data-filter="1" aria-pressed="false">Niveau 1</button>
+      <button class="chip" data-filter="2" aria-pressed="false">Niveau 2</button>
+      <button class="chip" data-filter="3" aria-pressed="false">Niveau 3</button>
+      <button class="chip" data-filter="none" aria-pressed="false">Videndeling</button>
+    </div>
+    <div class="vgrid" id="viden-grid"></div>
+  </div>
+</section>
+
+<section class="stack" style="padding-top:0">
+  <div class="wrap">
+    <div class="ctacard">
+      <canvas class="ctacard__noise" aria-hidden="true"></canvas>
+      <div class="ctacard__content">
+        <h2 class="reveal">Dirigér jeres næste program med agenterne. Ikke udenom dem.</h2>
+        <p class="lead reveal">45 minutters arbejdssession med en af vores AI-praktikere. Vi kortlægger, hvor Directed Agentic Delivery giver mening hos jer — og hvor I starter.</p>
+        <div class="ctacard__actions reveal">
+          <a class="btn btn--primary" href="../#kontakt">Book en session <span class="arw">→</span></a>
+          <a class="btn btn--soft" href="../viden/">Se al viden</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap footer__in">
+    <div>© 2026 Consid København · Directed Agentic Delivery</div>
+    <div class="footer__links"><a href="../#ydelser">Ydelser</a><a href="../viden/">Indsigter</a><a href="../#kontakt">Kontakt</a></div>
+  </div>
+</footer>
+<script>
+window.VIDEN_GRID_ITEMS = [{"slug": "ai-bliver-brugt-som-forklaring-paa-meget", "t": "AI bliver brugt som forklaring p\u00e5 meget \u2013 ogs\u00e5 det, teknologien ikke g\u00f8r", "d": "\"AI washing\" er blevet standardforklaringen p\u00e5 komplekse beslutninger med mange \u00e5rsager. Hvorfor for enkle forklaringer f\u00f8rer til forkerte investeringer og forklaringer der ikke holder.", "tags": ["Kommunikation", "AI-strategi"], "author": "Michael Lund-Andersen", "date": "2026-05-05", "lv": null, "type": "artikel", "comingSoon": false}, {"slug": "ai-goer-udvikling-lettere-kompleksiteten-flytter", "t": "AI g\u00f8r udvikling lettere. Men kompleksiteten flytter.", "d": "N\u00e5r udviklingsarbejdet bliver lettere, forsvinder kompleksiteten ikke \u2014 den flytter ind i organisationen, og flaskehalsen flytter fra udviklingskapacitet til prioritering og integration.", "tags": ["Organisation", "Udvikling"], "author": "Michael Lund-Andersen", "date": "2026-05-19", "lv": null, "type": "artikel", "comingSoon": false}, {"slug": "ai-kan-overtage-haandvaerket-ikke-overblikket", "t": "AI kan overtage h\u00e5ndv\u00e6rket, men ikke overblikket.", "d": "Da jeg byggede en app til R\u00f8rvig Sejlklub med Lovable, satte jeg to AI-agenter til at vurdere arkitekturen mod hinanden \u2014 med mig selv som vetoret i midten. Om hvorfor stilladset omkring AI'en g\u00f8r forskellen.", "tags": ["Praksis", "Udvikling"], "author": "Michael Lund-Andersen", "date": "2026-05-27", "lv": null, "type": "artikel", "comingSoon": false}, {"slug": "ai-sikkerhedsnet-i-skolen-men-mod-hvad", "t": "Regeringen lover et AI-sikkerhedsnet i skolen. Men mod hvad?", "d": "En national AI-strategi for uddannelse b\u00f8r v\u00e6rne mod at produktion forveksles med forst\u00e5else \u2014 ikke mod teknologien selv.", "tags": ["Uddannelse", "AI-strategi"], "author": "Michael Lund-Andersen", "date": "2026-06-09", "lv": null, "type": "artikel", "comingSoon": false}, {"slug": "arbejde-i-bredden-ai-hjaelper-med-dybden", "t": "Jeg har altid v\u00e6ret god til at arbejde i bredden. AI hj\u00e6lper mig til at arbejde i dybden.", "d": "Tre eksempler fra hverdagen som direkt\u00f8r \u2014 \u00f8konomi, kundepr\u00e6sentationer og rekruttering \u2014 p\u00e5 hvordan AI ikke giver f\u00e6rre opgaver, men mulighed for at g\u00e5 markant mere i dybden med hver af dem.", "tags": ["Praksis", "Ledelse"], "author": "Michael Lund-Andersen", "date": "2026-06-02", "lv": null, "type": "artikel", "comingSoon": false}, {"slug": "health-os-hvad-et-aar-med-data-laerte-mig", "t": "Health OS: hvad et \u00e5r med data l\u00e6rte mig om min egen krop", "d": "Et \u00e5r med Tanita-scanninger, Garmin- og Lifesum-data samlet i et AI-bygget analysesystem \u2014 og hvad det afsl\u00f8rede om protein, muskelmasse og hvad data faktisk fanger.", "tags": ["Praksis", "Data"], "author": "Michael Lund-Andersen", "date": "2026-07-03", "lv": null, "type": "artikel", "comingSoon": false}, {"slug": "tre-lag-et-system-oekonomifunktionen-i-consid", "t": "Tre lag. \u00c9t system. S\u00e5dan bruger jeg AI til at drive \u00f8konomifunktionen i Consid Denmark.", "d": "Et dybdedyk i hvordan en driftsmodel, en dataarkitektur og en rutinestruktur tilsammen g\u00f8r det muligt at drive en CFO-funktion med AI \u2014 og genbruge samme setup til salg.", "tags": ["Praksis", "Organisation", "Ledelse"], "author": "Michael Lund-Andersen", "date": "2026-06-17", "lv": null, "type": "artikel", "comingSoon": false}, {"slug": "velformuleret-er-ikke-laengere-et-kvalitetstegn", "t": "Velformuleret er ikke l\u00e6ngere et kvalitetstegn", "d": "N\u00e5r AI g\u00f8r det let at producere fagligt overbevisende indhold uden selv at forst\u00e5 det, bliver m\u00f8det den egentlige eksamen \u2014 og vurdering kr\u00e6ver et menneske med viden om det, der bliver vurderet.", "tags": ["Kommunikation", "Vurdering"], "author": "Michael Lund-Andersen", "date": "2026-05-13", "lv": null, "type": "artikel", "comingSoon": false}, {"slug": null, "t": "Playbook: Kom i gang med Directed Agentic Delivery", "d": "Et samlet whitepaper er p\u00e5 vej \u2014 den praktiske vej fra v\u00e6rkt\u00f8jsbruger til et fundament, agenter kan arbejde ud fra.", "lv": 0, "type": "whitepaper", "comingSoon": true}, {"slug": null, "t": "Playbook: Governance for AI-teams", "d": "Et samlet whitepaper er p\u00e5 vej \u2014 rammer, checkpoints og beslutningspunkter for team, der allerede bygger med AI.", "lv": 1, "type": "whitepaper", "comingSoon": true}, {"slug": null, "t": "Playbook: Arkitektur som fundament", "d": "Et samlet whitepaper er p\u00e5 vej \u2014 hvordan kortlagt arkitektur bliver det, agenter kan bygge videre p\u00e5.", "lv": 2, "type": "whitepaper", "comingSoon": true}, {"slug": null, "t": "Playbook: Skal\u00e9r Directed Agentic Delivery", "d": "Et samlet whitepaper er p\u00e5 vej \u2014 governance og arkitekturstyring for organisationer, der dirigerer agenter i skala.", "lv": 3, "type": "whitepaper", "comingSoon": true}];
+</script>
+<script src="../assets/site.js"></script>
+<script>
+const videnGridCardHtml = v => {
+  const niveau = v.lv === null ? '' : String(v.lv);
+  const kind = v.type === 'whitepaper' ? 'Whitepaper' : 'Artikel';
+  const lvl = v.lv === null ? 'Videndeling' : 'Niveau ' + v.lv;
+  const coming = !!v.comingSoon;
+  const tagName = coming ? 'div' : 'a';
+  const href = coming ? '' : ` href="${v.slug}.html"`;
+  const foot = coming ? 'Kommer snart' : 'Læs mere <span class="arw">→</span>';
+  return `<${tagName} class="ocard vcard${coming ? ' is-soon' : ''}"${href} data-niveau="${niveau}">
+   <span class="ocard__tag">${kind} · ${lvl}</span>
+   <h3>${v.t}</h3>
+   <p>${v.d}</p>
+   <span class="ocard__foot"><span style="margin-left:auto">${foot}</span></span>
+ </${tagName}>`;
+};
+initRail({
+  items: window.VIDEN_GRID_ITEMS,
+  container: document.getElementById('viden-grid'),
+  filtersEl: document.getElementById('viden-filters'),
+  prevBtn: null,
+  nextBtn: null,
+  renderCard: videnGridCardHtml,
+  matchFilter: (v, f) => f === 'all' || (f === 'none' ? v.lv === null : v.lv === +f)
+});
+</script>
+</body>
+</html>
