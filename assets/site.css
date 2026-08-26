@@ -286,7 +286,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 }
 .leadcard h3{font-size:clamp(1.3rem,2.2vw,1.7rem)}
 .leadform{display:flex;flex-direction:column;gap:var(--s-4)}
-.leadform .field{display:flex;flex-direction:column;gap:.4rem}
+.leadform .field{display:flex;flex-direction:column;gap:.4rem;width:75%}
 .leadform label{font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.08em;text-transform:uppercase;color:var(--graphite)}
 .leadform input{
   padding:.85rem 1rem;border-radius:var(--r-sm);border:1px solid var(--hairline);
