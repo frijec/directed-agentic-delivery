@@ -701,18 +701,20 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       <div class="reveal">
         <h2 style="max-width:16ch">Ydelser til jeres niveau</h2>
       </div>
+    </div>
+    <p class="lead reveal" style="margin-top:var(--s-5)">Konkrete leverancer, matchet til hvor I står i dag.</p>
+    <div class="railhead" style="margin-top:var(--s-6)">
+      <div class="filters reveal" id="ydelser-filters" style="margin-top:0" role="group" aria-label="Filtrér ydelser efter niveau">
+        <button class="chip" data-filter="all" aria-pressed="true">Alle</button>
+        <button class="chip" data-filter="0" aria-pressed="false">Niveau 0</button>
+        <button class="chip" data-filter="1" aria-pressed="false">Niveau 1</button>
+        <button class="chip" data-filter="2" aria-pressed="false">Niveau 2</button>
+        <button class="chip" data-filter="3" aria-pressed="false">Niveau 3</button>
+      </div>
       <div class="railnav reveal">
         <button class="rbtn" id="ydelser-prev" aria-label="Forrige ydelser"><span class="arw">←</span></button>
         <button class="rbtn" id="ydelser-next" aria-label="Næste ydelser"><span class="arw">→</span></button>
       </div>
-    </div>
-    <p class="lead reveal" style="margin-top:var(--s-5)">Konkrete leverancer, matchet til hvor I står i dag.</p>
-    <div class="filters reveal" id="ydelser-filters" role="group" aria-label="Filtrér ydelser efter niveau">
-      <button class="chip" data-filter="all" aria-pressed="true">Alle</button>
-      <button class="chip" data-filter="0" aria-pressed="false">Niveau 0</button>
-      <button class="chip" data-filter="1" aria-pressed="false">Niveau 1</button>
-      <button class="chip" data-filter="2" aria-pressed="false">Niveau 2</button>
-      <button class="chip" data-filter="3" aria-pressed="false">Niveau 3</button>
     </div>
   </div>
   <div class="wrap"><div class="rail" id="ydelser-rail"></div></div>
@@ -763,13 +765,15 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       <div class="reveal">
         <h2 style="max-width:14ch">Fra teori til fundament</h2>
       </div>
+    </div>
+    <p class="lead reveal" style="margin-top:var(--s-5)">Artikler om retning og fundament for AI-arbejdet.</p>
+    <div class="railhead" style="margin-top:var(--s-6)">
+      <a class="btn btn--soft reveal" href="viden/">Se al viden <span class="arw">→</span></a>
       <div class="railnav reveal">
         <button class="rbtn" id="viden-prev" aria-label="Forrige viden"><span class="arw">←</span></button>
         <button class="rbtn" id="viden-next" aria-label="Næste viden"><span class="arw">→</span></button>
       </div>
     </div>
-    <p class="lead reveal" style="margin-top:var(--s-5)">Artikler om retning og fundament for AI-arbejdet.</p>
-    <a class="btn btn--soft reveal" style="margin-top:var(--s-6)" href="viden/">Se al viden <span class="arw">→</span></a>
   </div>
   <div class="wrap"><div class="rail" id="viden-rail"></div></div>
 </section>

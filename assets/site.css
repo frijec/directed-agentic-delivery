@@ -252,10 +252,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .related h3{font-size:var(--t-h3)}
 .related .vgrid{margin-top:var(--s-5)}
 
-/* Lead-gen -------------------------------------------------- */
-.leadcard{background:var(--sand);border-radius:var(--r-xl);padding:clamp(1.9rem,4.5vw,3.5rem)}
+/* Lead-gen — copy on the left half, form stacked and right-aligned
+   on the right half. */
+.leadcard{
+  background:var(--sand);border-radius:var(--r-xl);padding:clamp(1.9rem,4.5vw,3.5rem);
+  display:grid;grid-template-columns:1fr 1fr;gap:var(--s-8);align-items:start;
+}
 .leadcard h3{font-size:clamp(1.3rem,2.2vw,1.7rem)}
-.leadform{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-4);margin-top:var(--s-6);align-items:end}
+.leadform{display:flex;flex-direction:column;gap:var(--s-4)}
 .leadform .field{display:flex;flex-direction:column;gap:.4rem}
 .leadform label{font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.08em;text-transform:uppercase;color:var(--graphite)}
 .leadform input{
@@ -263,6 +267,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   background:var(--surface);font:inherit;font-size:var(--t-small);color:var(--ink-900)
 }
 .leadform input:focus-visible{outline:2px solid var(--crimson);outline-offset:1px}
-.leadform button{grid-column:span 1}
-@media (max-width:760px){.leadform{grid-template-columns:1fr}.leadform button{width:100%;justify-content:center}}
+.leadform button{align-self:flex-end}
+@media (max-width:880px){.leadcard{grid-template-columns:1fr}}
 #lf-status{margin-top:var(--s-4);font-size:var(--t-small);color:var(--wine)}

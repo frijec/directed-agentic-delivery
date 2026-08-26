@@ -89,18 +89,22 @@
 </section>
 <section class="wrap" style="padding-top:clamp(2rem,5vw,4rem)">
   <div class="leadcard reveal">
-    <span class="eyebrow"><i></i> AI-playbook</span>
-    <h3 style="margin-top:var(--s-4)">Få playbooket, når det er klar</h3>
-    <p class="lead" style="margin-top:var(--s-3)">Læg jeres oplysninger, så sender vi AI-playbooket — alle vores whitepapers samlet ét sted — så snart det er klar.</p>
-    <form id="leadform" class="leadform" action="https://formspree.io/f/xrpzndll" method="POST">
-      <input type="hidden" name="_subject" value="Ny lead fra Viden-artikel">
-      <input type="hidden" name="source" value="ai-kan-overtage-haandvaerket-ikke-overblikket">
-      <div class="field"><label for="lf-name-ai-kan-overtage-haandvaerket-ikke-overblikket">Navn</label><input id="lf-name-ai-kan-overtage-haandvaerket-ikke-overblikket" name="name" type="text" required></div>
-      <div class="field"><label for="lf-email-ai-kan-overtage-haandvaerket-ikke-overblikket">Email</label><input id="lf-email-ai-kan-overtage-haandvaerket-ikke-overblikket" name="email" type="email" required></div>
-      <div class="field"><label for="lf-company-ai-kan-overtage-haandvaerket-ikke-overblikket">Virksomhed</label><input id="lf-company-ai-kan-overtage-haandvaerket-ikke-overblikket" name="company" type="text" required></div>
-      <button class="btn btn--primary" type="submit">Send <span class="arw">→</span></button>
-    </form>
-    <p id="lf-status" role="status" hidden></p>
+    <div class="leadcard__copy">
+      <span class="eyebrow"><i></i> AI-playbook</span>
+      <h3 style="margin-top:var(--s-4)">Få vores AI Playbook</h3>
+      <p class="lead" style="margin-top:var(--s-3)">Del dine oplysninger med os, og så sender vi AI-playbooket — alle vores white-papers samlet ét sted.</p>
+    </div>
+    <div class="leadcard__form">
+      <form id="leadform" class="leadform" action="https://formspree.io/f/xrpzndll" method="POST">
+        <input type="hidden" name="_subject" value="Ny lead fra Viden-artikel">
+        <input type="hidden" name="source" value="ai-kan-overtage-haandvaerket-ikke-overblikket">
+        <div class="field"><label for="lf-name-ai-kan-overtage-haandvaerket-ikke-overblikket">Navn</label><input id="lf-name-ai-kan-overtage-haandvaerket-ikke-overblikket" name="name" type="text" required></div>
+        <div class="field"><label for="lf-email-ai-kan-overtage-haandvaerket-ikke-overblikket">Email</label><input id="lf-email-ai-kan-overtage-haandvaerket-ikke-overblikket" name="email" type="email" required></div>
+        <div class="field"><label for="lf-company-ai-kan-overtage-haandvaerket-ikke-overblikket">Virksomhed</label><input id="lf-company-ai-kan-overtage-haandvaerket-ikke-overblikket" name="company" type="text" required></div>
+        <button class="btn btn--primary" type="submit">Send <span class="arw">→</span></button>
+      </form>
+      <p id="lf-status" role="status" hidden></p>
+    </div>
   </div>
 </section>
 <section class="stack" style="padding-top:0">
