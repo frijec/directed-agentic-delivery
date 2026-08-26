@@ -2193,21 +2193,19 @@ const MODEL_BUILDERS = {
   // shapes (see "arrows"): a face-on disc turned edge-on to the camera
   // mid-spin would be an illegible sliver, so it spins around Z (its own
   // face normal) rather than Y.
-  // The hands alone turned out not to read: a flat disc facing the
-  // camera has (by design, that's the whole point of spinning it around
-  // its own face-normal) a near-constant surface normal across its
-  // rotation, so under matcap shading the face and any flat hands lying
-  // against it sample almost the same brightness — no shading contrast
-  // to see them by, confirmed live (rendered as a plain dark disc). The
-  // calendar and pyramid icons read fine because their identity comes
-  // from silhouette (rings poking past the edge; stepped tiers), not
-  // internal shading — so the crown here does the same job the
-  // calendar's rings do: a nub breaking the circle's outline is legible
-  // regardless of shading, where internal detail wasn't.
+  // No filled face: a flat disc facing the camera has (by design, that's
+  // the whole point of spinning it around its own face-normal) a
+  // near-constant surface normal across its rotation, so under matcap
+  // shading the face and any flat hands lying against it sample almost
+  // the same brightness — confirmed live, it rendered as a plain dark
+  // disc with the hands invisible inside it. Dropping the face and
+  // leaving only the rim (a torus — its tube wall has real curvature, so
+  // it keeps its halftone gradient) turns the clock into an outline: the
+  // hands and crown now sit against the transparent interior instead of
+  // a same-brightness disc, so they read by silhouette against that gap
+  // rather than needing shading contrast they can't get.
   clock: scene => {
     const g = new THREE.Group();
-    const face = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.1, 40), mat());
-    face.rotation.x = Math.PI / 2;
     const rim = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.05, 12, 40), mat());
     const crown = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.16, 0.09), mat());
     crown.position.set(0.63, 0, 0);
@@ -2224,7 +2222,7 @@ const MODEL_BUILDERS = {
     const minuteHand = hand(0.42, 0.06, -0.6);
     const pin = new THREE.Mesh(new THREE.SphereGeometry(0.055, 12, 12), mat());
     pin.position.z = 0.09;
-    g.add(face, rim, crown, hourHand, minuteHand, pin);
+    g.add(rim, crown, hourHand, minuteHand, pin);
     g.scale.setScalar(0.9);
     scene.add(g);
     // Verified by direct visual comparison of two rendered frames (crown
