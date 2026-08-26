@@ -2227,11 +2227,10 @@ const MODEL_BUILDERS = {
     g.add(face, rim, crown, hourHand, minuteHand, pin);
     g.scale.setScalar(0.9);
     scene.add(g);
-    // Verified empirically (tracked the crown's on-screen angle across
-    // 6 frames) rather than assumed from handedness rules: negative Z
-    // here actually rendered counter-clockwise, so positive is what
-    // turns clockwise on this camera setup.
-    if (!REDUCED_ILLUS) gsap.to(g.rotation, { z: '+=' + Math.PI * 2, duration: 11, repeat: -1, ease: 'none' });
+    // Verified by direct visual comparison of two rendered frames (crown
+    // moved from 3 o'clock toward 4-5 o'clock as rotation.z decreased) —
+    // a decreasing Z is what reads as clockwise on this camera setup.
+    if (!REDUCED_ILLUS) gsap.to(g.rotation, { z: '-=' + Math.PI * 2, duration: 11, repeat: -1, ease: 'none' });
   },
 
   // Three stacked, progressively narrower boxes — a stepped pyramid, one
