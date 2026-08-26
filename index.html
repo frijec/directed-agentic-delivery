@@ -114,6 +114,26 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
              box-shadow var(--d-base) var(--ease-out),
              transform var(--d-base) var(--ease-spring);
 }
+/* Every "→"/"←" glyph on the page (button arrows, the offerings-rail
+   Læs-mere arrow, the rail's prev/next controls) gets the same halftone
+   dot texture as the 3D models' dithering, at CSS cost only — a live
+   WebGL context per arrow was considered and rejected: there are ~15+
+   instances counting the per-offering-card ones, and this page already
+   runs 13 WebGL contexts for its 3D models plus the hero/CTA canvases,
+   close enough to typical browser context limits (8-16) that adding
+   another dozen risked silently losing old contexts. background-clip:
+   text + a tiled dot pattern gives the same visual family for free, at
+   any repeat count. Dot colour is set explicitly per background context
+   (default dark ink; white on the crimson primary buttons below) rather
+   than via currentColor, because currentColor here would resolve to
+   this same element's own color:transparent and vanish. */
+.arw{
+  font-size:1.5em;
+  background-image:radial-gradient(var(--ink-800) 42%, transparent 44%);
+  background-size:2.5px 2.5px;background-position:center;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.btn--primary .arw{background-image:radial-gradient(#fff 42%, transparent 44%)}
 .btn .arw{transition:transform var(--d-base) var(--ease-spring)}
 .btn:hover{transform:translateY(-2px)}
 .btn:hover .arw{transform:translateX(5px)}
@@ -663,8 +683,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
         <h2 style="max-width:14ch">Fra teori til fundament</h2>
       </div>
       <div class="railnav reveal">
-        <button class="rbtn" id="prev" aria-label="Forrige ydelser">←</button>
-        <button class="rbtn" id="next" aria-label="Næste ydelser">→</button>
+        <button class="rbtn" id="prev" aria-label="Forrige ydelser"><span class="arw">←</span></button>
+        <button class="rbtn" id="next" aria-label="Næste ydelser"><span class="arw">→</span></button>
       </div>
     </div>
     <p class="lead reveal" style="margin-top:var(--s-5)">Artikler og whitepapers om retning, fundament og de fire niveauer. Sorteret, så I kan finde jeres udgangspunkt.</p>
