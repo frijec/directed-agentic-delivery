@@ -197,10 +197,20 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .statcard{background:var(--plum);color:#fff;border-radius:var(--r-lg);padding:clamp(1.5rem,3vw,2rem);box-shadow:var(--lift-2)}
 .statcard .mono{color:rgba(255,255,255,.45)}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-5);margin-top:var(--s-5)}
-.stat{display:flex;align-items:center;gap:var(--s-4)}
-.stat__model{flex:none;width:clamp(3.25rem,5vw,4.5rem);height:clamp(3.25rem,5vw,4.5rem)}
+.stat{display:flex;align-items:flex-start;gap:var(--s-4)}
+/* Height is set explicitly in the .tally-scoped rule below (a calc() off
+   the real number/label metrics), not via align-items:stretch +
+   aspect-ratio — that combination measured 300px here: a <canvas> child's
+   browser-default replaced-element intrinsic size leaking through once
+   aspect-ratio and grid/flex auto-sizing were both indefinite at once.
+   flex:none plus an explicit height keeps this deterministic. */
+.stat__model{flex:none;aspect-ratio:1}
 .stat__model canvas{display:block;width:100%;height:100%}
-.stat__num{font-family:var(--font-display);font-size:clamp(1.5rem,2.4vw,2.1rem);font-weight:900;letter-spacing:-.035em;font-variant-numeric:tabular-nums}
+/* No explicit line-height previously meant this inherited body's 1.6 —
+   a ~60px numeral sitting in a 96px box. Harmless while the icon column
+   was a hand-picked size, but that slack height was what the new
+   stretch-to-match-text sizing below picked up and amplified. */
+.stat__num{font-family:var(--font-display);font-size:clamp(1.5rem,2.4vw,2.1rem);font-weight:900;letter-spacing:-.035em;line-height:1;font-variant-numeric:tabular-nums}
 .stat__lab{font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:var(--s-1)}
 
 /* MARQUEE ------------------------------------------------ */
@@ -231,6 +241,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .tally .stats{margin-top:clamp(2rem,3.5vw,2.75rem)}
 .tally .stat__num{font-size:clamp(2.4rem,5vw,3.75rem);color:var(--ink-900)}
 .tally .stat__lab{color:rgba(20,17,18,.6)}
+/* Explicit height = number's own line-height:1 box (clamp(2.4rem,5vw,
+   3.75rem)) + the label's margin-top (--s-1) + the label's own box
+   (font-size --t-micro at its inherited 1.6 line-height = .75rem*1.6 =
+   1.2rem) — i.e. exactly top-of-number to bottom-of-label, computed from
+   the real values rather than guessed. aspect-ratio:1 on .stat__model
+   then derives a matching width automatically. */
+.tally .stat__model{height:calc(clamp(2.4rem,5vw,3.75rem) + var(--s-1) + 1.2rem)}
 .tally__marquee{margin:clamp(1.75rem,3.5vw,2.5rem) calc(clamp(1.5rem,3vw,2.5rem)*-1) calc(clamp(1.5rem,3vw,2rem)*-1);
   padding-block:clamp(1rem,2vw,1.5rem);
   mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
@@ -730,7 +747,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
           <div class="stat__text"><div class="stat__num" data-count="700" data-suffix="+">0</div><div class="stat__lab">Aktive kunder</div></div>
         </div>
         <div class="stat">
-          <div class="stat__model" data-illus="calendar" aria-hidden="true"></div>
+          <div class="stat__model" data-illus="clock" aria-hidden="true"></div>
           <div class="stat__text"><div class="stat__num" data-count="25" data-suffix="+">0</div><div class="stat__lab">År i Norden</div></div>
         </div>
         <div class="stat">
@@ -1672,7 +1689,7 @@ const MODEL_ZOOM = {
   // computed from each shape's real extent at zoom = 2*5*tan(37.5°) /
   // (extent/0.55) targeting ~55% frame fill, not eyeballed, then checked
   // live.
-  expert: 3.3, customers: 2.2, calendar: 3.6, levels: 4.2
+  expert: 3.3, customers: 2.2, clock: 3.55, levels: 4.2
 };
 // Pulse (Item9, adapted) — unlike the other six models' zoom values,
 // this one isn't just aesthetic framing: it's the exact constant that
@@ -2128,6 +2145,13 @@ const MODEL_BUILDERS = {
   // unobtrusive read at this small size.
   expert: scene => {
     const g = buildPerson();
+    // The bust is a surface of revolution around its own Y axis (sphere +
+    // tapered cylinder), so spinning it around world Y alone is
+    // motionless to the eye — every frame looks identical. A small
+    // permanent tilt breaks that symmetry so the continuous Y-spin
+    // actually reads as rotation (like a leaning top), rather than
+    // needing an off-axis spin to fake it.
+    g.rotation.z = 0.18;
     scene.add(g);
     if (!REDUCED_ILLUS) gsap.to(g.rotation, { y: '+=' + Math.PI * 2, duration: 10, repeat: -1, ease: 'none' });
   },
@@ -2142,24 +2166,45 @@ const MODEL_BUILDERS = {
     if (!REDUCED_ILLUS) gsap.to(g.rotation, { y: '+=' + Math.PI * 2, duration: 12, repeat: -1, ease: 'none' });
   },
 
-  calendar: scene => {
+  // A clock face + rim, with an hour and minute hand at different fixed
+  // angles, plus a watch crown on the rim.
+  // Same flat-object-needs-Z-spin fix as the rest of this file's flat
+  // shapes (see "arrows"): a face-on disc turned edge-on to the camera
+  // mid-spin would be an illegible sliver, so it spins around Z (its own
+  // face normal) rather than Y.
+  // The hands alone turned out not to read: a flat disc facing the
+  // camera has (by design, that's the whole point of spinning it around
+  // its own face-normal) a near-constant surface normal across its
+  // rotation, so under matcap shading the face and any flat hands lying
+  // against it sample almost the same brightness — no shading contrast
+  // to see them by, confirmed live (rendered as a plain dark disc). The
+  // calendar and pyramid icons read fine because their identity comes
+  // from silhouette (rings poking past the edge; stepped tiers), not
+  // internal shading — so the crown here does the same job the
+  // calendar's rings do: a nub breaking the circle's outline is legible
+  // regardless of shading, where internal detail wasn't.
+  clock: scene => {
     const g = new THREE.Group();
-    const page = new THREE.Mesh(new THREE.BoxGeometry(0.9, 1.05, 0.08), mat());
-    const header = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.22, 0.06), mat());
-    header.position.set(0, 0.415, 0.07);
-    const ringGeo = new THREE.TorusGeometry(0.075, 0.028, 8, 16);
-    const ring1 = new THREE.Mesh(ringGeo, mat()); ring1.position.set(-0.28, 0.58, 0); ring1.rotation.x = Math.PI / 2;
-    const ring2 = new THREE.Mesh(ringGeo, mat()); ring2.position.set(0.28, 0.58, 0); ring2.rotation.x = Math.PI / 2;
-    g.add(page, header, ring1, ring2);
+    const face = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.1, 40), mat());
+    face.rotation.x = Math.PI / 2;
+    const rim = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.05, 12, 40), mat());
+    const crown = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.16, 0.09), mat());
+    crown.position.set(0.63, 0, 0);
+    const hand = (length, width, angleRad) => {
+      const pivot = new THREE.Group();
+      const bar = new THREE.Mesh(new THREE.BoxGeometry(width, length, 0.06), mat());
+      bar.position.y = length / 2;
+      pivot.add(bar);
+      pivot.position.z = 0.08;
+      pivot.rotation.z = angleRad;
+      return pivot;
+    };
+    const hourHand = hand(0.28, 0.08, 0.9);
+    const minuteHand = hand(0.42, 0.06, -0.6);
+    const pin = new THREE.Mesh(new THREE.SphereGeometry(0.055, 12, 12), mat());
+    pin.position.z = 0.09;
+    g.add(face, rim, crown, hourHand, minuteHand, pin);
     scene.add(g);
-    // Unlike the other stat icons, this is a flat, thin object (a page)
-    // rather than a roughly round one — spinning it around Y like the
-    // others periodically turns its thin edge toward the camera,
-    // rendering as an illegible dark sliver mid-spin (confirmed live).
-    // Spinning around Z instead — the axis perpendicular to its flat
-    // face, same fix already used by the "arrows" model for its flat
-    // extruded shapes — keeps the face (and the calendar silhouette)
-    // toward the camera through the whole rotation.
     if (!REDUCED_ILLUS) gsap.to(g.rotation, { z: '+=' + Math.PI * 2, duration: 11, repeat: -1, ease: 'none' });
   },
 
