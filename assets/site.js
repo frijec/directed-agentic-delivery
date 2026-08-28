@@ -39,12 +39,33 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-/* Nav sticky state */
+/* Nav sticky state — plain pages flip to the blurred/dark-label look
+   as soon as you scroll at all (scrollY > 12). The onDark variant
+   (nav overlaid transparent on a plum header, e.g. Ydelse pages) needs
+   to stay transparent for as long as the plum band is still behind it,
+   not just past a fixed scroll distance — otherwise it flips to
+   dark-on-dark the moment you nudge the page, before the plum has
+   actually scrolled away. So for that variant, every scroll tick
+   compares the header's own live rect against the nav's height: once
+   the header's bottom edge has scrolled above where the nav ends,
+   the plum is fully gone from behind it and the same data-stuck
+   attribute flips. */
 const navEl = document.getElementById('nav');
 if (navEl) {
-  const onScroll = () => navEl.dataset.stuck = String(scrollY > 12);
-  onScroll();
-  addEventListener('scroll', onScroll, { passive: true });
+  const darkHead = navEl.classList.contains('nav--onDark') && document.querySelector('.ydelse__head');
+  if (darkHead) {
+    const onScroll = () => {
+      const navHeight = navEl.getBoundingClientRect().height;
+      navEl.dataset.stuck = String(darkHead.getBoundingClientRect().bottom <= navHeight);
+    };
+    onScroll();
+    addEventListener('scroll', onScroll, { passive: true });
+    addEventListener('resize', onScroll, { passive: true });
+  } else {
+    const onScroll = () => navEl.dataset.stuck = String(scrollY > 12);
+    onScroll();
+    addEventListener('scroll', onScroll, { passive: true });
+  }
 }
 
 /* Rail / grid / filter factory — shared by the Ydelser rail, the
