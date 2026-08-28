@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<title>Conductor Model: arkitektur og leverance i praksis — Consid</title>
+<meta name="description" content="AI-agenter kan bygge kode hurtigt. Men hastighed er ikke det samme som retning. Og de fleste processer vi bruger i dag er ikke designet til en verden hvor…">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;900&family=EB+Garamond:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+<nav class="nav" id="nav">
+  <div class="nav__in">
+    <a class="brand" href="../#top"><img class="brand__mark" src="../assets/brand-mark.png" alt="Consid"><span class="brand__sub">Directed Agentic Delivery</span></a>
+    <div class="nav__links">
+      <a class="nav__link" href="../#niveau">Jeres niveau</a>
+      <a class="nav__link" href="../#principper">Sådan arbejder vi</a>
+      <a class="nav__link" href="../#ydelser">Ydelser</a>
+      <a class="nav__link" href="../viden/">Viden</a>
+      <a class="btn btn--primary" href="https://calendly.com/consid-dad" data-calendly>Book en session <span class="arw">→</span></a>
+    </div>
+  </div>
+</nav>
+
+<section class="stack article__head">
+  <div class="wrap">
+    <span class="eyebrow reveal"><i></i> Videndeling</span>
+    <h1 class="reveal" style="font-size:var(--t-h2);margin-top:var(--s-5);max-width:24ch">Conductor Model: arkitektur og leverance i praksis</h1>
+    <p class="lead reveal" style="margin-top:var(--s-5)">AI-agenter kan bygge kode hurtigt. Men hastighed er ikke det samme som retning. Og de fleste processer vi bruger i dag er ikke designet til en verden hvor…</p>
+    <div class="article__meta reveal"><span>Anders Bendtsen</span><span>·</span><span>7. apr. 2026</span></div>
+    <div class="article__dither reveal" aria-hidden="true"></div>
+  </div>
+</section>
+
+<section class="wrap article__body">
+    <h2>Fra principper til praksis</h2>
+    <p>AI-agenter kan bygge kode hurtigt. Men hastighed er ikke det samme som retning. Og de fleste processer vi bruger i dag er ikke designet til en verden hvor agenter er en del af teamet. Uden en model for hvordan afgrænsning, arkitektur og leverance hænger sammen i en agentic verden, accelererer man bare i tilfældige retninger.</p>
+    <p>Jeg har bygget en konkret model. Jeg kalder den Conductor Model. Den bygger på de principper jeg beskrev i mine forrige artikler (del 1, del 2).</p>
+    <p>De fleste kender efterhånden til skills, kodificerede procedurer som en AI-agent kan følge. Playbooks er en udvidelse af skills: hvor en skill håndterer en specifik opgave, orkestrerer en playbook en hel arbejdsgang fra start til slut. Og roller sørger for at arkitekten, tech lead'en og produktejeren har klare ansvarsområder. Alt sammen markdown-filer i repositoryet, som både mennesker og AI-agenter kan følge.</p>
+    <p>I denne artikel vil jeg vise, hvordan modellen fungerer. Først det typiske udviklingsflow. Derefter det lange lys og den udforskning der kommer før.</p>
+    <div class="section-break reveal" data-illus="blobA" aria-hidden="true"></div>
+    <h2>Filosofien</h2>
+    <p>Conductor Model bygger på en simpel overbevisning: tænk før du koder. Definér arkitekturen før agenter implementerer den. Skriv specifikationerne præcist nok til at en agent kan arbejde inden for dem. Byg i små iterationer, hvor mennesket validerer ved hvert afgørende punkt. Og kodificér den viden du opbygger, så den er tilgængelig næste gang. Det hviler på to bærende principper. Architecture-driven betyder at arkitekturen fungerer som en levende kontrakt, ikke et statisk diagram. Den beskriver den tilsigtede struktur, de beslutninger der er taget, og de grænser agenter opererer inden for. Spec-driven betyder at specifikationer definerer hvad der skal bygges, præcist nok til at en agent kan implementere mod dem. Scope, forventet adfærd, begrænsninger og acceptkriterier. Ikke 200-siders kravdokumenter, men klare nok rammer til at intentionen er eksplicit.</p>
+    <p>Det er de fem principper fra del 2 omsat til en leverancemodel:</p>
+    <ul><li>Tænk før du handler — forstå hvad og hvorfor, før agenten begynder</li><li>Gør intentionen eksplicit — specifikationer og arkitektur som levende dokumenter</li><li>Gør viden operationel — kodificér processer i skills og playbooks</li><li>Mennesket tager de kritiske beslutninger — human gates ved hvert afgørende punkt</li><li>Eksekvér i små, reversible skridt — byg i små iterationer, validér undervejs</li></ul>
+    <h2>Delivery</h2>
+    <p>I praksis starter en leverance med fundamentet. Afgrænsningen og arkitekturen skal på plads, før agenter begynder at bygge. Hvad skal bygges, hvad skal ikke bygges, og hvordan hænger det sammen. AI kan hjælpe med at udforske muligheder og generere udkast, men det er mennesket der ejer afgrænsningen og de arkitektoniske beslutninger.</p>
+    <p>Capabilities, de forretningsevner systemet skal understøtte, defineres med et ID, så de kan spores hele vejen fra intention til leveret kode. Det er sporbarhedens udgangspunkt. Arkitekturen dokumenteres med beslutninger og begrundelser, ikke som ceremoni, men fordi agenter har brug for kontekst. En ADR (Architecture Decision Record) der forklarer hvorfor en event-driven tilgang blev valgt, forhindrer at en agent tre uger senere bygger noget synkront, fordi det var det hurtigste.</p>
+    <p>Med fundamentet på plads kommer gap analysen: hvad mangler, og i hvilken rækkefølge skal det bygges? Tanken er at bryde det ned i opgaver der er små nok til at hver kan leveres i én PR, og starte med dem der giver hurtigst feedback og lavest risiko. Det er her intentionen bliver til noget en agent kan eksekvere.</p>
+    <p>Så implementering. Hver opgave har en specifikation agenten kan arbejde inden for. Og efter hver opgave et review: ikke bare koden, men sammenhængen. Kan man følge tråden fra capability til arkitektur til kode til test? Det er sporbarhed i praksis.</p>
+    <p>Til sidst status. Hvad blev færdigt, hvad blev udskudt, hvad ændrede sig. Fundamentet opdateres, så næste iteration starter fra et korrekt udgangspunkt. Det er den del jeg tror de fleste springer over, og det er den del der gør forskellen mellem et projekt der akkumulerer viden og et der starter forfra hver gang.</p>
+    <p>Start, slut, lær, gentag. Man behøver ikke bruge det hele. Til prototyper og spikes er der en hurtigere vej: kickstart. Tre spørgsmål, ti minutter, og du har et udkast til charter og arkitekturbeskrivelse. Nok til at komme i gang.</p>
+    <blockquote class="pullquote reveal">Start, slut, lær, gentag.</blockquote>
+    <p>Bag det hele ligger playbooks. Konkrete, kodificerede arbejdsgange:</p>
+    <ul><li><code>/elaborate</code> — afgrænser scope og capabilities</li><li><code>/architect</code> — designer løsningen og dokumenterer beslutninger</li><li><code>/version-planning</code> — gap analyse og opgavenedbrydning</li><li><code>/review</code> — validerer leverancen mod spec og arkitektur</li><li><code>/version-close</code> — gør status og opdaterer fundamentet</li><li><code>/kickstart</code> — den hurtige vej til prototyper</li></ul>
+    <p>Hver playbook definerer trin, inputs, outputs og de punkter hvor mennesket skal ind. Det er kodificerede processer, ikke dokumentation. Og modellen er bevidst opinionated: arkitekturen følger arc42, en velafprøvet skabelon der sikrer de samme elementer er dækket uanset projektet. Det gør det nemmere for agenter at navigere og nemmere for nye folk at finde rundt.</p>
+    <div class="section-break reveal" data-illus="blobB" aria-hidden="true"></div>
+    <h2>Det lange lys — Direction</h2>
+    <p>I nogle tilfælde er det nødvendigt at løfte blikket fra den enkelte iteration og se længere frem. Til det har jeg udarbejdet en række playbooks der hjælper med at sætte retningen og definere, hvor det er vi er på vej hen.</p>
+    <p><code>/vision</code> definerer hvad god oplevelse ser ud for de mennesker systemet skal betjene. Hvad er friktionen i dag, og hvad er det system der fjerner den. <code>/target-architecture</code> definerer den langsigtede arkitektur, de principper og beslutninger der skal holde på tværs af mange iterationer.</p>
+    <p>Det er to forskellige tidshorisonter. En iteration er uger. Direction er måneder eller år. Men de hænger sammen. Hver iteration opererer inden for den retning der er sat, og hver afsluttet iteration kan give anledning til at justere retningen.</p>
+    <p>For mig er det her arkitektens vigtigste arbejde: at definere det partitur som al leverance bygger på.</p>
+    <h2>Udforsk muligheder — Discovery</h2>
+    <p>Nogle gange er svaret ikke at bygge, men at undersøge først. Forestil dig at teamet overvejer at migrere fra en monolitisk API til en event-driven arkitektur. Det er en stor beslutning med mange ukendte. At gå direkte til implementering ville være at satse uden at vide hvad man satser på.</p>
+    <p>Til det har jeg <code>/discovery</code>. En playbook der udforsker muligheder og risici inden commitment. Den stiller spørgsmålene: hvad er mulighederne, hvad er trade-offs, og hvad anbefaler vi? Resultatet er ikke kode. Det er en beslutning og et scope der kan gå direkte ind som fundament for den næste iteration.</p>
+    <p>Derfra gentages det normale flow. Elaborate og architect tager discovery-resultatet og ser på, hvordan det vil ændre på fundamentet. Hvordan ændrer det fundamentet, og hvad skal arkitekturen tage højde for. Så det normale flow. Samme rytme, nyt udgangspunkt.</p>
+    <p>Reglen er enkel: hvis scope allerede er klart, spring discovery over og gå direkte til elaborate. Hvis der er for mange ukendte til at afgrænse fornuftigt, så undersøg først.</p>
+    <div class="section-break reveal" data-illus="blobA" aria-hidden="true"></div>
+    <h2>Hvad jeg tror det ændrer</h2>
+    <p>Jeg er stadig tidligt i rejsen med Conductor Model. Men jeg kan allerede se konturerne af, hvad der ændrer sig.</p>
+    <p>Arkitektens håndværk er det mest tydelige. Mindre tid på at præsentere, mere tid på at skrive. Arkitekturbeskrivelser der ikke kun er billeder på væggen, men dokumenter som agenter faktisk læser og opererer inden for.</p>
+    <p>Onboarding er en anden. Nye folk der har et fundament fra dag ét. Playbooks der forklarer hvordan vi arbejder. Skills der kodificerer de processer der ellers ville tage uger at lære. Arkitekturbeslutninger der er dokumenteret med begrundelser, ikke bare resultater.</p>
+    <p>Og så er der det der sker mellem iterationerne. Hver afsluttet iteration efterlader et opdateret fundament. Den næste starter ikke forfra, den starter fra et bedre udgangspunkt. Det er i hvert fald ambitionen.</p>
+    <h2>Hvad nu?</h2>
+    <p>Jeg har kaldt mit framework for the Conductor Model, men det vigtigste er ikke, den konkrete implementation, men mere de principper som ligger bag. Det er en praksis du opbygger. Start med én playbook. Kodificér én arbejdsgang dit team gentager. Se hvad der sker, når en agent kan følge den.</p>
+    <p>I min næste artikel vil jeg vise, hvordan de samme principper ser ud i en helt anden kontekst: enterprise architecture governance. Samme model, anden skala, andre beslutninger.</p>
+    <p>Hvad ville den første playbook i jeres team være? Hvilken arbejdsgang gentager I oftest, men aldrig har skrevet ned?</p>
+</section>
+
+<section class="wrap related">
+  <h3>Relaterede artikler</h3>
+  <div class="vgrid">
+   <a class="ocard vcard reveal" href="ai-kan-overtage-haandvaerket-ikke-overblikket.html">
+   <span class="ocard__tag">Artikel</span>
+   <h3>AI kan overtage håndværket, men ikke overblikket.</h3>
+   <p>Da jeg byggede en app til Rørvig Sejlklub med Lovable, satte jeg to AI-agenter til at vurdere arkitekturen mod hinanden — med mig selv som vetoret i midten. Om hvorfor stilladset omkring AI&#x27;en gør forskellen.</p>
+   <span class="ocard__foot"><span style="margin-left:auto">Læs mere <span class="arw">→</span></span></span>
+ </a>
+   <a class="ocard vcard reveal" href="arbejde-i-bredden-ai-hjaelper-med-dybden.html">
+   <span class="ocard__tag">Artikel</span>
+   <h3>Jeg har altid været god til at arbejde i bredden. AI hjælper mig til at arbejde i dybden.</h3>
+   <p>Tre eksempler fra hverdagen som direktør — økonomi, kundepræsentationer og rekruttering — på hvordan AI ikke giver færre opgaver, men mulighed for at gå markant mere i dybden med hver af dem.</p>
+   <span class="ocard__foot"><span style="margin-left:auto">Læs mere <span class="arw">→</span></span></span>
+ </a>
+   <a class="ocard vcard reveal" href="health-os-hvad-et-aar-med-data-laerte-mig.html">
+   <span class="ocard__tag">Artikel</span>
+   <h3>Health OS: hvad et år med data lærte mig om min egen krop</h3>
+   <p>Et år med Tanita-scanninger, Garmin- og Lifesum-data samlet i et AI-bygget analysesystem — og hvad det afslørede om protein, muskelmasse og hvad data faktisk fanger.</p>
+   <span class="ocard__foot"><span style="margin-left:auto">Læs mere <span class="arw">→</span></span></span>
+ </a>
+  </div>
+</section>
+<section class="wrap" style="padding-top:clamp(2rem,5vw,4rem)">
+  <div class="leadcard reveal">
+    <div class="leadcard__copy">
+      <span class="eyebrow"><i></i> AI-playbook</span>
+      <h3 style="margin-top:var(--s-4)">Få vores AI Playbook</h3>
+      <p class="lead" style="margin-top:var(--s-3)">Del dine oplysninger med os, og så sender vi AI-playbooket — alle vores white-papers samlet ét sted.</p>
+    </div>
+    <div class="leadcard__form">
+      <form id="leadform" class="leadform" action="https://formspree.io/f/xrpzndll" method="POST">
+        <input type="hidden" name="_subject" value="Ny lead fra Viden-artikel">
+        <input type="hidden" name="source" value="conductor-model-arkitektur-og-leverance-i-praksis">
+        <div class="field"><label for="lf-name-conductor-model-arkitektur-og-leverance-i-praksis">Navn</label><input id="lf-name-conductor-model-arkitektur-og-leverance-i-praksis" name="name" type="text" required></div>
+        <div class="field"><label for="lf-email-conductor-model-arkitektur-og-leverance-i-praksis">Email</label><input id="lf-email-conductor-model-arkitektur-og-leverance-i-praksis" name="email" type="email" required></div>
+        <div class="field"><label for="lf-company-conductor-model-arkitektur-og-leverance-i-praksis">Virksomhed</label><input id="lf-company-conductor-model-arkitektur-og-leverance-i-praksis" name="company" type="text" required></div>
+        <button class="btn btn--primary" type="submit">Send <span class="arw">→</span></button>
+      </form>
+      <p id="lf-status" role="status" hidden></p>
+    </div>
+  </div>
+</section>
+<section class="stack">
+  <div class="wrap">
+    <div class="ctacard">
+      <canvas class="ctacard__noise" aria-hidden="true"></canvas>
+      <div class="ctacard__content">
+        <h2 class="reveal">Dirigér jeres næste program med agenterne. Ikke udenom dem.</h2>
+        <p class="lead reveal">45 minutters arbejdssession med en af vores AI-praktikere. Vi kortlægger, hvor Directed Agentic Delivery giver mening hos jer — og hvor I starter.</p>
+        <div class="ctacard__actions reveal">
+          <a class="btn btn--primary" href="https://calendly.com/consid-dad" data-calendly>Book en session <span class="arw">→</span></a>
+          <a class="btn btn--soft" href="../#ydelser">Se ydelser</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap footer__in">
+    <div>© 2026 Consid København · Directed Agentic Delivery</div>
+    <div class="footer__links"><a href="../#ydelser">Ydelser</a><a href="../viden/">Viden</a><a href="../#kontakt">Kontakt</a></div>
+  </div>
+</footer>
+<script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+<script src="../assets/site.js"></script>
+<script type="module" src="../assets/dither.js"></script>
+</body>
+</html>

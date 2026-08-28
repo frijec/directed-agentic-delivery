@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<title>Forbered din kodebase til Agentic Engineering — Consid</title>
+<meta name="description" content="AI-agenter kommer til dit team. Måske om tre måneder. Måske om seks. Men de kommer.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;900&family=EB+Garamond:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+<nav class="nav" id="nav">
+  <div class="nav__in">
+    <a class="brand" href="../#top"><img class="brand__mark" src="../assets/brand-mark.png" alt="Consid"><span class="brand__sub">Directed Agentic Delivery</span></a>
+    <div class="nav__links">
+      <a class="nav__link" href="../#niveau">Jeres niveau</a>
+      <a class="nav__link" href="../#principper">Sådan arbejder vi</a>
+      <a class="nav__link" href="../#ydelser">Ydelser</a>
+      <a class="nav__link" href="../viden/">Viden</a>
+      <a class="btn btn--primary" href="https://calendly.com/consid-dad" data-calendly>Book en session <span class="arw">→</span></a>
+    </div>
+  </div>
+</nav>
+
+<section class="stack article__head">
+  <div class="wrap">
+    <span class="eyebrow reveal"><i></i> Videndeling</span>
+    <h1 class="reveal" style="font-size:var(--t-h2);margin-top:var(--s-5);max-width:24ch">Forbered din kodebase til Agentic Engineering</h1>
+    <p class="lead reveal" style="margin-top:var(--s-5)">AI-agenter kommer til dit team. Måske om tre måneder. Måske om seks. Men de kommer.</p>
+    <div class="article__meta reveal"><span>Anders Bendtsen</span><span>·</span><span>12. maj 2026</span></div>
+    <div class="article__dither reveal" aria-hidden="true"></div>
+  </div>
+</section>
+
+<section class="wrap article__body">
+    <p>AI-agenter kommer til dit team. Måske om tre måneder. Måske om seks. Men de kommer.</p>
+    <p>Og når de gør, møder de din kodebase som den er. Ikke som du planlægger at den skal være.</p>
+    <p>De teams der får mest ud af agenter, er ikke dem der finder den rigtige model eller prompter bedst. Det er dem hvis kodebase giver agenten noget at arbejde med. Klar arkitektur. Afgrænsede ansvarsområder. Tests der fanger fejl. Struktur der kan læses af et system der ikke kan spørge om hjælp.</p>
+    <p>I min forrige artikel (https://www.linkedin.com/pulse/vibe-coding-kan-tage-dig-et-stykke-men-ikke-hele-vejen-bendtsen-zmtee/) skrev jeg om forskellen på vibe coding og Directed Agentic Engineering. Det her er et skridt tilbage: hvad skal der faktisk til, inden agenterne kommer? Det er harness engineering (tilpasning af kodebasen til at arbejde med agenter), før du har brug for det.</p>
+    <p>Spørgsmålet er ikke "hvilken agent skal vi bruge?" Spørgsmålet er: er I klar? Og hvis ikke, hvad skal der til?</p>
+    <p>Det er det denne artikel handler om.</p>
+    <h2>Ambient affordances: Kan du og din agent finde vej?</h2>
+    <p>Birgitta Böckeler introducerer på martinfowler.com begrebet ambient affordances fra hendes kollega Ned Letcher: de strukturelle egenskaber i et miljø der gør det læsbart, navigerbart og let at arbejde i for en agent.</p>
+    <p>En agent kan ikke spørge. Den kan ikke sige "hvad mener du egentlig her?" eller "er det meningen at disse to services afhænger af hinanden?" Den arbejder med det den finder. Og hvis det den finder er mudret, er resultatet derefter.</p>
+    <p>Et konkret eksempel: Nitin Gavhane beskriver (https://nitingavhane.medium.com/ai-coding-agents-are-hitting-a-wall-and-the-wall-is-your-architecture-a57ec11d20ce) en agent der fik til opgave at tilføje en fakturafunktion til en stor monolit, og endte med at ændre 14 filer i stedet for 3. Den brækkede dele af systemet den aldrig eksplicit rørte. Ikke fordi agenten var dårlig, men fordi fakturering var spredt over seks forskellige steder i kodebasen: routes, services, repositories, models, workers og webhook-handlers. Agenten holdt konteksten flydende, mistede overblikket og tog beslutninger på ufuldstændigt grundlag.</p>
+    <p>Det er ikke et agent-problem. Det er et arkitektur-problem.</p>
+    <blockquote class="pullquote reveal">Det er ikke et agent-problem. Det er et arkitektur-problem.</blockquote>
+    <p>Ambient affordances er svaret: den kodebase der er klar til agenter er ikke nødvendigvis den nyeste eller den mest avancerede. Det er den der er struktureret, så en agent kan finde ud af hvad den har med at gøre, og hvad den ikke har.</p>
+    <div class="section-break reveal" data-illus="blobA" aria-hidden="true"></div>
+    <h2>Tre stemmer, samme svar</h2>
+    <p>Det interessante er, at dette ikke er nyt. Tre uafhængige kilder siger det samme.</p>
+    <p>DORA 2025 undersøgte hvad der adskiller de teams der får noget ud af AI fra dem der ikke gør. Svaret: løs kobling, automatiseret testning og observability. Teams med stramme afhængigheder og manuelle processer ser ingen gevinst, uanset hvilke AI-værktøjer de bruger.</p>
+    <p>Klassisk software engineering-litteratur har sagt det samme i årevis. Clean Architecture, Modern Software Engineering, Martin Fowlers arbejde. Afgrænsede ansvarsområder. Lav kobling. Høj kohæsion. Testbar kode. Principper for kode der kan forstås, ændres og vedligeholdes. Ikke skrevet med agenter i tankerne, men præcis hvad de har brug for.</p>
+    <p>Og i Directed Agentic Engineering, som jeg har beskrevet i denne artikelserie, afhænger principperne af det samme fundament. Du kan ikke gøre intentionen eksplicit i specifikationer og arkitekturbeskrivelser, hvis arkitekturen i sig selv er uklar. Du kan ikke eksekvere i små, reversible skridt, hvis kodebasen er så tæt koblet at alle ændringer har uforudsigelige konsekvenser. DAE forudsætter ambient affordances. Det er en metode der forstærker god software engineering, ikke en der kompenserer for fraværet af den.</p>
+    <p>Tre stemmer. Samme svar.</p>
+    <h2>Hvor starter man?</h2>
+    <p>Så hvordan kommer man i gang? Er det med en 200-punkts checkliste? Nej. Her er tre ting der kan bringe dig rigtig langt.</p>
+    <p><strong>1. Løs kobling og afgrænsede kontekster</strong></p>
+    <p>Det er her agenter oftest løber ind i problemer. En feature der er spredt over seks lag og ti filer er svær at ændre uden at påvirke noget der ikke burde påvirkes. Organiser kodebasen efter features og domæner frem for tekniske lag, og giv hver del et klart afgrænset ansvarsområde. Jo smallere kontekst en agent skal holde, desto mere præcist arbejder den.</p>
+    <p><strong>2. Test det der betyder noget</strong></p>
+    <p>Agenter skriver kode hurtigt. Uden tests er der intet der fanger dem, når de rammer ved siden af. Faros AI er et developer analytics platform der samler data på tværs af engineering-værktøjer. De analyserede over 10.000 udviklere på tværs af 1.255 teams og fandt 9% stigning i bug-rate og 91% stigning i code review-tid hos teams med høj AI-adoption. Det er ikke et argument mod AI. Det er et argument for tests, ikke som QA, men som det feedback-loop der fortæller agenten om den rammer rigtigt, og som giver dig tillid til at lade den arbejde.</p>
+    <p><strong>3. Observability og struktureret logging</strong></p>
+    <p>En agent der ikke kan se hvad der sker i systemet, arbejder uden at kunne validere sit eget arbejde. Struktureret logging og observability er ikke kun for drift. DORA siger det direkte: AI øger leveringsinstabilitet, medmindre observability-fundamentet er på plads.</p>
+    <p>Rækkefølgen er ikke tilfældig. Løs kobling giver agenten kontekst at arbejde i. Tests fanger det den overser. Observability lukker løkken. Start fra toppen.</p>
+    <div class="section-break reveal" data-illus="blobB" aria-hidden="true"></div>
+    <h2>Forberedelsen betaler sig uanset hvad</h2>
+    <p>Det paradoks Böckeler beskriver gælder særligt her: harness engineering er mest nødvendig der, hvor den er sværest at bygge. Det gælder legacy-systemer. Det gælder kodebaser med år af teknisk gæld. Og det er præcis der, de fleste teams befinder sig.</p>
+    <p>Men forberedelsen betaler sig uanset hvad. Løs kobling, god testdækning og observability gør din kodebase bedre at arbejde i, med eller uden agenter. Det er ikke investering i en fremtidig teknologi. Det er investering i kvalitet, der har sin egen værdi.</p>
+    <p>Og det behøver ikke ske på én gang. Som jeg beskrev i min artikel om legacy modernisering (https://www.linkedin.com/pulse/legacy-modernisering-med-ai-anders-bendtsen-d6p1e/), kan agenter selv hjælpe med at bringe koden hen, hvor den skal være. De kan kortlægge afhængigheder, identificere mønstre der bør refaktoreres, og understøtte den gradvise modernisering. Forberedelse og brug af agenter er ikke to adskilte faser. De kan foregå parallelt.</p>
+    <p>Agentic Engineering er i den forstand en test. Ikke af dine AI-værktøjer, men af din kodebase. Og den test kommer, uanset om du er klar.</p>
+    <p>Hvad er det første du ville rette i din kodebase, hvis en agent skulle arbejde i den i morgen?</p>
+</section>
+
+<section class="wrap related">
+  <h3>Relaterede artikler</h3>
+  <div class="vgrid">
+   <a class="ocard vcard reveal" href="ai-goer-udvikling-lettere-kompleksiteten-flytter.html">
+   <span class="ocard__tag">Artikel</span>
+   <h3>AI gør udvikling lettere. Men kompleksiteten flytter.</h3>
+   <p>Når udviklingsarbejdet bliver lettere, forsvinder kompleksiteten ikke — den flytter ind i organisationen, og flaskehalsen flytter fra udviklingskapacitet til prioritering og integration.</p>
+   <span class="ocard__foot"><span style="margin-left:auto">Læs mere <span class="arw">→</span></span></span>
+ </a>
+   <a class="ocard vcard reveal" href="ai-kan-overtage-haandvaerket-ikke-overblikket.html">
+   <span class="ocard__tag">Artikel</span>
+   <h3>AI kan overtage håndværket, men ikke overblikket.</h3>
+   <p>Da jeg byggede en app til Rørvig Sejlklub med Lovable, satte jeg to AI-agenter til at vurdere arkitekturen mod hinanden — med mig selv som vetoret i midten. Om hvorfor stilladset omkring AI&#x27;en gør forskellen.</p>
+   <span class="ocard__foot"><span style="margin-left:auto">Læs mere <span class="arw">→</span></span></span>
+ </a>
+   <a class="ocard vcard reveal" href="agentic-developer-i-praksis-du-koder-ikke-mere-du-beslutter-mere.html">
+   <span class="ocard__tag">Artikel</span>
+   <h3>Agentic developer i praksis: du koder ikke mere, du beslutter mere</h3>
+   <p>Jeg har de seneste 6 måneder skrevet og snakket meget om Directed Agentic Delivery. Ti artikler. Lige fra de mere teoretiske artikler til: hvordan bruger du…</p>
+   <span class="ocard__foot"><span style="margin-left:auto">Læs mere <span class="arw">→</span></span></span>
+ </a>
+  </div>
+</section>
+<section class="wrap" style="padding-top:clamp(2rem,5vw,4rem)">
+  <div class="leadcard reveal">
+    <div class="leadcard__copy">
+      <span class="eyebrow"><i></i> AI-playbook</span>
+      <h3 style="margin-top:var(--s-4)">Få vores AI Playbook</h3>
+      <p class="lead" style="margin-top:var(--s-3)">Del dine oplysninger med os, og så sender vi AI-playbooket — alle vores white-papers samlet ét sted.</p>
+    </div>
+    <div class="leadcard__form">
+      <form id="leadform" class="leadform" action="https://formspree.io/f/xrpzndll" method="POST">
+        <input type="hidden" name="_subject" value="Ny lead fra Viden-artikel">
+        <input type="hidden" name="source" value="forbered-din-kodebase-til-agentic-engineering">
+        <div class="field"><label for="lf-name-forbered-din-kodebase-til-agentic-engineering">Navn</label><input id="lf-name-forbered-din-kodebase-til-agentic-engineering" name="name" type="text" required></div>
+        <div class="field"><label for="lf-email-forbered-din-kodebase-til-agentic-engineering">Email</label><input id="lf-email-forbered-din-kodebase-til-agentic-engineering" name="email" type="email" required></div>
+        <div class="field"><label for="lf-company-forbered-din-kodebase-til-agentic-engineering">Virksomhed</label><input id="lf-company-forbered-din-kodebase-til-agentic-engineering" name="company" type="text" required></div>
+        <button class="btn btn--primary" type="submit">Send <span class="arw">→</span></button>
+      </form>
+      <p id="lf-status" role="status" hidden></p>
+    </div>
+  </div>
+</section>
+<section class="stack">
+  <div class="wrap">
+    <div class="ctacard">
+      <canvas class="ctacard__noise" aria-hidden="true"></canvas>
+      <div class="ctacard__content">
+        <h2 class="reveal">Dirigér jeres næste program med agenterne. Ikke udenom dem.</h2>
+        <p class="lead reveal">45 minutters arbejdssession med en af vores AI-praktikere. Vi kortlægger, hvor Directed Agentic Delivery giver mening hos jer — og hvor I starter.</p>
+        <div class="ctacard__actions reveal">
+          <a class="btn btn--primary" href="https://calendly.com/consid-dad" data-calendly>Book en session <span class="arw">→</span></a>
+          <a class="btn btn--soft" href="../#ydelser">Se ydelser</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap footer__in">
+    <div>© 2026 Consid København · Directed Agentic Delivery</div>
+    <div class="footer__links"><a href="../#ydelser">Ydelser</a><a href="../viden/">Viden</a><a href="../#kontakt">Kontakt</a></div>
+  </div>
+</footer>
+<script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+<script src="../assets/site.js"></script>
+<script type="module" src="../assets/dither.js"></script>
+</body>
+</html>

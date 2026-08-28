@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<title>Agentic developer i praksis: du koder ikke mere, du beslutter mere — Consid</title>
+<meta name="description" content="Jeg har de seneste 6 måneder skrevet og snakket meget om Directed Agentic Delivery. Ti artikler. Lige fra de mere teoretiske artikler til: hvordan bruger du…">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;900&family=EB+Garamond:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+<nav class="nav" id="nav">
+  <div class="nav__in">
+    <a class="brand" href="../#top"><img class="brand__mark" src="../assets/brand-mark.png" alt="Consid"><span class="brand__sub">Directed Agentic Delivery</span></a>
+    <div class="nav__links">
+      <a class="nav__link" href="../#niveau">Jeres niveau</a>
+      <a class="nav__link" href="../#principper">Sådan arbejder vi</a>
+      <a class="nav__link" href="../#ydelser">Ydelser</a>
+      <a class="nav__link" href="../viden/">Viden</a>
+      <a class="btn btn--primary" href="https://calendly.com/consid-dad" data-calendly>Book en session <span class="arw">→</span></a>
+    </div>
+  </div>
+</nav>
+
+<section class="stack article__head">
+  <div class="wrap">
+    <span class="eyebrow reveal"><i></i> Videndeling</span>
+    <h1 class="reveal" style="font-size:var(--t-h2);margin-top:var(--s-5);max-width:24ch">Agentic developer i praksis: du koder ikke mere, du beslutter mere</h1>
+    <p class="lead reveal" style="margin-top:var(--s-5)">Jeg har de seneste 6 måneder skrevet og snakket meget om Directed Agentic Delivery. Ti artikler. Lige fra de mere teoretiske artikler til: hvordan bruger du…</p>
+    <div class="article__meta reveal"><span>Anders Bendtsen</span><span>·</span><span>23. jun. 2026</span></div>
+    <div class="article__dither reveal" aria-hidden="true"></div>
+  </div>
+</section>
+
+<section class="wrap article__body">
+    <p>Jeg har de seneste 6 måneder skrevet og snakket meget om Directed Agentic Delivery. Ti artikler. Lige fra de mere teoretiske artikler til: hvordan bruger du Lovable sammen med Claude Code. Men en ting er at skrive om det, noget andet er at prøve det af i virkeligheden.</p>
+    <p>De seneste 2-3 måneder har jeg arbejdet intensivt på to projekter, hvor jeg har afprøvet mine tanker og idéer i praksis. Det ene er primært en arkitekturmæssig opgave. Det andet er en ren udviklingsopgave, og her valgte jeg at gå 100% agentic. Jeg valgte også at påtage mig opgaven, selvom det er mange år siden jeg sidst har haft et direkte ansvar for kode.</p>
+    <p>Projektet handler om at erstatte et forældet system og en håndfuld Excel-ark med en moderne app. En frivilligdrevet organisation, registrering af data i felten, rollebaseret adgang, realtidsflow. Elleve leverancebølger. Jeg kodede ikke en eneste linje.</p>
+    <p>Meget holdt. Men ikke altid der, hvor jeg troede det ville.</p>
+    <h2>Architecture-first og spec-driven</h2>
+    <p>En af de grundlæggende antagelser i Directed Agentic Delivery er, at man bruger lang tid på at planlægge og kort tid på at eksekvere. Architecture-first og spec-driven: du definerer hvad der skal bygges og inden for hvilken arkitektur det skal bygges. Præcist nok til at en agent kan arbejde inden for de rammer. Agenten implementerer. Du beslutter.</p>
+    <p>Det lød rigtigt da jeg skrev det. Og det viste sig også at holde stik i praksis.</p>
+    <p>Det lyder enkelt. Det er det også. Men enkelt er ikke det samme som let.</p>
+    <div class="section-break reveal" data-illus="blobA" aria-hidden="true"></div>
+    <h2>Beslutningsarbejdet</h2>
+    <p>Måske er det fordi jeg er arkitekt, men for mig er en arkitekturbeskrivelse vigtig. Ikke forstået sådan at alle detaljer skal være på plads, men man skal have en idé om retningen. Det er det man kalder en target architecture, og det var der jeg begyndte: med at beskrive den retning systemet skulle tage. Hvad skal det kunne, hvilke principper skal det bygges efter, og hvilke beslutninger er fastlåste fra start. Som en del af det arbejde beskrev jeg også systemets features, de konkrete evner systemet skal have for at opfylde sit formål.</p>
+    <p>Da der var tale om et nyt system, var baseline tom fra begyndelsen. Der var ingen eksisterende kode at tage udgangspunkt i.</p>
+    <p>Derefter udførte jeg en gap analyse. En gap analyse kortlægger afstanden mellem baseline og target architecture: hvad mangler for at nå dertil? Hvert gap er en konkret observation, og de opstod fra reviews, klientmøder og afklaringer undervejs. I projektet endte jeg med 57 gaps over projektets levetid. Kunden ser dem ikke. De er mit arbejdsredskab.</p>
+    <p>Fra gaps lavede jeg workpackages. Et workpackage defineres tæt på implementeringen, ikke måneder i forvejen. Det er en afgrænset leveranceenhed med et klart scope, konkrete done-criteria (kriterier for hvornår leverancen er færdig) og de brugerhistorier der hører til. Det indeholder også hvilke dele af arkitekturen der er relevante, og hvilke arkitektoniske beslutninger der gælder. Det er kontrakten mellem mig og kunden om hvad der leveres i næste omgang.</p>
+    <p>Kunden var tæt inde over hele vejen. Jeg arbejdede ikke med workpackages i isolation. Kombineret med prototyper undervejs sikrede vi at retningen var den rigtige, inden implementeringen begyndte.</p>
+    <p>Til implementeringen brugte jeg to værktøjer. Lovable brugte jeg særligt i begyndelsen til at definere applikationens look and feel. Efterfølgende brugte jeg det til UX-review af det Claude Code havde implementeret, og til at lave større ændringer i brugergrænsefladen. Claude Code tog sig af resten: databasemigrationer, edge functions, tests og dokumentation.</p>
+    <p>Tre til fem timer på at forberede og diskutere med kunden. Cirka én time på implementering.</p>
+    <p>Den time var faktisk ret nem. Jeg åbnede workpackagen, agenten byggede det der var scopet. Det er den del der ligner "udvikling" i traditionel forstand, og det er den del der tager kortest tid.</p>
+    <p>De tre til fem timer var noget andet. Det var tid brugt på at vedligeholde tråden fra vision til arkitektur til gaps til workpackages. På at afklare med kunden hvad der var i scope, hvad der var godt nok, og hvornår noget skulle tilbage.</p>
+    <p>Når Claude Code havde implementeret et workpackage, brugte jeg tid på at skrive frem og tilbage for at tilpasse det implementerede og komme med forslag til rettelser. Det er ikke en fejl i processen, det er en del af den. Agenten leverer et første bud, jeg vurderer det mod specifikationen og arkitekturen, og vi justerer.</p>
+    <p>Undervejs tilpassede jeg mine gaps og workpackages ud fra den erfaring jeg gjorde mig. Nye observationer blev til nye gaps. Nogle gaps viste sig at være løst af noget andet. Prioriteterne rykkede sig i takt med at systemet tog form.</p>
+    <p>Når et workpackage var implementeret og tilpasset, foretog jeg et review af det leverede og holdt demo for kunden. Godkendte kunden leverancen, opdaterede jeg baseline-arkitekturen, så den afspejlede den nye tilstand. Og så begyndte cyklussen forfra.</p>
+    <h2>Hvad holdt, hvad overraskede</h2>
+    <p>Det meste holdt. Men ikke altid der, hvor jeg troede det ville.</p>
+    <p>Spec-first virkede. Workpackages som kontraktform med kunden virkede. Human gates, de punkter i processen hvor jeg tog stilling inden agenten fortsatte, var ikke ceremonielle. De betød noget. De gange jeg sprang dem over, kunne jeg mærke det bagefter.</p>
+    <p>Det der overraskede mig positivt var, hvor nemt det var at ændre retning. Tidligt i projektet besluttede jeg at nonfood-varer skulle håndteres som en separat registreringstype. Halvvejs inde opdagede vi at varegrupper var en bedre løsning. Beslutningen blev omgjort, en ny arkitektonisk beslutning blev skrevet, og processen absorberede det uden drama. Det er en af gevinsterne ved lang planlægning og kort implementering: når du ikke har brugt uger på at kode noget, koster det ikke uger at gøre det om. Du prøver. Og du justerer.</p>
+    <p>Den menneskelige kontakt blev mere central end jeg havde forventet. Jeg brugte mere tid med kunden, ikke mindre. De tre til fem timer per workpackage var samarbejde, ikke administration. Vi afklarede retning, prototypede og vurderede hvad der var godt nok. Agenten løste implementeringen. Den menneskelige del, forståelsen af hvad der skulle bygges og hvad kunden virkelig havde brug for, den forblev hos os.</p>
+    <p>Størrelse viste sig at betyde mere end jeg havde forudset. Jeg fik mere end én gang en advarsel fra Claude Code om, at et workpackage måske var i overkanten. Jeg pressede på alligevel et par gange. Det var ikke en god idé. Resultatet var halvfærdigt, sammenhængen gik tabt undervejs, og jeg brugte mere tid på at rette end jeg havde sparet. Små, afgrænsede opgaver virker bedre. Det stod i teorien. Nu ved jeg det af erfaring.</p>
+    <blockquote class="pullquote reveal">Små, afgrænsede opgaver virker bedre. Det stod i teorien. Nu ved jeg det af erfaring.</blockquote>
+    <h2>Hvad det vil sige</h2>
+    <p>Jeg kodede ikke en eneste linje. Og det føles ikke længere mærkeligt.</p>
+    <p>Det der fylder dagene er noget andet. Det er at holde tråden fra vision til leverance, mens kunden ændrer mening og prioriteterne rykker sig. Det arbejde ser ikke ud af meget. Men det er det der afgør om projektet lander rigtigt.</p>
+    <p>Teorien holdt. Ikke fordi den var fejlfri, men fordi den var bygget til at håndtere det den ikke forudså. Det er måske den vigtigste observation jeg sidder tilbage med.</p>
+    <p>Jeg har nu prøvet det på konkrete projekter. Rytmen var den samme begge steder: lang planlægning, kort implementering, tæt kontakt med kunden, og vilje til at ændre retning når noget viste sig ikke at holde.</p>
+    <p>Hvad bruger du mest tid på i dag, planlægning eller implementering? Og hvad ville der ske, hvis forholdet var omvendt?</p>
+</section>
+
+<section class="wrap related">
+  <h3>Relaterede artikler</h3>
+  <div class="vgrid">
+   <a class="ocard vcard reveal" href="ai-goer-udvikling-lettere-kompleksiteten-flytter.html">
+   <span class="ocard__tag">Artikel</span>
+   <h3>AI gør udvikling lettere. Men kompleksiteten flytter.</h3>
+   <p>Når udviklingsarbejdet bliver lettere, forsvinder kompleksiteten ikke — den flytter ind i organisationen, og flaskehalsen flytter fra udviklingskapacitet til prioritering og integration.</p>
+   <span class="ocard__foot"><span style="margin-left:auto">Læs mere <span class="arw">→</span></span></span>
+ </a>
+   <a class="ocard vcard reveal" href="ai-kan-overtage-haandvaerket-ikke-overblikket.html">
+   <span class="ocard__tag">Artikel</span>
+   <h3>AI kan overtage håndværket, men ikke overblikket.</h3>
+   <p>Da jeg byggede en app til Rørvig Sejlklub med Lovable, satte jeg to AI-agenter til at vurdere arkitekturen mod hinanden — med mig selv som vetoret i midten. Om hvorfor stilladset omkring AI&#x27;en gør forskellen.</p>
+   <span class="ocard__foot"><span style="margin-left:auto">Læs mere <span class="arw">→</span></span></span>
+ </a>
+   <a class="ocard vcard reveal" href="arbejde-i-bredden-ai-hjaelper-med-dybden.html">
+   <span class="ocard__tag">Artikel</span>
+   <h3>Jeg har altid været god til at arbejde i bredden. AI hjælper mig til at arbejde i dybden.</h3>
+   <p>Tre eksempler fra hverdagen som direktør — økonomi, kundepræsentationer og rekruttering — på hvordan AI ikke giver færre opgaver, men mulighed for at gå markant mere i dybden med hver af dem.</p>
+   <span class="ocard__foot"><span style="margin-left:auto">Læs mere <span class="arw">→</span></span></span>
+ </a>
+  </div>
+</section>
+<section class="wrap" style="padding-top:clamp(2rem,5vw,4rem)">
+  <div class="leadcard reveal">
+    <div class="leadcard__copy">
+      <span class="eyebrow"><i></i> AI-playbook</span>
+      <h3 style="margin-top:var(--s-4)">Få vores AI Playbook</h3>
+      <p class="lead" style="margin-top:var(--s-3)">Del dine oplysninger med os, og så sender vi AI-playbooket — alle vores white-papers samlet ét sted.</p>
+    </div>
+    <div class="leadcard__form">
+      <form id="leadform" class="leadform" action="https://formspree.io/f/xrpzndll" method="POST">
+        <input type="hidden" name="_subject" value="Ny lead fra Viden-artikel">
+        <input type="hidden" name="source" value="agentic-developer-i-praksis-du-koder-ikke-mere-du-beslutter-mere">
+        <div class="field"><label for="lf-name-agentic-developer-i-praksis-du-koder-ikke-mere-du-beslutter-mere">Navn</label><input id="lf-name-agentic-developer-i-praksis-du-koder-ikke-mere-du-beslutter-mere" name="name" type="text" required></div>
+        <div class="field"><label for="lf-email-agentic-developer-i-praksis-du-koder-ikke-mere-du-beslutter-mere">Email</label><input id="lf-email-agentic-developer-i-praksis-du-koder-ikke-mere-du-beslutter-mere" name="email" type="email" required></div>
+        <div class="field"><label for="lf-company-agentic-developer-i-praksis-du-koder-ikke-mere-du-beslutter-mere">Virksomhed</label><input id="lf-company-agentic-developer-i-praksis-du-koder-ikke-mere-du-beslutter-mere" name="company" type="text" required></div>
+        <button class="btn btn--primary" type="submit">Send <span class="arw">→</span></button>
+      </form>
+      <p id="lf-status" role="status" hidden></p>
+    </div>
+  </div>
+</section>
+<section class="stack">
+  <div class="wrap">
+    <div class="ctacard">
+      <canvas class="ctacard__noise" aria-hidden="true"></canvas>
+      <div class="ctacard__content">
+        <h2 class="reveal">Dirigér jeres næste program med agenterne. Ikke udenom dem.</h2>
+        <p class="lead reveal">45 minutters arbejdssession med en af vores AI-praktikere. Vi kortlægger, hvor Directed Agentic Delivery giver mening hos jer — og hvor I starter.</p>
+        <div class="ctacard__actions reveal">
+          <a class="btn btn--primary" href="https://calendly.com/consid-dad" data-calendly>Book en session <span class="arw">→</span></a>
+          <a class="btn btn--soft" href="../#ydelser">Se ydelser</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap footer__in">
+    <div>© 2026 Consid København · Directed Agentic Delivery</div>
+    <div class="footer__links"><a href="../#ydelser">Ydelser</a><a href="../viden/">Viden</a><a href="../#kontakt">Kontakt</a></div>
+  </div>
+</footer>
+<script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+<script src="../assets/site.js"></script>
+<script type="module" src="../assets/dither.js"></script>
+</body>
+</html>
