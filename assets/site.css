@@ -188,7 +188,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .ocard.is-entering{opacity:0;transform:scale(.96);transition:none}
 .ocard:nth-child(3n+2){background:var(--sand)}
 .ocard:nth-child(5n+4){background:var(--blush)}
-.ocard__tag{font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.09em;text-transform:uppercase;color:var(--stone)}
+.ocard__tag{display:flex;align-items:center;gap:.4em;font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.09em;text-transform:uppercase;color:var(--stone)}
+.oicon{width:15px;height:15px;flex:none;stroke:currentColor}
 .ocard h3{font-size:1.25rem;letter-spacing:-.028em;font-weight:700;transition:color var(--d-fast) var(--ease-out)}
 .rail__spacer{flex:0 0 var(--gutter)}
 .ocard:hover h3{color:var(--wine)}
@@ -277,21 +278,19 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* YDELSE page — deliberately re-skinned to read as a service page, not
    an article: a dark plum header (the same "this matters more" surface
    already used for the CTA card and .whycard) instead of the article's
-   plain background, plus a mono spec strip and the existing niveau
-   .dots indicator reused directly on the header. */
+   plain background, plus a meta row (icon + kicker, niveau .dots) reused
+   directly on the header. */
 /* Extra top padding (overrides .stack's) — the nav is fixed/overlaid
    here (see .nav--onDark) rather than occupying flow space above, so
    the header's own content needs room to clear it. */
 .ydelse__head{background:var(--plum);border-radius:0 0 var(--r-xl) var(--r-xl);padding-top:clamp(6.5rem,12vw,8.5rem);padding-bottom:clamp(2.5rem,6vw,4rem)}
 .ydelse__head h1{color:#fff}
 .ydelse__head .lead{color:rgba(255,255,255,.78)}
-.ydelse__specs{display:flex;gap:var(--s-7);flex-wrap:wrap;margin-top:var(--s-7)}
-.ydelse__spec{display:flex;flex-direction:column;gap:.4em}
-.ydelse__spec-label{font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.55)}
-.ydelse__spec-value{font-size:var(--t-small);font-weight:600;color:#fff}
-.ydelse__spec .dots{margin-top:.15em}
-.ydelse__spec .dot{background:rgba(255,255,255,.28)}
-.ydelse__spec .dot--on{background:#fff}
+.ydelse__meta{display:flex;gap:var(--s-6);flex-wrap:wrap;align-items:center;justify-content:space-between;margin-top:var(--s-7)}
+.ydelse__kicker{display:flex;align-items:center;gap:.5em;font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+.ydelse__meta .dots{gap:6px}
+.ydelse__meta .dot{background:rgba(255,255,255,.28)}
+.ydelse__meta .dot--on{background:#fff}
 
 /* Pull quote — a sentence lifted verbatim from the body, blown up in
    the site's serif wordmark face for contrast against the sans body

@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<title>Fra Prototype til Produktion — Consid</title>
+<meta name="description" content="Noget er allerede bygget med et AI-værktøj. Vi finder ud af, om fundamentet holder — og retter det, så produktet tåler rigtige brugere uden at blive skrevet om fra bunden.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;900&family=EB+Garamond:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+<nav class="nav nav--onDark" id="nav">
+  <div class="nav__in">
+    <a class="brand" href="../#top"><img class="brand__mark" src="../assets/brand-mark.png" alt="Consid"><span class="brand__sub">Directed Agentic Delivery</span></a>
+    <div class="nav__links">
+      <a class="nav__link" href="../#niveau">Jeres niveau</a>
+      <a class="nav__link" href="../#principper">Sådan arbejder vi</a>
+      <a class="nav__link" href="../ydelser/">Ydelser</a>
+      <a class="nav__link" href="../viden/">Viden</a>
+      <a class="btn btn--primary" href="https://calendly.com/consid-dad" data-calendly>Book en session <span class="arw">→</span></a>
+    </div>
+  </div>
+</nav>
+
+<section class="stack ydelse__head">
+  <div class="wrap">
+    <span class="eyebrow reveal"><i></i> Ydelse</span>
+    <h1 class="reveal" style="font-size:var(--t-h2);margin-top:var(--s-5);max-width:24ch">Fra Prototype til Produktion</h1>
+    <p class="lead reveal" style="margin-top:var(--s-5)">Noget er allerede bygget med et AI-værktøj. Vi finder ud af, om fundamentet holder — og retter det, så produktet tåler rigtige brugere uden at blive skrevet om fra bunden.</p>
+    <div class="ydelse__meta reveal">
+      <span class="ydelse__kicker"><svg class="oicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2c3 2 5 6 5 10-1 1-3 2-5 2s-4-1-5-2c0-4 2-8 5-10z"/><circle cx="12" cy="10" r="1.6"/><path d="M9 16l-2 5 3-1.5M15 16l2 5-3-1.5"/></svg>Sundhedstjek · Produktionsklar · Lovable, Cursor, Bolt</span>
+      <span class="dots" aria-label="Relevant på niveau 0, 1"><i class="dot dot--on"></i><i class="dot dot--on"></i><i class="dot "></i><i class="dot "></i></span>
+    </div>
+  </div>
+</section>
+
+<section class="wrap article__body">
+    <h2>Hvad er det?</h2>
+    <p>Noget er allerede bygget. En prototype i Lovable, et internt værktøj i Cursor, en integration sat op med Bolt — hurtigt, uden en arkitekt i nærheden, af nogen der løste et problem, ikke skrev et system.</p>
+    <p>Det er ikke et problem i sig selv. Det bliver et problem, når nogen skal bruge det rigtigt: en kunde, en afdeling, en investor der spørger til driften. Datamodellen holdt til demoen. Adgangsstyringen findes ikke. Ingen kan arbejde i koden ved siden af den, der byggede den.</p>
+    <p>Forløbet har to trin: først finder vi ud af, hvad der holder. Så retter vi det, der ikke gør. I kan stoppe efter det første.</p>
+    <h2>Hvor står I i dag?</h2>
+    <p>I er på Niveau 0 — Værktøjsbruger. Der er kode, den kører, og den er for det meste skrevet af en agent. Beslutningerne om, hvordan den hænger sammen, blev truffet undervejs af en, der løste et problem — ikke af en, der designede et system.</p>
+    <p>Målet er ikke at gøre jer til et Niveau 3-setup. Målet er et fundament, I kan bygge videre på uden at ramme loftet igen om tre måneder.</p>
+    <h2>Hvad gør vi?</h2>
+    <p><strong>Trin 1 — Sundhedstjek.</strong> Et møde, hvor I viser os det, I har bygget. Vi gennemgår koden og opsætningen inden for et døgn og svarer på tre ting: Holder fundamentet — datamodel, autentifikation, adgangsstyring? Kan det vokse, eller er det bygget til at blive vist frem én gang? Og hvad koster det at rette, prioriteret efter risiko. I får en kort, konkret rapport — ikke en 40-siders arkitekturgennemgang.</p>
+    <p>Rapporten er jeres, uanset hvad I gør bagefter.</p>
+    <p><strong>Trin 2 — Vi retter det.</strong> Vi arbejder listen igennem, med det farligste først: datamodel, adgang, håndtering af persondata. Så gør vi produktet flerbrugerklart — rigtige brugere gør ting, en demo aldrig gør. Vi sætter drift op: deployment, miljøer, logning, backup. Og vi giver koden tydelige grænser og skrevne beslutninger, så flere udviklere — og agenter — kan arbejde videre i den. Det er også det, der flytter jer fra Niveau 0 mod Niveau 1.</p>
+    <p>Vi skriver ikke om fra bunden. Det er sjældent nødvendigt og altid dyrt. Vi forstærker det, der bærer. Nye funktioner venter — det er en billigere samtale at tage bagefter.</p>
+    <h2>Hvad får I?</h2>
+    <ul><li>En skriftlig vurdering: hvad holder, hvad skal rettes, og hvornår</li><li>Et klart svar på, om I kan blive i samme værktøj, eller skal videre</li><li>Fundamentet rettet dér, hvor det bar risiko: data, adgang, drift</li><li>Et produkt, der kan sættes i drift med rigtige brugere på</li><li>En kodebase, flere udviklere — og agenter — kan arbejde videre i</li><li>Koden og beslutningerne er jeres. Vi bygger ikke noget, der kræver os for at køre videre</li></ul>
+    <h2>Hvem er det for?</h2>
+    <p>Iværksættere, produktchefer og teams, der har bygget noget med et AI-værktøj, og som skal vide, om det holder, før de investerer mere tid, viser det til en investor, eller lader en kunde bruge det.</p>
+</section>
+
+<section class="wrap related">
+  <h3>Relaterede artikler</h3>
+  <div class="vgrid">
+   <a class="ocard vcard reveal" href="../viden/ai-bliver-brugt-som-forklaring-paa-meget.html">
+   <span class="ocard__tag">Artikel</span>
+   <h3>AI bliver brugt som forklaring på meget – også det, teknologien ikke gør</h3>
+   <p>&quot;AI washing&quot; er blevet standardforklaringen på komplekse beslutninger med mange årsager. Hvorfor for enkle forklaringer fører til forkerte investeringer og forklaringer der ikke holder.</p>
+   <span class="ocard__foot"><span style="margin-left:auto">Læs mere <span class="arw">→</span></span></span>
+ </a>
+   <a class="ocard vcard reveal" href="../viden/forbered-din-kodebase-til-agentic-engineering.html">
+   <span class="ocard__tag">Artikel</span>
+   <h3>Forbered din kodebase til Agentic Engineering</h3>
+   <p>AI-agenter kommer til dit team. Måske om tre måneder. Måske om seks. Men de kommer.</p>
+   <span class="ocard__foot"><span style="margin-left:auto">Læs mere <span class="arw">→</span></span></span>
+ </a>
+  </div>
+</section>
+
+<section class="wrap related">
+  <h3>Relaterede ydelser</h3>
+  <div class="vgrid">
+   <a class="ocard vcard reveal" href="agentic-workshops.html">
+   <span class="ocard__tag"><svg class="oicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14c2.5.3 4.5 2.4 4.5 6"/></svg>Workshop · Endagsforløb</span>
+   <h3>Agentic Workshops</h3>
+   <p>En struktureret endagsworkshop, der giver jeres team et fælles udgangspunkt for at arbejde med AI — tilpasset til, hvor I står i dag.</p>
+   <span class="ocard__foot">
+     <span class="dots" aria-label="Relevant på niveau 0, 1, 2"><i class="dot dot--on"></i><i class="dot dot--on"></i><i class="dot dot--on"></i><i class="dot "></i></span>
+     <span style="margin-left:auto">Læs mere <span class="arw">→</span></span>
+   </span>
+ </a>
+   <a class="ocard vcard reveal" href="directed-agentic-delivery.html">
+   <span class="ocard__tag"><svg class="oicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="6" r="2.2"/><circle cx="19" cy="6" r="2.2"/><circle cx="12" cy="18" r="2.2"/><path d="M7 7l3 8M17 7l-3 8"/></svg>Forløb · M1 / M2 / M3</span>
+   <h3>Directed Agentic Delivery</h3>
+   <p>Den tilgang vi bruger, når vi implementerer applikationer og systemer for jeres organisation. Tre niveauer matchet til jeres kapabilitet. Arkitekturdrevet og specifikationsdrevet hele vejen igennem.</p>
+   <span class="ocard__foot">
+     <span class="dots" aria-label="Relevant på niveau 1, 2, 3"><i class="dot "></i><i class="dot dot--on"></i><i class="dot dot--on"></i><i class="dot dot--on"></i></span>
+     <span style="margin-left:auto">Læs mere <span class="arw">→</span></span>
+   </span>
+ </a>
+   <a class="ocard vcard reveal" href="from-idea-to-prototype.html">
+   <span class="ocard__tag"><svg class="oicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 00-3.5 10.9c.6.5 1 1.2 1.1 2.1h4.8c.1-.9.5-1.6 1.1-2.1A6 6 0 0012 3z"/></svg>Hurtig prototyping · Lovable</span>
+   <h3>Fra Idé til Prototype</h3>
+   <p>I har en idé. Vi hjælper jer med at gøre den virkelig. Med Lovable går vi fra koncept til fungerende produkt på dage — rigtig kode, rigtig UI, klar til at bygge videre på.</p>
+   <span class="ocard__foot">
+     <span class="dots" aria-label="Relevant på niveau 0"><i class="dot dot--on"></i><i class="dot "></i><i class="dot "></i><i class="dot "></i></span>
+     <span style="margin-left:auto">Læs mere <span class="arw">→</span></span>
+   </span>
+ </a>
+  </div>
+</section>
+<section class="wrap" style="padding-top:clamp(2rem,5vw,4rem)">
+  <div class="leadcard reveal">
+    <div class="leadcard__copy">
+      <span class="eyebrow"><i></i> AI-playbook</span>
+      <h3 style="margin-top:var(--s-4)">Få vores AI Playbook</h3>
+      <p class="lead" style="margin-top:var(--s-3)">Del dine oplysninger med os, og så sender vi AI-playbooket — alle vores white-papers samlet ét sted.</p>
+    </div>
+    <div class="leadcard__form">
+      <form id="leadform" class="leadform" action="https://formspree.io/f/xrpzndll" method="POST">
+        <input type="hidden" name="_subject" value="Ny lead fra Viden-artikel">
+        <input type="hidden" name="source" value="fra-prototype-til-produktion">
+        <div class="field"><label for="lf-name-fra-prototype-til-produktion">Navn</label><input id="lf-name-fra-prototype-til-produktion" name="name" type="text" required></div>
+        <div class="field"><label for="lf-email-fra-prototype-til-produktion">Email</label><input id="lf-email-fra-prototype-til-produktion" name="email" type="email" required></div>
+        <div class="field"><label for="lf-company-fra-prototype-til-produktion">Virksomhed</label><input id="lf-company-fra-prototype-til-produktion" name="company" type="text" required></div>
+        <button class="btn btn--primary" type="submit">Send <span class="arw">→</span></button>
+      </form>
+      <p id="lf-status" role="status" hidden></p>
+    </div>
+  </div>
+</section>
+<section class="stack">
+  <div class="wrap">
+    <div class="ctacard">
+      <canvas class="ctacard__noise" aria-hidden="true"></canvas>
+      <div class="ctacard__content">
+        <span class="eyebrow reveal" style="margin-bottom:var(--s-5)"><i></i> Næste skridt</span>
+        <h2 class="reveal">Dirigér jeres næste program med agenterne. Ikke udenom dem.</h2>
+        <p class="lead reveal">45 minutters arbejdssession med en af vores AI-praktikere. Vi kortlægger, hvor Directed Agentic Delivery giver mening hos jer — og hvor I starter.</p>
+        <div class="ctacard__actions reveal">
+          <a class="btn btn--primary" href="https://calendly.com/consid-dad" data-calendly>Book en session <span class="arw">→</span></a>
+          <a class="btn btn--soft" href="../#ydelser">Se ydelser</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap footer__in">
+    <div>© 2026 Consid København · Directed Agentic Delivery</div>
+    <div class="footer__links"><a href="../ydelser/">Ydelser</a><a href="../viden/">Viden</a><a href="../#kontakt">Kontakt</a></div>
+  </div>
+</footer>
+<script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

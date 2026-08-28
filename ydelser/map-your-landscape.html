@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<title>Kortlæg Jeres Arkitektur — Consid</title>
+<meta name="description" content="Forstå hvad I har, før I bygger videre på det. Vi kortlægger komponenter, afhængigheder, dataflows og beslutningshistorik — for én applikation eller for hele teknologilandskabet.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;900&family=EB+Garamond:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+<nav class="nav nav--onDark" id="nav">
+  <div class="nav__in">
+    <a class="brand" href="../#top"><img class="brand__mark" src="../assets/brand-mark.png" alt="Consid"><span class="brand__sub">Directed Agentic Delivery</span></a>
+    <div class="nav__links">
+      <a class="nav__link" href="../#niveau">Jeres niveau</a>
+      <a class="nav__link" href="../#principper">Sådan arbejder vi</a>
+      <a class="nav__link" href="../ydelser/">Ydelser</a>
+      <a class="nav__link" href="../viden/">Viden</a>
+      <a class="btn btn--primary" href="https://calendly.com/consid-dad" data-calendly>Book en session <span class="arw">→</span></a>
+    </div>
+  </div>
+</nav>
+
+<section class="stack ydelse__head">
+  <div class="wrap">
+    <span class="eyebrow reveal"><i></i> Ydelse</span>
+    <h1 class="reveal" style="font-size:var(--t-h2);margin-top:var(--s-5);max-width:24ch">Kortlæg Jeres Arkitektur</h1>
+    <p class="lead reveal" style="margin-top:var(--s-5)">Forstå hvad I har, før I bygger videre på det. Vi kortlægger komponenter, afhængigheder, dataflows og beslutningshistorik — for én applikation eller for hele teknologilandskabet.</p>
+    <div class="ydelse__meta reveal">
+      <span class="ydelse__kicker"><svg class="oicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="2.2"/><circle cx="5" cy="19" r="2.2"/><circle cx="19" cy="19" r="2.2"/><path d="M12 7v6M12 13L6 17M12 13l6 4"/></svg>Kortlægning · Én applikation eller hele landskabet · EA Workbench</span>
+      <span class="dots" aria-label="Relevant på niveau 1, 2, 3"><i class="dot "></i><i class="dot dot--on"></i><i class="dot dot--on"></i><i class="dot dot--on"></i></span>
+    </div>
+  </div>
+</section>
+
+<section class="wrap article__body">
+    <h2>Hvad er det?</h2>
+    <p>Før agenter kan arbejde forsvarligt i et system, skal nogen vide, hvad der reelt er der. De fleste teams arver kodebaser med mangelfuld dokumentation, udokumenterede beslutninger og uklare grænser. Uden det billede kan agenten kun arbejde ud fra gæt — og den produktivitet, I burde kunne hente, bliver til revisionsarbejde i stedet for fremdrift.</p>
+    <p>Forløbet findes i to omfang. I vælger det, der matcher problemet.</p>
+    <p><strong>Én applikation.</strong> To til fire uger. Et retvisende arkitekturbillede af én applikation eller ét afgrænset system.</p>
+    <p><strong>Hele landskabet.</strong> Et enterprise-arkitekturforløb på tværs af systemer, teams og produkter. Ved høj agent-andel er landskabet for komplekst til at holde i hovedet på en enkelt arkitekt — I har brug for et katalog, ikke en person, der husker det hele.</p>
+    <h2>Hvor står I i dag?</h2>
+    <p>På Niveau 1 introducerer I AI-understøttet udvikling på en eksisterende applikation og mangler et retvisende billede af, hvad der faktisk er der. På Niveau 2 og 3 styrer I agenter på tværs af flere systemer, og spørgsmålet er ikke længere én kodebase, men sammenhængen mellem dem.</p>
+    <h2>Hvad gør vi?</h2>
+    <p>Vi læser koden, taler med dem, der byggede den, og laver et struktureret katalog over, hvad der reelt er der. Ikke hvad dokumentationen siger, ikke hvad arkitekturdiagrammet viser — hvad der faktisk kører.</p>
+    <p><strong>Komponenter og afhængigheder.</strong> De logiske komponenter, deres ansvar og grænser. Hvad systemet kalder, hvad der kalder det, og hvor koblingen er tættest — internt og eksternt.</p>
+    <p><strong>Dataflows.</strong> Hvordan data bevæger sig: input, transformationer, lagring, output.</p>
+    <p><strong>Beslutningshistorik.</strong> Hvor vi kan finde den, fanger vi de beslutninger, der har formet arkitekturen. Hvorfor er den struktureret sådan? Hvad er prøvet og forkastet? Det er den kontekst, teams mister, når folk stopper.</p>
+    <p><strong>Governance.</strong> *(Landskabsomfang.)* Vi hjælper jer med at etablere den model, der holder kataloget levende, efter vi er gået. Arkitektur uden governance driver. Kataloget bliver mekanismen for at styre AI-leverance i stor skala.</p>
+    <p>Vi bruger EA Workbench: en praktikerorienteret tilgang med et levende katalog, hvor beslutninger, komponenter, grænseflader og kapabiliteter vedligeholdes som styrede artefakter — ikke slides. YAML-baseret, git-native, og designet til at blive vedligeholdt sammen med den kode, det beskriver.</p>
+    <h2>Hvad får I?</h2>
+    <ul><li>Et nu-tids arkitekturkatalog: komponenter, afhængigheder, dataflows</li><li>Et ADR-register med de genfundne arkitekturbeslutninger</li><li>En gap-liste: hvad der er uklart, hvad der er risikofyldt, hvad der kræver en beslutning</li><li>I landskabsomfang: en governance-model, I selv kan drive</li><li>En fungerende EA Workbench-installation i jeres eget repository, vedligeholdt af jeres team</li></ul>
+    <h2>Hvem er det for?</h2>
+    <p>Teams, der overtager en eksisterende applikation eller forbereder AI-understøttet udvikling i en kodebase, de endnu ikke forstår fuldt ud. Og CTO'er, arkitekturchefer og tekniske ledere med ansvar for et landskab, der skal være styrbart, før det skaleres.</p>
+    <p>Ved I allerede, at applikationen skal moderniseres og ikke bare forstås, er det Applikationsmodernisering — det forløb indeholder sin egen arkitekturvurdering, så I skal ikke købe begge dele.</p>
+</section>
+
+<section class="wrap related">
+  <h3>Relaterede artikler</h3>
+  <div class="vgrid">
+   <a class="ocard vcard reveal" href="../viden/conductor-model-arkitektur-og-leverance-i-praksis.html">
+   <span class="ocard__tag">Artikel</span>
+   <h3>Conductor Model: arkitektur og leverance i praksis</h3>
+   <p>AI-agenter kan bygge kode hurtigt. Men hastighed er ikke det samme som retning. Og de fleste processer vi bruger i dag er ikke designet til en verden hvor…</p>
+   <span class="ocard__foot"><span style="margin-left:auto">Læs mere <span class="arw">→</span></span></span>
+ </a>
+   <a class="ocard vcard reveal" href="../viden/ea-governance-der-kvalificerer-beslutninger-med-de-rette-folk-og-den-rette-kontekst.html">
+   <span class="ocard__tag">Artikel</span>
+   <h3>EA Governance der kvalificerer beslutninger — med de rette folk og den rette kontekst</h3>
+   <p>Forestil dig et team der kan træffe en arkitekturbeslutning uden at booke tid i et review board. De ved hvilke principper der gælder, hvilke standarder der er…</p>
+   <span class="ocard__foot"><span style="margin-left:auto">Læs mere <span class="arw">→</span></span></span>
+ </a>
+   <a class="ocard vcard reveal" href="../viden/forbered-din-kodebase-til-agentic-engineering.html">
+   <span class="ocard__tag">Artikel</span>
+   <h3>Forbered din kodebase til Agentic Engineering</h3>
+   <p>AI-agenter kommer til dit team. Måske om tre måneder. Måske om seks. Men de kommer.</p>
+   <span class="ocard__foot"><span style="margin-left:auto">Læs mere <span class="arw">→</span></span></span>
+ </a>
+  </div>
+</section>
+
+<section class="wrap related">
+  <h3>Relaterede ydelser</h3>
+  <div class="vgrid">
+   <a class="ocard vcard reveal" href="agentic-workshops.html">
+   <span class="ocard__tag"><svg class="oicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14c2.5.3 4.5 2.4 4.5 6"/></svg>Workshop · Endagsforløb</span>
+   <h3>Agentic Workshops</h3>
+   <p>En struktureret endagsworkshop, der giver jeres team et fælles udgangspunkt for at arbejde med AI — tilpasset til, hvor I står i dag.</p>
+   <span class="ocard__foot">
+     <span class="dots" aria-label="Relevant på niveau 0, 1, 2"><i class="dot dot--on"></i><i class="dot dot--on"></i><i class="dot dot--on"></i><i class="dot "></i></span>
+     <span style="margin-left:auto">Læs mere <span class="arw">→</span></span>
+   </span>
+ </a>
+   <a class="ocard vcard reveal" href="ai-compliance-review.html">
+   <span class="ocard__tag"><svg class="oicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>Compliance · EU AI Act · Risikoklassificering</span>
+   <h3>AI Compliance Review</h3>
+   <p>Vi kortlægger jeres AI-initiativer ende til ende, identificerer compliance-gab og uklar ansvarsfordeling, og leverer en beslutningsklar roadmap — før myndighederne gør det for jer.</p>
+   <span class="ocard__foot">
+     <span class="dots" aria-label="Relevant på niveau 2, 3"><i class="dot "></i><i class="dot "></i><i class="dot dot--on"></i><i class="dot dot--on"></i></span>
+     <span style="margin-left:auto">Læs mere <span class="arw">→</span></span>
+   </span>
+ </a>
+   <a class="ocard vcard reveal" href="application-modernisation.html">
+   <span class="ocard__tag"><svg class="oicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4-8 4-8-4 8-4z"/><path d="M4 12l8 4 8-4"/><path d="M4 16l8 4 8-4"/></svg>Modernisering · AI-understøttet levering</span>
+   <h3>Applikationsmodernisering</h3>
+   <p>Legacy-systemer, der holder jer tilbage. Vi hjælper jer med at modernisere — re-platforming, re-arkitektur eller trinvis omskrivning med AI-understøttet levering.</p>
+   <span class="ocard__foot">
+     <span class="dots" aria-label="Relevant på niveau 2"><i class="dot "></i><i class="dot "></i><i class="dot dot--on"></i><i class="dot "></i></span>
+     <span style="margin-left:auto">Læs mere <span class="arw">→</span></span>
+   </span>
+ </a>
+  </div>
+</section>
+<section class="wrap" style="padding-top:clamp(2rem,5vw,4rem)">
+  <div class="leadcard reveal">
+    <div class="leadcard__copy">
+      <span class="eyebrow"><i></i> AI-playbook</span>
+      <h3 style="margin-top:var(--s-4)">Få vores AI Playbook</h3>
+      <p class="lead" style="margin-top:var(--s-3)">Del dine oplysninger med os, og så sender vi AI-playbooket — alle vores white-papers samlet ét sted.</p>
+    </div>
+    <div class="leadcard__form">
+      <form id="leadform" class="leadform" action="https://formspree.io/f/xrpzndll" method="POST">
+        <input type="hidden" name="_subject" value="Ny lead fra Viden-artikel">
+        <input type="hidden" name="source" value="map-your-landscape">
+        <div class="field"><label for="lf-name-map-your-landscape">Navn</label><input id="lf-name-map-your-landscape" name="name" type="text" required></div>
+        <div class="field"><label for="lf-email-map-your-landscape">Email</label><input id="lf-email-map-your-landscape" name="email" type="email" required></div>
+        <div class="field"><label for="lf-company-map-your-landscape">Virksomhed</label><input id="lf-company-map-your-landscape" name="company" type="text" required></div>
+        <button class="btn btn--primary" type="submit">Send <span class="arw">→</span></button>
+      </form>
+      <p id="lf-status" role="status" hidden></p>
+    </div>
+  </div>
+</section>
+<section class="stack">
+  <div class="wrap">
+    <div class="ctacard">
+      <canvas class="ctacard__noise" aria-hidden="true"></canvas>
+      <div class="ctacard__content">
+        <span class="eyebrow reveal" style="margin-bottom:var(--s-5)"><i></i> Næste skridt</span>
+        <h2 class="reveal">Dirigér jeres næste program med agenterne. Ikke udenom dem.</h2>
+        <p class="lead reveal">45 minutters arbejdssession med en af vores AI-praktikere. Vi kortlægger, hvor Directed Agentic Delivery giver mening hos jer — og hvor I starter.</p>
+        <div class="ctacard__actions reveal">
+          <a class="btn btn--primary" href="https://calendly.com/consid-dad" data-calendly>Book en session <span class="arw">→</span></a>
+          <a class="btn btn--soft" href="../#ydelser">Se ydelser</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap footer__in">
+    <div>© 2026 Consid København · Directed Agentic Delivery</div>
+    <div class="footer__links"><a href="../ydelser/">Ydelser</a><a href="../viden/">Viden</a><a href="../#kontakt">Kontakt</a></div>
+  </div>
+</footer>
+<script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

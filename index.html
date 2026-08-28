@@ -466,7 +466,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .ocard.is-entering{opacity:0;transform:scale(.96);transition:none}
 .ocard:nth-child(3n+2){background:var(--sand)}
 .ocard:nth-child(5n+4){background:var(--blush)}
-.ocard__tag{font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.09em;text-transform:uppercase;color:var(--stone)}
+.ocard__tag{display:flex;align-items:center;gap:.4em;font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.09em;text-transform:uppercase;color:var(--stone)}
+.oicon{width:15px;height:15px;flex:none;stroke:currentColor}
 .ocard h3{font-size:1.25rem;letter-spacing:-.028em;font-weight:700;transition:color var(--d-fast) var(--ease-out)}
 /* Real content, not container padding — trailing padding on a scrolling
    flex row isn't reliably scrollable-to in every browser, which is what
@@ -584,8 +585,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <div class="nav__links">
       <a class="nav__link" href="#niveau">Jeres niveau</a>
       <a class="nav__link" href="#principper">Sådan arbejder vi</a>
-      <a class="nav__link" href="#ydelser">Ydelser</a>
-      <a class="nav__link" href="#viden">Viden</a>
+      <a class="nav__link" href="ydelser/">Ydelser</a>
+      <a class="nav__link" href="viden/">Viden</a>
       <a class="btn btn--primary" href="https://calendly.com/consid-dad" data-calendly>Book en session <span class="arw">→</span></a>
     </div>
   </div>
@@ -715,12 +716,15 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     </div>
     <p class="lead reveal" style="margin-top:var(--s-5)">Konkrete leverancer, matchet til hvor I står i dag.</p>
     <div class="railhead" style="margin-top:var(--s-6)">
-      <div class="filters reveal" id="ydelser-filters" style="margin-top:0" role="group" aria-label="Filtrér ydelser efter niveau">
-        <button class="chip" data-filter="all" aria-pressed="true">Alle</button>
-        <button class="chip" data-filter="0" aria-pressed="false">Niveau 0</button>
-        <button class="chip" data-filter="1" aria-pressed="false">Niveau 1</button>
-        <button class="chip" data-filter="2" aria-pressed="false">Niveau 2</button>
-        <button class="chip" data-filter="3" aria-pressed="false">Niveau 3</button>
+      <div style="display:flex;flex-wrap:wrap;gap:var(--s-4);align-items:center">
+        <div class="filters reveal" id="ydelser-filters" style="margin-top:0" role="group" aria-label="Filtrér ydelser efter niveau">
+          <button class="chip" data-filter="all" aria-pressed="true">Alle</button>
+          <button class="chip" data-filter="0" aria-pressed="false">Niveau 0</button>
+          <button class="chip" data-filter="1" aria-pressed="false">Niveau 1</button>
+          <button class="chip" data-filter="2" aria-pressed="false">Niveau 2</button>
+          <button class="chip" data-filter="3" aria-pressed="false">Niveau 3</button>
+        </div>
+        <a class="btn btn--soft reveal" href="ydelser/">Se alle ydelser <span class="arw">→</span></a>
       </div>
       <div class="railnav reveal">
         <button class="rbtn" id="ydelser-prev" aria-label="Forrige ydelser"><span class="arw">←</span></button>
@@ -854,7 +858,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 <footer class="footer">
   <div class="wrap footer__in">
     <div>© 2026 Consid København · Directed Agentic Delivery</div>
-    <div class="footer__links"><a href="#ydelser">Ydelser</a><a href="viden/">Viden</a><a href="#kontakt">Kontakt</a></div>
+    <div class="footer__links"><a href="ydelser/">Ydelser</a><a href="viden/">Viden</a><a href="#kontakt">Kontakt</a></div>
   </div>
 </footer>
 
@@ -899,17 +903,14 @@ const LEVELS=[
 ];
 
 const OFFERINGS=[
- {t:'Agentic Development Review',tag:'Assessment · 4 faser',d:'En struktureret gennemgang, der kortlægger jeres AI-leveranceevne, finder hullerne og lægger vejen frem.',lv:[0,1]},
- {t:'AI Compliance Review',tag:'EU AI Act · Risiko',d:'Vi kortlægger jeres AI-initiativer fra ende til anden, finder compliance-huller og uklart ejerskab — før tilsynet gør det for jer.',lv:[0,1,2,3]},
- {t:'Fra idé til prototype',tag:'Prototyping · Lovable',d:'I har idéen. Vi bygger den på dage — rigtig kode, rigtig brugerflade, klar til at arbejde videre på.',lv:[0]},
- {t:'Viden inden for rækkevidde',tag:'Vidensprodukt',d:'I har informationen. Vi bygger agenterne og fladerne, der lægger den rigtige viden i de rigtige hænder.',lv:[0,1]},
- {t:'Bygger I i Lovable?',tag:'Rådgivning · Harness',d:'I bygger hurtigt. Vi sidder ved siden af: rådgiver om arkitekturen nedenunder, reviewer det, der bliver bygget, og leverer det tekniske sikkerhedsnet.',lv:[0,1]},
- {t:'Rammer for jeres AI-team',tag:'Governance · Vibe-coding',d:'Jeres udviklere sender allerede kode med AI. Vi gør det styret: arkitektur-checkpoints, spec-workflows og menneskelige beslutningspunkter.',lv:[1,2]},
- {t:'Kortlæg jeres applikation',tag:'Applikation · Arkitektur',d:'Før I bygger videre, skal I vide, hvad I har. Vi kortlægger komponenter, afhængigheder, dataflow og beslutningshistorik.',lv:[1,2]},
- {t:'Directed Agentic Delivery',tag:'Leverance · M1 / M2 / M3',d:'Sådan bygger vi applikationer og systemer for jer. Tre niveauer matchet til jeres kapacitet. Arkitektur først, specifikationer hele vejen.',lv:[1,2,3]},
- {t:'Modernisering af applikationer',tag:'Legacy · AI-assisteret',d:'Legacy-systemer, der bremser jer. Vi re-platformer, re-arkitekterer eller skriver om i små, styrede skridt.',lv:[2,3]},
- {t:'Kortlæg jeres landskab',tag:'Enterprise arkitektur · EA Workbench',d:'Arkitekturstyring for organisationer, der dirigerer agenter i skala. Overblik over landskabet, styr på beslutningerne, kontrol med udviklingen.',lv:[2,3]},
- {t:'Agentic Workshop',tag:'Workshop · Endagsforløb',d:'En struktureret endagssession, der giver jeres team et fælles, værktøjsagnostisk udgangspunkt for at arbejde med AI — i proces, arkitektur og daglig engineering.',lv:[0,1,2,3],url:'ydelser/agentic-workshops.html'}
+ {t:'Directed Agentic Delivery',tag:'Forløb · M1 / M2 / M3',d:'Den tilgang vi bruger, når vi implementerer applikationer og systemer for jeres organisation. Tre niveauer matchet til jeres kapabilitet. Arkitekturdrevet og specifikationsdrevet hele vejen igennem.',lv:[1,2,3],icon:'Workflow',url:'ydelser/directed-agentic-delivery.html'},
+ {t:'Fra Prototype til Produktion',tag:'Sundhedstjek · Produktionsklar · Lovable, Cursor, Bolt',d:'Noget er allerede bygget med et AI-værktøj. Vi finder ud af, om fundamentet holder — og retter det, så produktet tåler rigtige brugere uden at blive skrevet om fra bunden.',lv:[0,1],icon:'Rocket',url:'ydelser/fra-prototype-til-produktion.html'},
+ {t:'Agentic Workshops',tag:'Workshop · Endagsforløb',d:'En struktureret endagsworkshop, der giver jeres team et fælles udgangspunkt for at arbejde med AI — tilpasset til, hvor I står i dag.',lv:[0,1,2],icon:'Users',url:'ydelser/agentic-workshops.html'},
+ {t:'Governance for Jeres AI-team',tag:'Governance · Fra tjekpunkter til drift',d:'Jeres udviklere leverer allerede med AI. Vi lægger den styring omkring det, der passer til jeres niveau — fra arkitekturtjekpunkter for et assisteret team til driftmodel for agenter, der kører autonomt.',lv:[1,2,3],icon:'ShieldCheck',url:'ydelser/guardrails-for-your-ai-team.html'},
+ {t:'Kortlæg Jeres Arkitektur',tag:'Kortlægning · Én applikation eller hele landskabet · EA Workbench',d:'Forstå hvad I har, før I bygger videre på det. Vi kortlægger komponenter, afhængigheder, dataflows og beslutningshistorik — for én applikation eller for hele teknologilandskabet.',lv:[1,2,3],icon:'Network',url:'ydelser/map-your-landscape.html'},
+ {t:'Applikationsmodernisering',tag:'Modernisering · AI-understøttet levering',d:'Legacy-systemer, der holder jer tilbage. Vi hjælper jer med at modernisere — re-platforming, re-arkitektur eller trinvis omskrivning med AI-understøttet levering.',lv:[2],icon:'Layers',url:'ydelser/application-modernisation.html'},
+ {t:'AI Compliance Review',tag:'Compliance · EU AI Act · Risikoklassificering',d:'Vi kortlægger jeres AI-initiativer ende til ende, identificerer compliance-gab og uklar ansvarsfordeling, og leverer en beslutningsklar roadmap — før myndighederne gør det for jer.',lv:[2,3],icon:'ShieldCheck',url:'ydelser/ai-compliance-review.html'},
+ {t:'Fra Idé til Prototype',tag:'Hurtig prototyping · Lovable',d:'I har en idé. Vi hjælper jer med at gøre den virkelig. Med Lovable går vi fra koncept til fungerende produkt på dage — rigtig kode, rigtig UI, klar til at bygge videre på.',lv:[0],icon:'Lightbulb',url:'ydelser/from-idea-to-prototype.html'}
 ];
 
 /* VIDEN — articles (real, linked to /viden/<slug>.html) and
@@ -1064,9 +1065,22 @@ function initRail({items,container,filtersEl,prevBtn,nextBtn,renderCard,matchFil
   return {applyFilter};
 }
 
+/* Small original line-icon set (not copied from any icon library) —
+   mirrors the same paths embedded server-side in build_articles.py's
+   ICON_PATHS, so homepage cards and their linked Ydelse pages match. */
+const ICON_PATHS={
+  Users:'<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14c2.5.3 4.5 2.4 4.5 6"/>',
+  ShieldCheck:'<path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/>',
+  Layers:'<path d="M12 3l8 4-8 4-8-4 8-4z"/><path d="M4 12l8 4 8-4"/><path d="M4 16l8 4 8-4"/>',
+  Workflow:'<circle cx="5" cy="6" r="2.2"/><circle cx="19" cy="6" r="2.2"/><circle cx="12" cy="18" r="2.2"/><path d="M7 7l3 8M17 7l-3 8"/>',
+  Rocket:'<path d="M12 2c3 2 5 6 5 10-1 1-3 2-5 2s-4-1-5-2c0-4 2-8 5-10z"/><circle cx="12" cy="10" r="1.6"/><path d="M9 16l-2 5 3-1.5M15 16l2 5-3-1.5"/>',
+  Lightbulb:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 00-3.5 10.9c.6.5 1 1.2 1.1 2.1h4.8c.1-.9.5-1.6 1.1-2.1A6 6 0 0012 3z"/>',
+  Network:'<circle cx="12" cy="5" r="2.2"/><circle cx="5" cy="19" r="2.2"/><circle cx="19" cy="19" r="2.2"/><path d="M12 7v6M12 13L6 17M12 13l6 4"/>',
+};
+const iconSvg=name=>ICON_PATHS[name]?`<svg class="oicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON_PATHS[name]}</svg>`:'';
 const offeringCardHtml=o=>`
  <a class="ocard reveal" href="${o.url||'#'}" data-lv="${o.lv.join(',')}">
-   <span class="ocard__tag">${o.tag}</span>
+   <span class="ocard__tag">${iconSvg(o.icon)}${o.tag}</span>
    <h3>${o.t}</h3>
    <p>${o.d}</p>
    <span class="ocard__foot">
