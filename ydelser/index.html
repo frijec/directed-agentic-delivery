@@ -73,12 +73,14 @@ window.ICON_PATHS = {"Users": "<circle cx=\"9\" cy=\"8\" r=\"3\"/><path d=\"M3 2
 const iconSvg = name => window.ICON_PATHS[name] ? `<svg class="oicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${window.ICON_PATHS[name]}</svg>` : '';
 const ydelserGridCardHtml = o => `
  <a class="ocard vcard reveal" href="${o.slug}.html" data-lv="${o.lv.join(',')}">
-   <span class="ocard__tag">${iconSvg(o.icon)}${o.tag}</span>
    <h3>${o.t}</h3>
    <p>${o.d}</p>
-   <span class="ocard__foot">
-     <span class="dots" aria-label="Relevant på niveau ${o.lv.join(', ')}">${[0,1,2,3].map(n=>`<i class="dot ${o.lv.includes(n)?'dot--on':''}"></i>`).join('')}</span>
-     <span style="margin-left:auto">Læs mere <span class="arw">→</span></span>
+   <span class="ocard__foot" style="flex-direction:column;align-items:stretch;gap:var(--s-3)">
+     <span class="ocard__tag">${iconSvg(o.icon)}${o.tag}</span>
+     <span style="display:flex;align-items:center;gap:var(--s-3)">
+       <span class="dots" aria-label="Relevant på niveau ${o.lv.join(', ')}">${[0,1,2,3].map(n=>`<i class="dot ${o.lv.includes(n)?'dot--on':''}"></i>`).join('')}</span>
+       <span style="margin-left:auto">Læs mere <span class="arw">→</span></span>
+     </span>
    </span>
  </a>`;
 initRail({

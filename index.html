@@ -429,12 +429,16 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* OFFERINGS — rail --------------------------------------- */
 .railhead{display:flex;flex-wrap:wrap;gap:var(--s-5);align-items:end;justify-content:space-between}
 .filters{display:flex;flex-wrap:wrap;gap:var(--s-2);margin-top:var(--s-6)}
-.chip{padding:.6rem 1.1rem;border-radius:var(--r-pill);font-size:var(--t-small);color:var(--graphite);
+/* Chips, the rail's prev/next .rbtn circles, and the section's own
+   "Se alle X" .btn all sit in the same row — height:2.75rem on all
+   three (matching .rbtn's fixed circle) keeps them visually level. */
+.chip{height:2.75rem;display:inline-flex;align-items:center;padding:0 1.1rem;border-radius:var(--r-pill);font-size:var(--t-small);color:var(--graphite);
   background:var(--surface);box-shadow:var(--lift-1);
   transition:color var(--d-fast) var(--ease-out),background-color var(--d-fast) var(--ease-out),transform var(--d-fast) var(--ease-spring)}
 .chip:hover{color:var(--ink-800);transform:translateY(-2px)}
 .chip:active{transform:scale(.97)}
 .chip[aria-pressed="true"]{background:var(--ink-800);color:#fff}
+.railhead .btn{height:2.75rem;padding-block:0}
 
 .rail{display:flex;gap:var(--s-4);overflow-x:auto;scroll-snap-type:x mandatory;
   scroll-padding-inline:var(--gutter);
@@ -716,19 +720,19 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     </div>
     <p class="lead reveal" style="margin-top:var(--s-5)">Konkrete leverancer, matchet til hvor I står i dag.</p>
     <div class="railhead" style="margin-top:var(--s-6)">
-      <div style="display:flex;flex-wrap:wrap;gap:var(--s-4);align-items:center">
-        <div class="filters reveal" id="ydelser-filters" style="margin-top:0" role="group" aria-label="Filtrér ydelser efter niveau">
-          <button class="chip" data-filter="all" aria-pressed="true">Alle</button>
-          <button class="chip" data-filter="0" aria-pressed="false">Niveau 0</button>
-          <button class="chip" data-filter="1" aria-pressed="false">Niveau 1</button>
-          <button class="chip" data-filter="2" aria-pressed="false">Niveau 2</button>
-          <button class="chip" data-filter="3" aria-pressed="false">Niveau 3</button>
-        </div>
-        <a class="btn btn--soft reveal" href="ydelser/">Se alle ydelser <span class="arw">→</span></a>
+      <div class="filters reveal" id="ydelser-filters" style="margin-top:0" role="group" aria-label="Filtrér ydelser efter niveau">
+        <button class="chip" data-filter="all" aria-pressed="true">Alle</button>
+        <button class="chip" data-filter="0" aria-pressed="false">Niveau 0</button>
+        <button class="chip" data-filter="1" aria-pressed="false">Niveau 1</button>
+        <button class="chip" data-filter="2" aria-pressed="false">Niveau 2</button>
+        <button class="chip" data-filter="3" aria-pressed="false">Niveau 3</button>
       </div>
-      <div class="railnav reveal">
-        <button class="rbtn" id="ydelser-prev" aria-label="Forrige ydelser"><span class="arw">←</span></button>
-        <button class="rbtn" id="ydelser-next" aria-label="Næste ydelser"><span class="arw">→</span></button>
+      <div style="display:flex;align-items:center;gap:var(--s-3)">
+        <a class="btn btn--soft reveal" href="ydelser/">Se alle ydelser <span class="arw">→</span></a>
+        <div class="railnav reveal">
+          <button class="rbtn" id="ydelser-prev" aria-label="Forrige ydelser"><span class="arw">←</span></button>
+          <button class="rbtn" id="ydelser-next" aria-label="Næste ydelser"><span class="arw">→</span></button>
+        </div>
       </div>
     </div>
   </div>
@@ -782,11 +786,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       </div>
     </div>
     <p class="lead reveal" style="margin-top:var(--s-5)">Artikler om retning og fundament for AI-arbejdet.</p>
-    <div class="railhead" style="margin-top:var(--s-6)">
-      <a class="btn btn--soft reveal" href="viden/">Se al viden <span class="arw">→</span></a>
-      <div class="railnav reveal">
-        <button class="rbtn" id="viden-prev" aria-label="Forrige viden"><span class="arw">←</span></button>
-        <button class="rbtn" id="viden-next" aria-label="Næste viden"><span class="arw">→</span></button>
+    <div class="railhead" style="margin-top:var(--s-6);justify-content:flex-end">
+      <div style="display:flex;align-items:center;gap:var(--s-3)">
+        <a class="btn btn--soft reveal" href="viden/">Se al viden <span class="arw">→</span></a>
+        <div class="railnav reveal">
+          <button class="rbtn" id="viden-prev" aria-label="Forrige viden"><span class="arw">←</span></button>
+          <button class="rbtn" id="viden-next" aria-label="Næste viden"><span class="arw">→</span></button>
+        </div>
       </div>
     </div>
   </div>
@@ -1080,12 +1086,14 @@ const ICON_PATHS={
 const iconSvg=name=>ICON_PATHS[name]?`<svg class="oicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON_PATHS[name]}</svg>`:'';
 const offeringCardHtml=o=>`
  <a class="ocard reveal" href="${o.url||'#'}" data-lv="${o.lv.join(',')}">
-   <span class="ocard__tag">${iconSvg(o.icon)}${o.tag}</span>
    <h3>${o.t}</h3>
    <p>${o.d}</p>
-   <span class="ocard__foot">
-     <span class="dots" aria-label="Relevant på niveau ${o.lv.join(', ')}">${[0,1,2,3].map(n=>`<i class="dot ${o.lv.includes(n)?'dot--on':''}"></i>`).join('')}</span>
-     <span style="margin-left:auto">Læs mere <span class="arw">→</span></span>
+   <span class="ocard__foot" style="flex-direction:column;align-items:stretch;gap:var(--s-3)">
+     <span class="ocard__tag">${iconSvg(o.icon)}${o.tag}</span>
+     <span style="display:flex;align-items:center;gap:var(--s-3)">
+       <span class="dots" aria-label="Relevant på niveau ${o.lv.join(', ')}">${[0,1,2,3].map(n=>`<i class="dot ${o.lv.includes(n)?'dot--on':''}"></i>`).join('')}</span>
+       <span style="margin-left:auto">Læs mere <span class="arw">→</span></span>
+     </span>
    </span>
  </a>`;
 const ydelserRail=initRail({
