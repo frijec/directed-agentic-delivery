@@ -132,13 +132,25 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   padding:1.15rem var(--gutter);
 }
 .brand{display:flex;align-items:center;gap:var(--s-3);text-decoration:none;flex:none}
-.brand__mark{height:22px;width:auto;display:block}
-.brand__sub{font-family:var(--font-mono);font-size:var(--t-micro);color:var(--stone);letter-spacing:.03em;padding-left:var(--s-3);border-left:1px solid var(--hairline)}
+.brand__mark{height:22px;width:auto;display:block;transition:filter var(--d-fast) var(--ease-out)}
+.brand__sub{font-family:var(--font-mono);font-size:var(--t-micro);color:var(--stone);letter-spacing:.03em;padding-left:var(--s-3);border-left:1px solid var(--hairline);transition:color var(--d-fast) var(--ease-out),border-color var(--d-fast) var(--ease-out)}
 .nav__links{display:flex;gap:var(--s-5);margin-left:auto;align-items:center}
 .nav__link{text-decoration:none;font-size:var(--t-small);color:var(--graphite);transition:color var(--d-fast) var(--ease-out)}
 .nav__link:hover{color:var(--ink-800)}
 .nav .btn{padding:.7rem 1.2rem}
 @media (max-width:900px){.nav__links .nav__link{display:none} .brand__sub{display:none}}
+
+/* Nav-on-dark variant — for pages whose top section is a dark (plum)
+   band (Ydelse pages): the nav overlays that band as a transparent bar
+   with a white logo/label instead of sitting in normal flow above it,
+   then reverts to the standard in-flow blurred nav (dark label, light
+   background) the moment the page scrolls (same data-stuck toggle
+   already driving the blur-in above). The CTA button is untouched. */
+.nav--onDark{position:fixed;top:0;left:0;right:0}
+.nav--onDark:not([data-stuck="true"]) .brand__mark{filter:brightness(0) invert(1)}
+.nav--onDark:not([data-stuck="true"]) .brand__sub{color:rgba(255,255,255,.65);border-left-color:rgba(255,255,255,.3)}
+.nav--onDark:not([data-stuck="true"]) .nav__link{color:rgba(255,255,255,.85)}
+.nav--onDark:not([data-stuck="true"]) .nav__link:hover{color:#fff}
 
 /* RAIL + CARD system (Ydelser + Viden share this) --------- */
 .railhead{display:flex;flex-wrap:wrap;gap:var(--s-5);align-items:end;justify-content:space-between}
@@ -267,7 +279,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
    already used for the CTA card and .whycard) instead of the article's
    plain background, plus a mono spec strip and the existing niveau
    .dots indicator reused directly on the header. */
-.ydelse__head{background:var(--plum);border-radius:0 0 var(--r-xl) var(--r-xl);padding-bottom:clamp(2.5rem,6vw,4rem)}
+/* Extra top padding (overrides .stack's) — the nav is fixed/overlaid
+   here (see .nav--onDark) rather than occupying flow space above, so
+   the header's own content needs room to clear it. */
+.ydelse__head{background:var(--plum);border-radius:0 0 var(--r-xl) var(--r-xl);padding-top:clamp(6.5rem,12vw,8.5rem);padding-bottom:clamp(2.5rem,6vw,4rem)}
 .ydelse__head h1{color:#fff}
 .ydelse__head .lead{color:rgba(255,255,255,.78)}
 .ydelse__specs{display:flex;gap:var(--s-7);flex-wrap:wrap;margin-top:var(--s-7)}
