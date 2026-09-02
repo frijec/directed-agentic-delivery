@@ -21,6 +21,7 @@
   --crimson:#90263B;
   --crimson-700:#75182C;
   --plum:#492A34;
+  --plum-tint:color-mix(in srgb, var(--plum), white 22%);
   --wine:#701132;
   --coral:#F49E88;
   --hairline:rgba(27,27,29,.08);
@@ -283,7 +284,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* Extra top padding (overrides .stack's) — the nav is fixed/overlaid
    here (see .nav--onDark) rather than occupying flow space above, so
    the header's own content needs room to clear it. */
-.ydelse__head{position:relative;background:var(--plum);border-radius:0 0 var(--r-xl) var(--r-xl);padding-top:clamp(6.5rem,12vw,8.5rem);padding-bottom:clamp(2.5rem,6vw,4rem)}
+/* z-index:0 (not just position:relative) so this establishes its OWN
+   stacking context — .ydelse__illus's z-index:-1 needs to be scoped
+   locally, behind this header's text but above its own background,
+   not resolved against some ancestor context further up the page. */
+.ydelse__head{position:relative;z-index:0;overflow:hidden;background:var(--plum);border-radius:0 0 var(--r-xl) var(--r-xl);padding-top:clamp(6.5rem,12vw,8.5rem);padding-bottom:clamp(2.5rem,6vw,4rem)}
 .ydelse__head h1{color:#fff}
 .ydelse__head .lead{color:rgba(255,255,255,.78)}
 .ydelse__meta{display:flex;gap:var(--s-6);flex-wrap:wrap;align-items:center;justify-content:space-between;margin-top:var(--s-7)}
@@ -293,13 +298,18 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .ydelse__meta .dot--on{background:#fff}
 
 /* One handrolled abstract shape per offering (assets/dither.js), run
-   through the same matcap+dither pipeline as the article breaks below
-   — a distinct visual mark per Ydelse, not a literal icon. Sits behind/
-   beside the header text on wide viewports; hidden below 900px rather
-   than fighting the H1 for space, matching the nav links' own cutoff. */
+   through the same matcap+dither pipeline as the article breaks below,
+   but tinted a shade lighter than the plum it sits on (--plum-tint, set
+   per-scene in dither.js) instead of the crimson used elsewhere — a
+   background texture, not a foreground mark. Oversized on purpose: top
+   and bottom both sit 20% past the header's own edge and get cropped by
+   .ydelse__head's overflow:hidden, and z-index:-1 keeps it behind the
+   text. Hidden below 900px rather than fighting the H1 for space. */
 .ydelse__illus{
-  position:absolute;top:50%;right:clamp(1.5rem,6vw,5.5rem);transform:translateY(-50%);
-  width:clamp(120px,15vw,210px);aspect-ratio:1;opacity:.92;pointer-events:none;
+  position:absolute;z-index:-1;top:-20%;bottom:-20%;
+  right:clamp(-1rem,2vw,1.5rem);
+  width:clamp(320px,40vw,680px);
+  pointer-events:none;
 }
 .ydelse__illus canvas{display:block;width:100%;height:100%}
 @media (max-width:900px){.ydelse__illus{display:none}}

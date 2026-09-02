@@ -100,7 +100,21 @@ void main() {
 }
 `;
 
-function makeIllusScene(container, build, zoom) {
+// getComputedStyle on a plain (unregistered) custom property returns
+// its literal specified value, not a resolved colour — fine for a bare
+// hex custom property (--crimson) but color-mix(...) comes back as that
+// same unparsed function string, which THREE.Color can't read. So the
+// lighter-than-plum background tint is computed here instead of via the
+// --plum-tint custom property in CSS (kept there too, for any plain-CSS
+// use, at the same 22% lift).
+function resolveInk(inkVar) {
+  if (inkVar === 'plum-tint') {
+    return new THREE.Color(illusTok('--plum') || '#492A34').lerp(new THREE.Color(0xffffff), 0.3);
+  }
+  return new THREE.Color(illusTok(inkVar || '--crimson') || '#90263B');
+}
+
+function makeIllusScene(container, build, zoom, inkVar) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   container.appendChild(renderer.domElement);
@@ -126,7 +140,7 @@ function makeIllusScene(container, build, zoom) {
       uBias: { value: DITHER_BIAS },
       uGamma: { value: DITHER_GAMMA },
       uGrayscale: { value: DITHER_GRAYSCALE },
-      uInk: { value: new THREE.Color(illusTok('--crimson') || '#90263B') }
+      uInk: { value: resolveInk(inkVar) }
     },
     transparent: true
   });
@@ -180,7 +194,16 @@ const mat = () => new THREE.MeshMatcapMaterial({ matcap: matcapTex });
    the article template between section gaps. */
 const SHAPE_ZOOM = {
   blobA: 2.35, blobB: 2.05,
-  coil: 1.9, rock: 2.3, cluster: 1.85, lattice: 1.7, crater: 2.3, target: 2.6, twin: 2.05
+  coil: 2.5, rock: 3.0, cluster: 2.4, lattice: 2.2, crater: 3.0, target: 3.4, twin: 2.05
+};
+// The 6 Ydelse HEADER marks read as a background texture, tinted a
+// shade lighter than the plum they sit on (assets/site.css --plum-tint)
+// rather than the crimson used everywhere else (blobA/blobB's article
+// breaks, and twin's own use as a small in-body section-break) — those
+// stay foreground accents, unchanged.
+const SHAPE_INK = {
+  coil: 'plum-tint', rock: 'plum-tint', cluster: 'plum-tint', lattice: 'plum-tint',
+  crater: 'plum-tint', target: 'plum-tint'
 };
 const SHAPE_BUILDERS = {
   // Jittered icosahedron — each vertex nudged outward/inward along its
@@ -356,5 +379,5 @@ const SHAPE_BUILDERS = {
 };
 
 Object.entries(SHAPE_BUILDERS).forEach(([name, build]) => {
-  document.querySelectorAll(`[data-illus="${name}"]`).forEach(el => makeIllusScene(el, build, SHAPE_ZOOM[name]));
+  document.querySelectorAll(`[data-illus="${name}"]`).forEach(el => makeIllusScene(el, build, SHAPE_ZOOM[name], SHAPE_INK[name]));
 });
