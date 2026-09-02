@@ -301,14 +301,19 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
    through the same matcap+dither pipeline as the article breaks below,
    but tinted a shade lighter than the plum it sits on (--plum-tint, set
    per-scene in dither.js) instead of the crimson used elsewhere — a
-   background texture, not a foreground mark. Oversized on purpose: top
-   and bottom both sit 20% past the header's own edge and get cropped by
-   .ydelse__head's overflow:hidden, and z-index:-1 keeps it behind the
-   text. Hidden below 900px rather than fighting the H1 for space. */
+   background texture, not a foreground mark. Sized off the viewport,
+   NOT the header's own box (a header-relative top/bottom:-20% just
+   dilutes into a wide, mostly-empty frame once the width is huge) —
+   width and height are equal and both huge, so it overflows the header
+   on every side and reads as running behind the H1/lead text rather
+   than sitting beside it. z-index:-1 keeps the header's own text
+   stacked above it; .ydelse__head's overflow:hidden crops the bleed.
+   Hidden below 900px rather than fighting the H1 for space. */
 .ydelse__illus{
-  position:absolute;z-index:-1;top:-20%;bottom:-20%;
-  right:clamp(-1rem,2vw,1.5rem);
-  width:clamp(320px,40vw,680px);
+  position:absolute;z-index:-1;top:50%;left:50%;
+  transform:translate(-42%,-50%);
+  width:clamp(900px,95vw,1900px);
+  height:clamp(900px,95vw,1900px);
   pointer-events:none;
 }
 .ydelse__illus canvas{display:block;width:100%;height:100%}

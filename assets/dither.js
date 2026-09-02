@@ -106,10 +106,15 @@ void main() {
 // same unparsed function string, which THREE.Color can't read. So the
 // lighter-than-plum background tint is computed here instead of via the
 // --plum-tint custom property in CSS (kept there too, for any plain-CSS
-// use, at the same 22% lift).
+// use). Lifting lightness in HSL (same hue/saturation as --plum) rather
+// than lerping toward white — a straight lerp desaturates fast and reads
+// as grey; holding the hue keeps it reading as "lighter plum", not grey.
 function resolveInk(inkVar) {
   if (inkVar === 'plum-tint') {
-    return new THREE.Color(illusTok('--plum') || '#492A34').lerp(new THREE.Color(0xffffff), 0.3);
+    const base = new THREE.Color(illusTok('--plum') || '#492A34');
+    const hsl = {};
+    base.getHSL(hsl);
+    return new THREE.Color().setHSL(hsl.h, Math.min(1, hsl.s + 0.1), Math.min(1, hsl.l + 0.3));
   }
   return new THREE.Color(illusTok(inkVar || '--crimson') || '#90263B');
 }
