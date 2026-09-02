@@ -349,6 +349,10 @@ const SHAPE_BUILDERS = {
 
   // Concentric rings, tilted so they read as rings rather than a
   // single flat line — a target/bullseye, not a literal dartboard.
+  // Each ring is rotationally symmetric around its own Z axis, so
+  // spinning the group on Z alone is invisible (every frame looks
+  // identical) — animate the tilt itself (X/Y) instead, same as
+  // every other shape here, so the rings actually read as moving.
   target: scene => {
     const group = new THREE.Group();
     for (let i = 0; i < 4; i++) {
@@ -358,7 +362,7 @@ const SHAPE_BUILDERS = {
     group.rotation.x = 0.55;
     group.rotation.y = 0.15;
     scene.add(group);
-    return dt => { group.rotation.z += dt * 0.22; };
+    return dt => { group.rotation.x += dt * 0.16; group.rotation.y += dt * 0.24; };
   },
 
   // Two overlapping jittered blobs — two paths, one offering.
