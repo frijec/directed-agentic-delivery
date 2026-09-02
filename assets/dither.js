@@ -178,7 +178,10 @@ const mat = () => new THREE.MeshMatcapMaterial({ matcap: matcapTex });
    objects), these exist only to break up long article text, so they
    deliberately read as pure form rather than an object. Alternated by
    the article template between section gaps. */
-const SHAPE_ZOOM = { blobA: 2.35, blobB: 2.05 };
+const SHAPE_ZOOM = {
+  blobA: 2.35, blobB: 2.05,
+  coil: 1.9, rock: 2.3, cluster: 1.85, lattice: 1.7, crater: 2.3, target: 2.6, twin: 2.05
+};
 const SHAPE_BUILDERS = {
   // Jittered icosahedron — each vertex nudged outward/inward along its
   // own normal by a random amount, giving an irregular "rock" silhouette
@@ -201,6 +204,154 @@ const SHAPE_BUILDERS = {
     const mesh = new THREE.Mesh(new THREE.TorusKnotGeometry(0.42, 0.14, 100, 12), mat());
     scene.add(mesh);
     return dt => { mesh.rotation.x += dt * 0.18; mesh.rotation.y += dt * 0.26; };
+  },
+
+  /* ----------------------------------------------------------
+     Ydelse (offering) header marks — one handrolled abstract
+     shape per offering, built as plain three.js primitives (no
+     imported models), run through the exact same matcap+dither
+     pipeline above so they read as one consistent family. Picked
+     per offering for what the form itself suggests, not as a
+     literal icon:
+       coil    — Directed Agentic Delivery: a climb through niveauer
+       rock    — Solidt Fundament: something solid built underneath
+       cluster — Agentic Workshops: a team convening around a core
+       lattice — Kortlæg Jeres Arkitektur: components in a catalog
+       crater  — Applikationsmodernisering: a legacy surface, worn
+       target  — AI Compliance Review: risk classification, zoned
+       twin    — two paths into one offering (DAD's "to måder")
+     ---------------------------------------------------------- */
+
+  // A helical tube — literally a spring/coil, walked as a parametric
+  // curve rather than any built-in three.js primitive.
+  coil: scene => {
+    class Helix extends THREE.Curve {
+      getPoint(t) {
+        const a = t * Math.PI * 2 * 3.4;
+        return new THREE.Vector3(Math.cos(a) * 0.34, (t - 0.5) * 1.15, Math.sin(a) * 0.34);
+      }
+    }
+    const geo = new THREE.TubeGeometry(new Helix(), 140, 0.085, 10, false);
+    const mesh = new THREE.Mesh(geo, mat());
+    scene.add(mesh);
+    return dt => { mesh.rotation.y += dt * 0.32; };
+  },
+
+  // Same jittered-icosahedron technique as blobA, but coarser
+  // subdivision (flatter facets) and a much stronger jitter — reads
+  // as a rough-cut foundation stone rather than a smooth blob.
+  rock: scene => {
+    const geo = new THREE.IcosahedronGeometry(0.64, 1);
+    const pos = geo.attributes.position;
+    const v = new THREE.Vector3();
+    for (let i = 0; i < pos.count; i++) {
+      v.fromBufferAttribute(pos, i).normalize();
+      const jitter = 1 + (Math.random() - 0.5) * 0.5;
+      pos.setXYZ(i, v.x * 0.64 * jitter, v.y * 0.64 * jitter, v.z * 0.64 * jitter);
+    }
+    geo.computeVertexNormals();
+    const mesh = new THREE.Mesh(geo, mat());
+    scene.add(mesh);
+    return dt => { mesh.rotation.x += dt * 0.15; mesh.rotation.y += dt * 0.2; };
+  },
+
+  // A dozen small spheres at the vertex directions of an icosahedron
+  // plus one at the centre — a cluster of nodes, not a solid.
+  cluster: scene => {
+    const group = new THREE.Group();
+    const base = new THREE.IcosahedronGeometry(1, 0);
+    const posAttr = base.attributes.position;
+    const seen = new Set();
+    const v = new THREE.Vector3();
+    for (let i = 0; i < posAttr.count; i++) {
+      const key = `${posAttr.getX(i).toFixed(2)},${posAttr.getY(i).toFixed(2)},${posAttr.getZ(i).toFixed(2)}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      v.set(posAttr.getX(i), posAttr.getY(i), posAttr.getZ(i)).normalize();
+      const r = 0.15 + Math.random() * 0.06;
+      const s = new THREE.Mesh(new THREE.SphereGeometry(r, 16, 16), mat());
+      s.position.copy(v).multiplyScalar(0.4);
+      group.add(s);
+    }
+    group.add(new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 16), mat()));
+    scene.add(group);
+    return dt => { group.rotation.x += dt * 0.2; group.rotation.y += dt * 0.28; };
+  },
+
+  // A clean 3x3x3 grid of small cubes — discrete, catalogued
+  // components rather than one continuous form.
+  lattice: scene => {
+    const group = new THREE.Group();
+    const n = 3, size = 0.27, gap = 0.07, step = size + gap, offset = (n - 1) * step / 2;
+    for (let x = 0; x < n; x++) for (let y = 0; y < n; y++) for (let z = 0; z < n; z++) {
+      const box = new THREE.Mesh(new THREE.BoxGeometry(size, size, size), mat());
+      box.position.set(x * step - offset, y * step - offset, z * step - offset);
+      group.add(box);
+    }
+    scene.add(group);
+    return dt => { group.rotation.x += dt * 0.16; group.rotation.y += dt * 0.22; };
+  },
+
+  // A high-subdivision sphere with several smoothed radial dents
+  // pressed into it at random points — a weathered, cratered surface.
+  crater: scene => {
+    const geo = new THREE.IcosahedronGeometry(0.62, 3);
+    const pos = geo.attributes.position;
+    const v = new THREE.Vector3();
+    const pits = Array.from({ length: 7 }, () => ({
+      dir: new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize(),
+      radius: 0.32 + Math.random() * 0.26,
+      depth: 0.11 + Math.random() * 0.09
+    }));
+    for (let i = 0; i < pos.count; i++) {
+      v.fromBufferAttribute(pos, i).normalize();
+      let r = 0.62;
+      for (const p of pits) {
+        const d = v.angleTo(p.dir);
+        if (d < p.radius) { const t = 1 - d / p.radius; r -= p.depth * t * t; }
+      }
+      r *= 1 + (Math.random() - 0.5) * 0.025;
+      pos.setXYZ(i, v.x * r, v.y * r, v.z * r);
+    }
+    geo.computeVertexNormals();
+    const mesh = new THREE.Mesh(geo, mat());
+    scene.add(mesh);
+    return dt => { mesh.rotation.x += dt * 0.16; mesh.rotation.y += dt * 0.22; };
+  },
+
+  // Concentric rings, tilted so they read as rings rather than a
+  // single flat line — a target/bullseye, not a literal dartboard.
+  target: scene => {
+    const group = new THREE.Group();
+    for (let i = 0; i < 4; i++) {
+      const r = 0.16 + i * 0.135;
+      group.add(new THREE.Mesh(new THREE.TorusGeometry(r, 0.042, 12, 48), mat()));
+    }
+    group.rotation.x = 0.55;
+    group.rotation.y = 0.15;
+    scene.add(group);
+    return dt => { group.rotation.z += dt * 0.22; };
+  },
+
+  // Two overlapping jittered blobs — two paths, one offering.
+  twin: scene => {
+    const group = new THREE.Group();
+    [-0.22, 0.22].forEach(offset => {
+      const geo = new THREE.IcosahedronGeometry(0.4, 1);
+      const pos = geo.attributes.position;
+      const v = new THREE.Vector3();
+      for (let i = 0; i < pos.count; i++) {
+        v.fromBufferAttribute(pos, i).normalize();
+        const jitter = 1 + (Math.random() - 0.5) * 0.28;
+        pos.setXYZ(i, v.x * 0.4 * jitter, v.y * 0.4 * jitter, v.z * 0.4 * jitter);
+      }
+      geo.computeVertexNormals();
+      const mesh = new THREE.Mesh(geo, mat());
+      mesh.position.x = offset;
+      group.add(mesh);
+    });
+    scene.add(group);
+    return dt => { group.rotation.y += dt * 0.25; group.rotation.x += dt * 0.1; };
   }
 };
 

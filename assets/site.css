@@ -283,7 +283,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* Extra top padding (overrides .stack's) — the nav is fixed/overlaid
    here (see .nav--onDark) rather than occupying flow space above, so
    the header's own content needs room to clear it. */
-.ydelse__head{background:var(--plum);border-radius:0 0 var(--r-xl) var(--r-xl);padding-top:clamp(6.5rem,12vw,8.5rem);padding-bottom:clamp(2.5rem,6vw,4rem)}
+.ydelse__head{position:relative;background:var(--plum);border-radius:0 0 var(--r-xl) var(--r-xl);padding-top:clamp(6.5rem,12vw,8.5rem);padding-bottom:clamp(2.5rem,6vw,4rem)}
 .ydelse__head h1{color:#fff}
 .ydelse__head .lead{color:rgba(255,255,255,.78)}
 .ydelse__meta{display:flex;gap:var(--s-6);flex-wrap:wrap;align-items:center;justify-content:space-between;margin-top:var(--s-7)}
@@ -291,6 +291,18 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .ydelse__meta .dots{gap:6px}
 .ydelse__meta .dot{background:rgba(255,255,255,.28)}
 .ydelse__meta .dot--on{background:#fff}
+
+/* One handrolled abstract shape per offering (assets/dither.js), run
+   through the same matcap+dither pipeline as the article breaks below
+   — a distinct visual mark per Ydelse, not a literal icon. Sits behind/
+   beside the header text on wide viewports; hidden below 900px rather
+   than fighting the H1 for space, matching the nav links' own cutoff. */
+.ydelse__illus{
+  position:absolute;top:50%;right:clamp(1.5rem,6vw,5.5rem);transform:translateY(-50%);
+  width:clamp(120px,15vw,210px);aspect-ratio:1;opacity:.92;pointer-events:none;
+}
+.ydelse__illus canvas{display:block;width:100%;height:100%}
+@media (max-width:900px){.ydelse__illus{display:none}}
 
 /* Pull quote — a sentence lifted verbatim from the body, blown up in
    the site's serif wordmark face for contrast against the sans body
