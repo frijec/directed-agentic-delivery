@@ -270,6 +270,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 }
 .article__meta{display:flex;gap:var(--s-3);flex-wrap:wrap;align-items:center;margin-top:var(--s-5);
   font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.08em;text-transform:uppercase;color:var(--stone)}
+/* Reuses .chip verbatim (as plain links, not filter buttons) so a tag
+   here is visually the same token a reader will click again on the
+   overview page's filter bar — the link between the two is the point. */
+.article__tags{display:flex;flex-wrap:wrap;gap:var(--s-2);margin-top:var(--s-4)}
+.article__tags .chip{text-decoration:none}
 .article__body{max-width:var(--measure);margin-top:var(--s-8)}
 .article__body h2{font-size:clamp(1.4rem,2.4vw,1.9rem);margin-top:var(--s-8)}
 .article__body p{margin-top:var(--s-5);color:var(--ink-700);line-height:1.75;font-size:var(--t-body)}

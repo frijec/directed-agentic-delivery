@@ -45,6 +45,21 @@
   <div class="wrap">
     <h1 style="font-size:var(--t-h2);max-width:20ch" class="reveal">Fra teori til fundament</h1>
     <p class="lead reveal" style="margin-top:var(--s-5)">Artikler om retning og fundament for AI-arbejdet.</p>
+    <div class="filters reveal" id="viden-filters" style="margin-top:var(--s-6)" role="group" aria-label="Filtrér artikler efter emne">
+      <button class="chip" data-filter="all" aria-pressed="true">Alle</button>
+      <button class="chip" data-filter="AI-strategi" aria-pressed="false">AI-strategi</button>
+      <button class="chip" data-filter="Arkitektur" aria-pressed="false">Arkitektur</button>
+      <button class="chip" data-filter="Data" aria-pressed="false">Data</button>
+      <button class="chip" data-filter="Governance" aria-pressed="false">Governance</button>
+      <button class="chip" data-filter="Kommunikation" aria-pressed="false">Kommunikation</button>
+      <button class="chip" data-filter="Ledelse" aria-pressed="false">Ledelse</button>
+      <button class="chip" data-filter="Leverancemodel" aria-pressed="false">Leverancemodel</button>
+      <button class="chip" data-filter="Organisation" aria-pressed="false">Organisation</button>
+      <button class="chip" data-filter="Praksis" aria-pressed="false">Praksis</button>
+      <button class="chip" data-filter="Uddannelse" aria-pressed="false">Uddannelse</button>
+      <button class="chip" data-filter="Udvikling" aria-pressed="false">Udvikling</button>
+      <button class="chip" data-filter="Vurdering" aria-pressed="false">Vurdering</button>
+    </div>
     <div class="vgrid" id="viden-grid"></div>
   </div>
 </section>
@@ -85,7 +100,7 @@ const videnGridCardHtml = v => {
   const tagName = coming ? 'div' : 'a';
   const href = coming ? '' : ` href="${v.slug}.html"`;
   const foot = coming ? 'Kommer snart' : 'Læs mere <span class="arw">→</span>';
-  const tagText = kind + (coming ? ' · Kommer snart' : '');
+  const tagText = kind + (coming ? ' · Kommer snart' : (v.tags && v.tags.length ? ' · ' + v.tags.join(', ') : ''));
   return `<${tagName} class="ocard vcard reveal${coming ? ' is-soon' : ''}"${href}>
    <span class="ocard__tag">${tagText}</span>
    <h3>${v.t}</h3>
@@ -93,13 +108,22 @@ const videnGridCardHtml = v => {
    <span class="ocard__foot"><span style="margin-left:auto">${foot}</span></span>
  </${tagName}>`;
 };
-initRail({
+const videnRail = initRail({
   items: window.VIDEN_GRID_ITEMS,
   container: document.getElementById('viden-grid'),
+  filtersEl: document.getElementById('viden-filters'),
   prevBtn: null,
   nextBtn: null,
-  renderCard: videnGridCardHtml
+  renderCard: videnGridCardHtml,
+  matchFilter: (v, f) => f === 'all' || (v.tags || []).includes(f)
 });
+// Deep link from an article's own tag pills (?tag=Arkitektur) straight
+// into the matching filter here, so a tag click actually connects the
+// two pages instead of just landing on an unfiltered grid.
+const requestedTag = new URLSearchParams(location.search).get('tag');
+if (requestedTag && document.querySelector(`#viden-filters .chip[data-filter="${CSS.escape(requestedTag)}"]`)) {
+  videnRail.applyFilter(requestedTag);
+}
 </script>
 </body>
 </html>

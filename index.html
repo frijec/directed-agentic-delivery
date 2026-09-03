@@ -1150,19 +1150,22 @@ panel.addEventListener('click',e=>{
   if(j) ydelserRail.applyFilter(j.dataset.jump);
 });
 
-/* Viden — 8 real articles + whitepaper placeholders. No niveau here:
-   articles and whitepapers aren't leveled the way services are. No
-   filter UI either — not enough real variety yet to warrant one (7
-   articles vs. a handful of coming-soon placeholders). Whitepaper
-   cards (comingSoon:true) render as non-interactive: no href,
-   "Kommer snart" instead of a working "Læs mere". */
+/* Viden — 16 real articles + whitepaper placeholders. No niveau here:
+   articles and whitepapers aren't leveled the way services are. Tag
+   filtering lives on the full overview (viden/), not this compact
+   preview rail — a 12-chip filter row would overwhelm it here; the
+   card's tags are still shown as text so the rail stays visually
+   consistent with the overview grid. Whitepaper cards (comingSoon:true)
+   render as non-interactive: no href, "Kommer snart" instead of a
+   working "Læs mere". */
 const videnCardHtml=v=>{
   const kind=v.type==='whitepaper'?'Whitepaper':'Artikel';
   const tagAttr=v.comingSoon?'':` href="viden/${v.slug}.html"`;
   const tagName=v.comingSoon?'div':'a';
+  const tagText=kind+(v.comingSoon?' · Kommer snart':(v.tags&&v.tags.length?' · '+v.tags.join(', '):''));
   return `
  <${tagName} class="ocard vcard reveal${v.comingSoon?' is-soon':''}"${tagAttr}>
-   <span class="ocard__tag">${kind}${v.comingSoon?' · Kommer snart':''}</span>
+   <span class="ocard__tag">${tagText}</span>
    <h3>${v.t}</h3>
    <p>${v.d}</p>
    <span class="ocard__foot">
