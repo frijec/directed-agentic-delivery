@@ -97,13 +97,18 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
              box-shadow var(--d-base) var(--ease-out),
              transform var(--d-base) var(--ease-spring);
 }
+/* Dot coverage bumped from the original 42%/44%/2.5px (~28% of each
+   cell filled — read as pale/washed-out at the arrow's real ~22px
+   size) to 65%/70%/2px (~65% coverage): reads as a solid, confident
+   glyph at actual size while still breaking up into visible dots on
+   close inspection, keeping the dithered texture used elsewhere. */
 .arw{
   font-size:1.5em;
-  background-image:radial-gradient(var(--ink-800) 42%, transparent 44%);
-  background-size:2.5px 2.5px;background-position:center;
+  background-image:radial-gradient(var(--ink-800) 65%, transparent 70%);
+  background-size:2px 2px;background-position:center;
   -webkit-background-clip:text;background-clip:text;color:transparent;
 }
-.btn--primary .arw{background-image:radial-gradient(#fff 42%, transparent 44%)}
+.btn--primary .arw{background-image:radial-gradient(#fff 65%, transparent 70%)}
 .btn .arw{transition:transform var(--d-base) var(--ease-spring)}
 .btn:hover{transform:translateY(-2px)}
 .btn:hover .arw{transform:translateX(5px)}
