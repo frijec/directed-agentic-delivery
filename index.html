@@ -235,7 +235,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .statcard{background:var(--plum);color:#fff;border-radius:var(--r-lg);padding:clamp(1.5rem,3vw,2rem);box-shadow:var(--lift-2)}
 .statcard .mono{color:rgba(255,255,255,.45)}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-5);margin-top:var(--s-5)}
-.stat{display:flex;align-items:flex-start;gap:var(--s-4)}
+.stat{display:flex;align-items:flex-start;gap:var(--s-4);min-width:0}
+.stat__text{min-width:0}
 /* Height is set explicitly in the .tally-scoped rule below (a calc() off
    the real number/label metrics), not via align-items:stretch +
    aspect-ratio — that combination measured 300px here: a <canvas> child's
@@ -289,7 +290,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .tally__marquee{margin:clamp(1.75rem,3.5vw,2.5rem) calc(clamp(1.5rem,3vw,2.5rem)*-1) calc(clamp(1.5rem,3vw,2rem)*-1);
   padding-block:clamp(1rem,2vw,1.5rem);
   mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
-@media (max-width:640px){.tally .stats{grid-template-columns:1fr 1fr}}
+@media (max-width:640px){.tally .stats{grid-template-columns:1fr}}
 
 /* THESIS ------------------------------------------------- */
 .thesis{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(1rem,2.5vw,2rem);margin-top:clamp(2rem,4vw,3rem);align-items:start}
