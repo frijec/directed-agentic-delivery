@@ -106,6 +106,16 @@ img,svg{display:block;max-width:100%}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 :focus-visible{outline:2px solid var(--crimson);outline-offset:3px;border-radius:6px}
 
+.skip-link{
+  position:absolute;top:var(--s-4);left:var(--s-4);z-index:1000;
+  transform:translateY(-150%);
+  background:var(--ink-800);color:#fff;padding:.85rem 1.4rem;
+  border-radius:var(--r-md);text-decoration:none;white-space:nowrap;
+  font-size:var(--t-small);font-weight:600;
+  transition:transform var(--d-fast) var(--ease-out);
+}
+.skip-link:focus{transform:translateY(0)}
+
 .wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:var(--gutter)}
 .stack{padding-block:clamp(5.25rem,10.5vw,9.75rem)}
 .measure{max-width:var(--measure)}
@@ -259,7 +269,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* MARQUEE ------------------------------------------------ */
 .marquee{overflow:hidden;padding-block:var(--s-5);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
 .marquee__track{display:flex;gap:var(--s-4);width:max-content;animation:slide 44s linear infinite}
-.marquee:hover .marquee__track{animation-play-state:paused}
+.marquee:hover .marquee__track,.marquee.is-paused .marquee__track{animation-play-state:paused}
 @keyframes slide{to{transform:translateX(-50%)}}
 .mchip{
   background:var(--surface);border-radius:var(--r-pill);padding:.85rem 1.5rem;
@@ -274,9 +284,21 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
    is a type-only accent everywhere else on the site; this is the one
    surface use, which is why text follows the same dark-on-coral pairing
    as the h1's own coral chips rather than the hero cards' white-on-plum. */
-.tally{background:var(--coral);border-radius:var(--r-lg);
+.tally{position:relative;background:var(--coral);border-radius:var(--r-lg);
   padding:clamp(2rem,4vw,3rem) clamp(1.5rem,3vw,2.5rem) clamp(1.5rem,3vw,2rem);
   box-shadow:var(--lift-2);overflow:hidden}
+/* Sits outside .marquee itself (not subject to its mask-image fade)
+   so the button doesn't get faded out near the right edge. The only
+   way to pause the 44s auto-scroll was :hover — no keyboard or touch
+   equivalent (WCAG 2.2.2). */
+.marquee__pause{
+  position:absolute;bottom:clamp(1.6rem,3.2vw,2.3rem);right:clamp(1.5rem,3vw,2.5rem);z-index:2;
+  width:2.25rem;height:2.25rem;border-radius:50%;display:grid;place-items:center;
+  background:var(--ink-800);color:#fff;box-shadow:var(--lift-1);
+  transition:background-color var(--d-fast) var(--ease-out),transform var(--d-fast) var(--ease-spring);
+}
+.marquee__pause:hover{background:var(--crimson);transform:translateY(-1px)}
+.marquee__pause svg{width:14px;height:14px}
 /* This is the section's only heading, so it's a plain <h2> for the
    document outline — full display size, same weight as every other
    section title, not a shrunken eyebrow label. */
@@ -605,6 +627,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 </style>
 </head>
 <body>
+<a class="skip-link" href="#main">Spring til indhold</a>
 <nav class="nav" id="nav">
   <div class="nav__in">
     <a class="brand" href="#top"><img class="brand__mark" src="assets/brand-mark.png" alt="Consid" width="88" height="22"><span class="brand__sub">Directed Agentic Delivery</span></a>
@@ -617,7 +640,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     </div>
   </div>
 </nav>
-<main>
+<main id="main">
 
 <header class="hero" id="top">
   <canvas id="heroGrid" aria-hidden="true"></canvas>
@@ -860,8 +883,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
           <div class="stat__text"><div class="stat__num" data-count="3" data-suffix="">0</div><div class="stat__lab">Leveranceniveauer</div></div>
         </div>
       </div>
-      <div class="marquee tally__marquee" aria-hidden="true">
-        <div class="marquee__track" id="track"></div>
+      <div class="marquee tally__marquee">
+        <div class="marquee__track" id="track" aria-hidden="true"></div>
+        <button class="marquee__pause" id="marqueePause" type="button" aria-pressed="false" aria-label="Sæt animation på pause">
+          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="5" width="3" height="14" rx="1"></rect><rect x="14" y="5" width="3" height="14" rx="1"></rect></svg>
+        </button>
       </div>
     </div>
   </div>
@@ -1184,6 +1210,20 @@ initRail({
 /* Marquee */
 const items=['<b>Praktiker-drevet</b> — seniorarkitekter i front','<b>1800+</b> specialister','<b>Teknologi-agnostisk</b>','<b>700+</b> aktive kunder','<b>Arkitektur først</b>','<b>25+</b> år i Norden','<b>Specifikations-drevet</b>','<b>Mennesker</b> ved beslutningerne','<b>EU AI Act</b>-parat'];
 document.getElementById('track').innerHTML=[...items,...items].map(t=>`<span class="mchip">${t}</span>`).join('');
+
+/* Pause control — :hover already paused the 44s auto-scroll, but that
+   has no keyboard or touch equivalent (WCAG 2.2.2 needs one regardless
+   of REDUCED, which only covers users with the OS preference set). */
+const PAUSE_ICON='<svg viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="5" width="3" height="14" rx="1"></rect><rect x="14" y="5" width="3" height="14" rx="1"></rect></svg>';
+const PLAY_ICON='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>';
+const marqueeEl=document.querySelector('.marquee');
+const marqueePause=document.getElementById('marqueePause');
+marqueePause.addEventListener('click',()=>{
+  const paused=marqueeEl.classList.toggle('is-paused');
+  marqueePause.setAttribute('aria-pressed',String(paused));
+  marqueePause.setAttribute('aria-label',paused?'Genoptag animation':'Sæt animation på pause');
+  marqueePause.innerHTML=paused?PLAY_ICON:PAUSE_ICON;
+});
 
 /* Reveal */
 if(!REDUCED){
