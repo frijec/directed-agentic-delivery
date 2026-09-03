@@ -9,16 +9,34 @@
    ============================================================ */
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* Calendly popup — the widget script loads async, so [data-calendly]
-   links keep a real href to calendly.com as a fallback: if someone
-   clicks before the script arrives, the link just navigates normally
-   instead of silently doing nothing. */
+/* widget.css/widget.js are NOT loaded up front (they blocked first
+   paint on every page for a feature most visits never use) — fetched
+   lazily on first click instead; the real href on [data-calendly] is
+   the fallback if that load ever fails. */
 const CALENDLY_URL = 'https://calendly.com/consid-dad?background_color=fdfcfb&text_color=141416&primary_color=90263b';
+let calendlyLoad = null;
+function loadCalendly() {
+  if (!calendlyLoad) {
+    calendlyLoad = new Promise((resolve, reject) => {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'https://assets.calendly.com/assets/external/widget.css';
+      document.head.appendChild(link);
+      const script = document.createElement('script');
+      script.src = 'https://assets.calendly.com/assets/external/widget.js';
+      script.onload = resolve;
+      script.onerror = reject;
+      document.body.appendChild(script);
+    });
+  }
+  return calendlyLoad;
+}
 document.querySelectorAll('[data-calendly]').forEach(a => {
   a.addEventListener('click', e => {
-    if (!window.Calendly) return;
     e.preventDefault();
-    Calendly.initPopupWidget({ url: CALENDLY_URL });
+    loadCalendly()
+      .then(() => Calendly.initPopupWidget({ url: CALENDLY_URL }))
+      .catch(() => { window.location.href = a.href; });
   });
 });
 
