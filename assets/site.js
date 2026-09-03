@@ -96,27 +96,67 @@ if (navEl) {
 function initRail({ items, container, filtersEl, prevBtn, nextBtn, renderCard, matchFilter }) {
   container.innerHTML = items.map(renderCard).join('') + '<div class="rail__spacer" aria-hidden="true"></div>';
 
+  // FLIP (First, Last, Invert, Play): hiding/showing a grid card is an
+  // instant reflow — every other card that stays visible jumps straight
+  // to its new position with no transition of its own, which is the
+  // "glitchy" part. Record where the staying cards are BEFORE `mutate`
+  // runs, then after the resulting layout has settled, invert that jump
+  // with a transform and transition it back to zero — so the jump itself
+  // becomes a smooth slide instead of a teleport.
+  function withFlip(cards, mutate) {
+    if (REDUCED) { mutate(); return; }
+    const staying = cards.filter(c => !c.hidden);
+    const first = new Map(staying.map(c => [c, c.getBoundingClientRect()]));
+    mutate();
+    requestAnimationFrame(() => {
+      staying.forEach(c => {
+        if (c.hidden) return; // just hidden by this mutation — its own leave animation covers it
+        const f = first.get(c), l = c.getBoundingClientRect();
+        const dx = f.left - l.left, dy = f.top - l.top;
+        if (!dx && !dy) return;
+        c.style.transition = 'none';
+        c.style.transform = `translate(${dx}px,${dy}px)`;
+        requestAnimationFrame(() => {
+          c.style.transition = 'transform var(--d-base) var(--ease-out)';
+          c.style.transform = '';
+          c.addEventListener('transitionend', () => { c.style.transition = ''; }, { once: true });
+        });
+      });
+    });
+  }
+
   // filtersEl/matchFilter are optional — a page can render a plain,
   // unfiltered rail/grid by omitting them.
   function applyFilter(f) {
     if (!filtersEl) return;
     filtersEl.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c.dataset.filter === f)));
     const cards = [...container.querySelectorAll('.ocard')];
+    const leaving = [];
     // Cards that change visibility fade+scale rather than teleporting via
     // the bare [hidden] toggle — REDUCED skips straight to the end state.
-    cards.forEach((c, i) => {
-      const show = matchFilter(items[i], f);
-      if (show === !c.hidden) return;
-      if (REDUCED) { c.hidden = !show; return; }
-      if (show) {
-        c.hidden = false;
-        c.classList.add('is-entering');
-        requestAnimationFrame(() => requestAnimationFrame(() => c.classList.remove('is-entering')));
-      } else {
-        c.classList.add('is-leaving');
-        setTimeout(() => { c.hidden = true; c.classList.remove('is-leaving'); }, 260);
-      }
+    withFlip(cards, () => {
+      cards.forEach((c, i) => {
+        const show = matchFilter(items[i], f);
+        if (show === !c.hidden) return;
+        if (REDUCED) { c.hidden = !show; return; }
+        if (show) {
+          c.hidden = false;
+          c.classList.add('is-entering');
+          requestAnimationFrame(() => requestAnimationFrame(() => c.classList.remove('is-entering')));
+        } else {
+          c.classList.add('is-leaving');
+          leaving.push(c);
+        }
+      });
     });
+    // The leaving cards' own hide happens 260ms later (their fade needs
+    // to finish first) — that's a second reflow moment, so it gets its
+    // own FLIP pass rather than reusing the one above.
+    if (leaving.length && !REDUCED) {
+      setTimeout(() => {
+        withFlip(cards, () => leaving.forEach(c => { c.hidden = true; c.classList.remove('is-leaving'); }));
+      }, 260);
+    }
     if (prevBtn && nextBtn) container.scrollTo({ left: 0, behavior: REDUCED ? 'auto' : 'smooth' });
   }
   if (filtersEl) filtersEl.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => applyFilter(c.dataset.filter)));
