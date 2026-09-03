@@ -293,9 +293,19 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .ydelse__head .lead{color:rgba(255,255,255,.78)}
 .ydelse__meta{display:flex;gap:var(--s-6);flex-wrap:wrap;align-items:center;justify-content:space-between;margin-top:var(--s-7)}
 .ydelse__kicker{display:flex;align-items:center;gap:.5em;font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.7)}
-.ydelse__meta .dots{gap:6px}
-.ydelse__meta .dot{background:rgba(255,255,255,.28)}
-.ydelse__meta .dot--on{background:#fff}
+
+/* Level meter — the bare .dots component (still used on rail/related
+   cards) reads as decoration, not information: 6px dots with no
+   visible label, meaning only exposed via aria-label. On the Ydelse
+   page's own header, this is the ONE place a visitor decides "is this
+   for us?" — so it gets a labelled, numbered version instead. */
+.ydelse__levels{display:flex;align-items:center;gap:.65em}
+.ydelse__levels-label{font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+.lvlmeter{display:flex;gap:5px}
+.lvl{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;
+  font-family:var(--font-mono);font-size:10px;font-weight:600;
+  color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.24);background:transparent}
+.lvl--on{color:var(--plum);background:#fff;border-color:#fff}
 
 /* One handrolled abstract shape per offering (assets/dither.js), run
    through the same matcap+dither pipeline as the article breaks below,
