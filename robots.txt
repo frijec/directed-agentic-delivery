@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://frijec.github.io/directed-agentic-delivery/sitemap.xml

@@ -10,7 +10,7 @@
    index.html, which is a direct port of a named object from the
    origami set — so they're not shared with that registry.
    ============================================================ */
-import * as THREE from 'https://unpkg.com/three@0.169.0/build/three.module.js';
+import * as THREE from './vendor/three.module.min.js';
 
 const REDUCED_ILLUS = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const DITHER_GRID = 2, DITHER_PIXEL_RATIO = 1, DITHER_GAIN = 1.0, DITHER_BIAS = 0.0, DITHER_GAMMA = 0.55;
