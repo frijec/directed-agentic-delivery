@@ -364,10 +364,7 @@ function initRail({ items, container, filtersEl, prevBtn, nextBtn, renderCard, m
 })();
 
 /* Lead-gen form — Formspree AJAX submit. No-ops on pages without a
-   #leadform. See README-style note in the article template: the
-   action= endpoint is a placeholder until a real Formspree form is
-   created (account creation isn't something this assistant can do on
-   the user's behalf). */
+   #leadform. */
 const leadform = document.getElementById('leadform');
 if (leadform) {
   const status = document.getElementById('lf-status');
