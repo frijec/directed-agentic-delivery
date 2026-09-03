@@ -394,6 +394,12 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .leadcard h3{font-size:clamp(1.3rem,2.2vw,1.7rem)}
 .leadform{display:flex;flex-direction:column;gap:var(--s-4);transition:opacity var(--d-base) var(--ease-out)}
 .leadform.is-leaving{opacity:0}
+/* Our own display:flex above has equal specificity to the browser's
+   built-in [hidden]{display:none} and wins on source order, so setting
+   the hidden attribute alone left the form's full-height box in place
+   (invisible, opacity:0 from .is-leaving) — pushing #lf-status down
+   into the empty space below it instead of taking its place. */
+.leadform[hidden]{display:none}
 .leadform .field{display:flex;flex-direction:column;gap:.4rem;width:75%}
 .leadform label{font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.08em;text-transform:uppercase;color:var(--graphite)}
 .leadform input{
