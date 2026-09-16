@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<title>Admin — Leads</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="/assets/favicon.png">
+<meta name="theme-color" content="#492A34">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;900&family=EB+Garamond:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css">
+<style>
+  .admin-panel{background:var(--surface);border-radius:20px;padding:var(--s-6, 28px);box-shadow:0 18px 50px rgba(27,27,29,.08)}
+  .admin-field{display:block;margin-top:12px}
+  .admin-field input{width:100%;max-width:360px;padding:12px 14px;border-radius:12px;border:1px solid var(--hairline);background:var(--air);font:inherit;color:inherit}
+  .admin-toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:18px}
+  .admin-toolbar input{flex:1 1 220px;max-width:320px;padding:10px 12px;border-radius:12px;border:1px solid var(--hairline);background:var(--air);font:inherit;color:inherit}
+  .admin-table-wrap{overflow-x:auto}
+  table.admin-table{width:100%;border-collapse:collapse;font-size:14px}
+  table.admin-table th,table.admin-table td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--hairline)}
+  table.admin-table th{font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--stone);white-space:nowrap}
+  table.admin-table td.msg{min-width:260px;white-space:pre-wrap}
+  .admin-note{color:var(--stone);font-size:14px}
+  .admin-error{color:var(--crimson);font-weight:600}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Spring til indhold</a>
+<nav class="nav" id="nav">
+  <div class="nav__in">
+    <a class="brand" href="/#top"><img class="brand__mark" src="/assets/brand-mark.png" alt="Consid" width="88" height="22"><span class="brand__sub">Directed Agentic Delivery</span></a>
+    <div class="nav__links">
+      <a class="nav__link" href="/ydelser/">Ydelser</a>
+      <a class="nav__link" href="/viden/">Viden</a>
+    </div>
+  </div>
+</nav>
+<main id="main">
+<section class="stack">
+  <div class="wrap">
+    <h1 style="font-size:var(--t-h2)">Leads</h1>
+    <p class="lead" style="margin-top:var(--s-5)">Intern side. Indtast adgangskoden for at se beskeder fra kontaktformularen og besvarelser fra Niveau-tjek.</p>
+
+    <div class="admin-panel" style="margin-top:var(--s-6)">
+      <form id="gate-form">
+        <label class="admin-field" for="admin-pass"><strong>Adgangskode</strong>
+          <input id="admin-pass" type="password" autocomplete="current-password" required>
+        </label>
+        <div style="margin-top:16px"><button class="btn btn--primary" type="submit">Log ind <span class="arw">→</span></button></div>
+        <p id="gate-msg" class="admin-note" style="margin-top:12px"></p>
+      </form>
+
+      <div id="panel" hidden>
+        <div class="admin-toolbar">
+          <input id="filter" type="search" placeholder="Søg på navn eller e-mail…" aria-label="Søg">
+          <button class="btn btn--soft" type="button" id="refresh">Opdatér</button>
+          <button class="btn btn--soft" type="button" id="csv">Hent CSV</button>
+          <button class="btn btn--soft" type="button" id="logout">Log ud</button>
+          <span class="admin-note" id="count"></span>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr><th>Dato</th><th>Navn</th><th>E-mail</th><th>Telefon</th><th>Virksomhed</th><th>Rolle</th><th>Besked</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+        <p class="admin-note" id="empty" hidden>Ingen beskeder endnu.</p>
+
+        <h2 style="font-size:var(--t-h3);margin-top:var(--s-8)">Niveau-tjek</h2>
+        <div class="admin-toolbar">
+          <input id="filter2" type="search" placeholder="Søg på firma eller e-mail…" aria-label="Søg">
+          <button class="btn btn--soft" type="button" id="csv2">Hent CSV</button>
+          <span class="admin-note" id="count2"></span>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr><th>Dato</th><th>Firma</th><th>E-mail</th><th>Rolle</th><th>Org.størrelse</th><th>Niveau</th><th>Andel</th><th>Struktur</th><th>Begrænsning</th></tr></thead>
+            <tbody id="rows2"></tbody>
+          </table>
+        </div>
+        <p class="admin-note" id="empty2" hidden>Ingen besvarelser endnu.</p>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+<footer class="footer">
+  <div class="wrap footer__in">
+    <div>© 2026 Consid København · Directed Agentic Delivery</div>
+    <div class="footer__links"><a href="/">Forside</a></div>
+  </div>
+</footer>
+<script>
+(function(){
+  var SUPABASE_URL = 'https://nkipqsrzwujanbcdmidk.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_WRbRixU4SsT6BR4MwWFX1w_RCHxgRpL';
+  var gateForm = document.getElementById('gate-form');
+  var gateMsg = document.getElementById('gate-msg');
+  var panel = document.getElementById('panel');
+  var rowsEl = document.getElementById('rows');
+  var emptyEl = document.getElementById('empty');
+  var countEl = document.getElementById('count');
+  var filterEl = document.getElementById('filter');
+  var data = [];
+
+  var rowsEl2 = document.getElementById('rows2');
+  var emptyEl2 = document.getElementById('empty2');
+  var countEl2 = document.getElementById('count2');
+  var filterEl2 = document.getElementById('filter2');
+  var data2 = [];
+
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+  function fmt(ts){
+    if(!ts) return '';
+    try { return new Date(ts).toLocaleString('da-DK', { dateStyle:'short', timeStyle:'short' }); }
+    catch(e){ return ts; }
+  }
+
+  function callRpc(name, password){
+    return fetch(SUPABASE_URL + '/rest/v1/rpc/' + name, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
+      body: JSON.stringify({ p_password: password })
+    }).then(function(res){
+      if(!res.ok) throw new Error('auth');
+      return res.json();
+    }).then(function(json){ return Array.isArray(json) ? json : []; });
+  }
+
+  function render(){
+    var q = (filterEl.value || '').trim().toLowerCase();
+    var list = q ? data.filter(function(r){
+      return ((r.name||'') + ' ' + (r.email||'') + ' ' + (r.company||'')).toLowerCase().indexOf(q) !== -1;
+    }) : data;
+    rowsEl.innerHTML = list.map(function(r){
+      return '<tr><td>' + esc(fmt(r.created_at)) + '</td><td>' + esc(r.name) + '</td><td><a href="mailto:' + esc(r.email) + '">' + esc(r.email) + '</a></td><td>' + esc(r.phone) + '</td><td>' + esc(r.company) + '</td><td>' + esc(r.role) + '</td><td class="msg">' + esc(r.message) + '</td></tr>';
+    }).join('');
+    emptyEl.hidden = list.length > 0;
+    countEl.textContent = list.length + ' af ' + data.length + ' beskeder';
+  }
+
+  function render2(){
+    var q = (filterEl2.value || '').trim().toLowerCase();
+    var list = q ? data2.filter(function(r){
+      return ((r.company||'') + ' ' + (r.email||'')).toLowerCase().indexOf(q) !== -1;
+    }) : data2;
+    rowsEl2.innerHTML = list.map(function(r){
+      return '<tr><td>' + esc(fmt(r.created_at)) + '</td><td>' + esc(r.company) + '</td><td><a href="mailto:' + esc(r.email) + '">' + esc(r.email) + '</a></td><td>' + esc(r.role) + '</td><td>' + esc(r.org_size) + '</td><td>Niveau ' + esc(r.samlet_niveau) + '</td><td>' + esc(r.andel_niveau) + '</td><td>' + esc(r.struktur_niveau) + '</td><td>' + esc(r.limiting_dimension) + '</td></tr>';
+    }).join('');
+    emptyEl2.hidden = list.length > 0;
+    countEl2.textContent = list.length + ' af ' + data2.length + ' besvarelser';
+  }
+
+  function load(password){
+    gateMsg.className = 'admin-note';
+    gateMsg.textContent = 'Henter…';
+    return Promise.all([
+      callRpc('get_contact_submissions', password),
+      callRpc('get_niveau_tjek_leads', password)
+    ]).then(function(results){
+      data = results[0];
+      data2 = results[1];
+      try { sessionStorage.setItem('adminPass', password); } catch(e){}
+      gateForm.hidden = true;
+      panel.hidden = false;
+      gateMsg.textContent = '';
+      render();
+      render2();
+    }).catch(function(){
+      gateMsg.className = 'admin-error';
+      gateMsg.textContent = 'Forkert adgangskode — prøv igen.';
+      try { sessionStorage.removeItem('adminPass'); } catch(e){}
+    });
+  }
+
+  gateForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    load(document.getElementById('admin-pass').value);
+  });
+
+  filterEl.addEventListener('input', render);
+  filterEl2.addEventListener('input', render2);
+
+  document.getElementById('refresh').addEventListener('click', function(){
+    var p = '';
+    try { p = sessionStorage.getItem('adminPass') || ''; } catch(e){}
+    if(p) load(p);
+  });
+
+  document.getElementById('logout').addEventListener('click', function(){
+    try { sessionStorage.removeItem('adminPass'); } catch(e){}
+    data = [];
+    data2 = [];
+    rowsEl.innerHTML = '';
+    rowsEl2.innerHTML = '';
+    panel.hidden = true;
+    gateForm.hidden = false;
+    document.getElementById('admin-pass').value = '';
+    gateMsg.textContent = '';
+    gateMsg.className = 'admin-note';
+  });
+
+  document.getElementById('csv').addEventListener('click', function(){
+    var cols = ['created_at','name','email','phone','company','role','message'];
+    var lines = [cols.join(',')].concat(data.map(function(r){
+      return cols.map(function(c){ return '"' + String(r[c] == null ? '' : r[c]).replace(/"/g,'""') + '"'; }).join(',');
+    }));
+    var blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'kontaktbeskeder.csv';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  document.getElementById('csv2').addEventListener('click', function(){
+    var cols = ['created_at','company','email','role','org_size','current_ai_usage','biggest_challenge','conversation_value','answers','andel_niveau','struktur_niveau','samlet_niveau','average','limiting_dimension'];
+    var lines = [cols.join(',')].concat(data2.map(function(r){
+      return cols.map(function(c){ return '"' + String(r[c] == null ? '' : r[c]).replace(/"/g,'""') + '"'; }).join(',');
+    }));
+    var blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'niveau-tjek.csv';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  var saved = '';
+  try { saved = sessionStorage.getItem('adminPass') || ''; } catch(e){}
+  if(saved) load(saved);
+})();
+</script>
+</body>
+</html>
