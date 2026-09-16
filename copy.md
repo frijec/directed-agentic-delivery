@@ -21,8 +21,7 @@ Directed Agentic Delivery — Consid
 
 ## Navigation
 
-**Brand subtitle** (next to the logo, hidden on narrow screens)
-Directed Agentic Delivery
+**Brand subtitle** — removed. The nav now shows just the Consid logo, matching consid.com's own header exactly, with no adjacent site-name label.
 
 **Nav link 1**
 Jeres niveau
