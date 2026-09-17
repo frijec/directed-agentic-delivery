@@ -218,38 +218,37 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .btn--onDark:hover{background:rgba(255,255,255,.18)}
 
 /* NAV -----------------------------------------------------
-   Matches consid.com's own global header exactly, including the part
-   that matters most: it's a transparent overlay that reads its
-   contrast from whatever's behind it, not a permanently-dark bar.
+   Matches consid.com's own real header exactly — measured directly off
+   the live site's computed styles and DOM (not guessed from a screenshot).
    See public/assets/site.css for the full explanation — kept in sync
    with that file by hand, per this page's own long-standing convention. */
 .nav{position:sticky;top:0;z-index:50;font-family:var(--font-considsans);
-  --nav-fg:var(--consid-red);--nav-fg-contrast:#fff}
+  --nav-fg:var(--consid-dark);--nav-cta:var(--consid-red)}
 .nav::before{
-  content:"";position:absolute;inset:-1px 0 0;
-  backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);
-  background-image:linear-gradient(to bottom, rgba(245,243,241,.86) 0%, rgba(245,243,241,0) 100%);
-  mask-image:linear-gradient(to bottom, #000 0%, #000 45%, transparent 100%);
-  -webkit-mask-image:linear-gradient(to bottom, #000 0%, #000 45%, transparent 100%);
-  pointer-events:none;opacity:0;transition:opacity var(--d-base) var(--ease-out);
+  content:"";position:absolute;inset:0;
+  background:rgba(255,255,255,.8);
+  backdrop-filter:saturate(1.8) blur(5px);-webkit-backdrop-filter:saturate(1.8) blur(5px);
+  transform:translateY(-100%);
+  transition:transform .3s cubic-bezier(.43,.195,.02,1);
+  pointer-events:none;
 }
-.nav[data-stuck="true"]::before{opacity:1}
-.nav--onDark:not([data-stuck="true"]){--nav-fg:#fff;--nav-fg-contrast:var(--consid-red)}
+.nav[data-stuck="true"]::before{transform:translateY(0)}
+.nav--onDark:not([data-stuck="true"]){--nav-fg:#fff;--nav-cta:#fff}
 .nav__in{
   position:relative;z-index:1;
   display:flex;align-items:center;gap:var(--s-5);
   padding:1.5rem var(--gutter);
 }
-.brand{display:flex;align-items:center;gap:var(--s-3);text-decoration:none;flex:none}
-.brand__mark{height:26px;width:auto;display:block;transition:filter var(--d-fast) var(--ease-out)}
-.nav--onDark:not([data-stuck="true"]) .brand__mark{filter:brightness(0) invert(1)}
+.brand{display:flex;align-items:center;text-decoration:none;flex:none;position:relative}
+.brand__mark{height:32px;width:auto;display:block;transition:opacity var(--d-fast) var(--ease-out)}
+.brand__mark--light{position:absolute;left:0;top:0;opacity:0}
+.nav--onDark:not([data-stuck="true"]) .brand__mark--dark{opacity:0}
+.nav--onDark:not([data-stuck="true"]) .brand__mark--light{opacity:1}
 .nav__links{display:flex;gap:var(--s-5);margin-left:auto;align-items:center}
-.nav__link{text-decoration:none;font-size:16px;font-weight:600;color:var(--nav-fg);transition:color var(--d-fast) var(--ease-out)}
-.nav__link:hover{opacity:.7}
-.nav .btn{background:transparent;border:2px solid var(--nav-fg);color:var(--nav-fg);
-  box-shadow:none;padding:.55rem 1.5rem;font-family:var(--font-considsans);font-weight:600;font-size:16px;
-  transition:background-color var(--d-fast) var(--ease-out),color var(--d-fast) var(--ease-out)}
-.nav .btn:hover{background:var(--nav-fg);color:var(--nav-fg-contrast);transform:none;box-shadow:none}
+.nav__link,.nav__cta{text-decoration:none;font-size:16px;font-weight:600;transition:color var(--d-fast) var(--ease-out)}
+.nav__link{color:var(--nav-fg)}
+.nav__cta{color:var(--nav-cta)}
+.nav__link:hover,.nav__cta:hover{opacity:.7}
 @media (max-width:900px){.nav__links .nav__link{display:none}}
 
 /* HERO --------------------------------------------------- */
@@ -685,29 +684,29 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 @media (prefers-reduced-motion:reduce){.contactform,.contactform__status{transition:none}}
 
 /* FOOTER ----------------------------------------------------
-   Matches consid.com's own footer: solid #1C1C1C, white ConsidSans,
-   underlined link columns, a social-icon row, and a bottom bar with the
-   wordmark plus legal links — same structure, our own real links. */
+   Matches consid.com's own real footer — measured directly off its live
+   DOM/computed styles: solid #1C1C1C, three plain link columns (no
+   separate header — the first link in each column is styled exactly like
+   the rest, just first), a row of 30px white circular social icons
+   pinned to the end of the same row, and a bottom row with the logo and
+   two legal links — no copyright line, no divider border. */
 .footer{background:var(--consid-dark);color:#fff;font-family:var(--font-considsans);
   padding-top:var(--s-8);padding-bottom:var(--s-6)}
-.footer__grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s-6) var(--s-5)}
-@media (max-width:900px){.footer__grid{grid-template-columns:repeat(2,1fr)}}
-@media (max-width:560px){.footer__grid{grid-template-columns:1fr}}
-.footer__col{display:flex;flex-direction:column;gap:var(--s-3)}
-.footer__col h3{font-size:var(--t-micro);text-transform:uppercase;letter-spacing:.08em;font-weight:400;color:rgba(255,255,255,.5);margin:0}
+.footer__grid{display:flex;flex-wrap:wrap;gap:var(--s-6) var(--s-5)}
+.footer__col{display:flex;flex-direction:column;gap:var(--s-3);flex:1 1 200px}
 .footer__col a{color:#fff;font-size:18px;font-weight:600;text-decoration:underline;text-underline-offset:.15em;text-decoration-color:rgba(255,255,255,.35);transition:text-decoration-color var(--d-fast) var(--ease-out)}
 .footer__col a:hover{text-decoration-color:#fff}
-.footer__social{display:flex;gap:var(--s-3);align-items:flex-start}
-.footer__social a{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:999px;background:rgba(255,255,255,.1);color:#fff;transition:background-color var(--d-fast) var(--ease-out)}
-.footer__social a:hover{background:rgba(255,255,255,.2)}
+.footer__social{display:flex;gap:var(--s-3);align-items:flex-start;margin-left:auto;flex:0 0 auto}
+.footer__social a{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:999px;background:#fff;color:var(--consid-dark);transition:opacity var(--d-fast) var(--ease-out)}
+.footer__social a:hover{opacity:.8}
 .footer__social svg{width:16px;height:16px}
-.footer__bottom{margin-top:var(--s-8);padding-top:var(--s-5);border-top:1px solid rgba(255,255,255,.14);
+.footer__bottom{margin-top:var(--s-6);
   display:flex;flex-wrap:wrap;gap:var(--s-4);align-items:center;justify-content:space-between}
-.footer__logo{display:block;height:22px}
+.footer__logo{display:block;height:32px}
 .footer__logo img{height:100%;width:auto;display:block}
-.footer__legal{display:flex;flex-wrap:wrap;gap:var(--s-5);align-items:center;font-size:var(--t-small);color:rgba(255,255,255,.55)}
-.footer__legal a{color:rgba(255,255,255,.55);text-decoration:underline;text-decoration-color:rgba(255,255,255,.3);transition:color var(--d-fast) var(--ease-out)}
-.footer__legal a:hover{color:#fff}
+.footer__legal{display:flex;flex-wrap:wrap;gap:var(--s-5);align-items:center;font-size:18px;color:#fff}
+.footer__legal a{color:#fff;text-decoration:none;transition:opacity var(--d-fast) var(--ease-out)}
+.footer__legal a:hover{opacity:.7}
 
 /* REVEAL ------------------------------------------------- */
 .reveal{opacity:0;transform:translateY(16px)}
@@ -727,14 +726,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 <a class="skip-link" href="#main">Spring til indhold</a>
 <nav class="nav" id="nav">
   <div class="nav__in">
-    <a class="brand" href="#top"><img class="brand__mark" src="/assets/consid-mark.svg" alt="Consid" width="104" height="26"></a>
+    <a class="brand" href="#top"><img class="brand__mark brand__mark--dark" src="/assets/consid-logo-dark.svg" alt="Consid" width="128" height="32"><img class="brand__mark brand__mark--light" src="/assets/consid-logo-white.svg" alt="Consid" width="128" height="32"></a>
     <div class="nav__links">
       <a class="nav__link" href="#niveau">Jeres niveau</a>
       <a class="nav__link" href="#principper">Sådan arbejder vi</a>
       <a class="nav__link" href="/ydelser/">Ydelser</a>
       <a class="nav__link" href="/viden/">Viden</a>
       <a class="nav__link" href="/#kontakt">Book en session</a>
-      <a class="btn btn--primary" href="/niveau-tjek">Tag niveau-tjekket <span class="arw">→</span></a>
+      <a class="nav__cta" href="/niveau-tjek">Tag niveau-tjekket</a>
     </div>
   </div>
 </nav>
@@ -1043,19 +1042,30 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   <div class="wrap">
     <div class="footer__grid">
       <div class="footer__col">
-        <h3>Sitet</h3>
-        <a href="/niveau-tjek">Niveau-tjek</a>
-        <a href="/ydelser/">Ydelser</a>
-        <a href="/viden/">Viden</a>
+        <a href="https://www.consid.com/services/" target="_blank" rel="noopener">Our services</a>
+        <a href="https://www.consid.com/career/" target="_blank" rel="noopener">Career</a>
+        <a href="https://www.consid.com/career/open-positions/" target="_blank" rel="noopener">Open positions</a>
+        <a href="https://www.consid.com/contact/" target="_blank" rel="noopener">Contact us</a>
+        <a href="tel:+4636-120210">Phone</a>
+        <a href="mailto:info@consid.se">Email</a>
       </div>
       <div class="footer__col">
-        <h3>Kontakt</h3>
-        <a href="/#kontakt">Book en session</a>
-        <a href="mailto:michael.lund-andersen@consid.com">Email</a>
+        <a href="https://www.consid.com/about/" target="_blank" rel="noopener">About</a>
+        <a href="https://www.consid.com/about/news/" target="_blank" rel="noopener">News</a>
+        <a href="https://www.consid.com/about/offices/" target="_blank" rel="noopener">Our offices</a>
+        <a href="https://www.consid.com/about/awards/" target="_blank" rel="noopener">Awards</a>
+        <a href="https://www.consid.com/about/sustainability/" target="_blank" rel="noopener">Sustainability</a>
+        <a href="https://www.consid.com/about/annual-reports/" target="_blank" rel="noopener">Annual reports</a>
+        <a href="https://www.consid.com/about/equality/" target="_blank" rel="noopener">Q by Consid</a>
+        <a href="https://www.consid.com/sv/om-oss/considition/" target="_blank" rel="noopener">Considition</a>
+        <a href="https://www.consid.com/sv/om-oss/consid-youth-education/" target="_blank" rel="noopener">Consid Youth Education</a>
+        <a href="https://www.consid.com/sv/om-oss/consid-awards/" target="_blank" rel="noopener">Consid Awards</a>
       </div>
       <div class="footer__col">
-        <h3>Consid</h3>
-        <a href="https://www.consid.com/" target="_blank" rel="noopener">consid.com</a>
+        <a href="https://www.consid.com/insights/" target="_blank" rel="noopener">Insights</a>
+        <a href="https://www.consid.com/insights/articles/" target="_blank" rel="noopener">Blog</a>
+        <a href="https://www.consid.com/insights/events-webinars/" target="_blank" rel="noopener">Events and webinars</a>
+        <a href="https://www.consid.com/insights/resources/" target="_blank" rel="noopener">Knowledge base</a>
       </div>
       <div class="footer__social" role="group" aria-label="Consid på sociale medier">
         <a href="https://www.facebook.com/consid.se/" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-7.5h2.5l.5-3h-3V8.5c0-.87.24-1.46 1.5-1.46H16.5V4.32C16.17 4.28 15.06 4.18 13.77 4.18c-2.6 0-4.38 1.58-4.38 4.5v2.02H6.9v3h2.5V21h4.1z"/></svg></a>
@@ -1064,9 +1074,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       </div>
     </div>
     <div class="footer__bottom">
-      <a class="footer__logo" href="https://www.consid.com/" target="_blank" rel="noopener"><img src="/assets/consid-wordmark-white.svg" alt="Consid" width="88" height="22"></a>
+      <img class="footer__logo" src="/assets/consid-logo-white.svg" alt="Consid" width="128" height="32">
       <div class="footer__legal">
-        <span>© 2026 Consid</span>
         <a href="https://www.consid.com/legal/privacy-policy/" target="_blank" rel="noopener">Privacy policy</a>
         <a href="https://www.consid.com/legal/cookie-policy/" target="_blank" rel="noopener">Cookie policy</a>
       </div>
