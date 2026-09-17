@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<title>Niveau-tjek: hvilket niveau er I på? — Consid</title>
+<meta name="description" content="Svar på 6 spørgsmål og få en konkret vurdering af, hvor jeres organisation reelt står med Agentic Delivery, på under 2 minutter.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://directed-agentic-delivery.consid.engineering/niveau-tjek">
+<link rel="icon" type="image/png" href="/assets/favicon.png">
+<meta name="theme-color" content="#492A34">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Consid">
+<meta property="og:title" content="Niveau-tjek: hvilket niveau er I på? — Consid">
+<meta property="og:description" content="Svar på 6 spørgsmål og få en konkret vurdering af, hvor jeres organisation reelt står med Agentic Delivery, på under 2 minutter.">
+<meta property="og:url" content="https://directed-agentic-delivery.consid.engineering/niveau-tjek">
+<meta property="og:image" content="https://directed-agentic-delivery.consid.engineering/assets/og/directed-agentic-delivery.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="da_DK">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Niveau-tjek: hvilket niveau er I på? — Consid">
+<meta name="twitter:description" content="Svar på 6 spørgsmål og få en konkret vurdering af, hvor jeres organisation reelt står med Agentic Delivery, på under 2 minutter.">
+<meta name="twitter:image" content="https://directed-agentic-delivery.consid.engineering/assets/og/directed-agentic-delivery.png">
+<link rel="stylesheet" href="/assets/site.css">
+<style>
+  /* Page-specific pieces site.css doesn't carry — ladder, quiz, result, lead form.
+     Same tokens as the shared sheet (--air/--surface/--crimson/--wine/--r-*), scoped
+     here the way pages/admin/index.html layers its own <style> on top of site.css. */
+
+  /* Each stage is a surface panel, the same card language as .ocard /
+     .leadcard elsewhere on the site, instead of raw text on --air. */
+  .niveau-stage{display:none;background:var(--surface);border-radius:var(--r-xl);
+    margin-top:var(--s-6);padding:clamp(1.6rem,4vw,3rem);box-shadow:var(--lift-1)}
+  .niveau-stage.is-active{display:block}
+
+  .skip-cta{
+    display:inline-flex;align-items:center;gap:.35rem;margin-top:var(--s-4);
+    font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.06em;
+    text-transform:uppercase;color:var(--wine);text-decoration:none;
+  }
+  .skip-cta:hover{text-decoration:underline}
+  .skip-cta--corner{margin-top:0;margin-left:auto;flex:none}
+
+  /* Ladder — read-only display variant of the homepage's .steps/.step tab strip. */
+  .ladder{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(.25rem,.5vw,.4rem);
+    margin-top:clamp(1.75rem,3.5vw,2.5rem);padding:clamp(.3rem,.55vw,.45rem);
+    background:var(--air);border-radius:calc(var(--r-md) + .35rem)}
+  .ladder__step{display:flex;flex-direction:column;align-items:flex-start;gap:var(--s-2);
+    padding:clamp(.7rem,1.25vw,1rem);border-radius:var(--r-md);position:relative;
+    transition:background var(--d-base) var(--ease-out)}
+  .ladder__step.is-active{background:var(--surface);box-shadow:var(--lift-1)}
+  .ladder__n{display:flex;align-items:center;justify-content:center;width:1.9rem;height:1.9rem;
+    border-radius:999px;font-family:var(--font-mono);font-size:var(--t-micro);font-weight:600;
+    background:var(--sand);color:var(--graphite)}
+  .ladder__step.is-active .ladder__n{background:var(--crimson);color:#fff}
+  .ladder__lab{font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.08em;
+    text-transform:uppercase;color:var(--stone)}
+  .ladder__name{font-family:var(--font-display);font-size:clamp(.95rem,1.4vw,1.15rem);
+    font-weight:600;letter-spacing:-.02em;transition:color var(--d-base) var(--ease-out)}
+  .ladder__step.is-active .ladder__name{color:var(--crimson)}
+  .ladder__pct{font-family:var(--font-mono);font-size:var(--t-micro);color:var(--stone);
+    font-variant-numeric:tabular-nums}
+  @media (max-width:760px){.ladder{grid-template-columns:repeat(2,1fr)}}
+
+  /* Quiz */
+  .quiz__head{display:flex;align-items:center;flex-wrap:wrap;gap:var(--s-3) var(--s-4);
+    font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.06em;
+    text-transform:uppercase;color:var(--stone)}
+  .quiz__back{color:var(--stone);text-decoration:none;background:none;border:0;cursor:pointer;
+    font:inherit;letter-spacing:inherit;text-transform:inherit}
+  .quiz__back:hover{color:var(--crimson)}
+  .quiz__bar{margin-top:var(--s-3);height:5px;width:100%;border-radius:999px;
+    background:var(--sand);overflow:hidden}
+  .quiz__bar > span{display:block;height:100%;border-radius:999px;background:var(--crimson);
+    transition:width var(--d-base) var(--ease-out)}
+  .quiz__q{margin-top:var(--s-6);font-family:var(--font-display);font-weight:500;
+    font-size:clamp(1.15rem,2.1vw,1.5rem);letter-spacing:-.02em;line-height:1.32;max-width:44ch}
+  .quiz__opts{margin-top:var(--s-5);display:flex;flex-direction:column;gap:var(--s-3)}
+  .quiz__opt{display:flex;align-items:flex-start;gap:var(--s-3);text-align:left;
+    padding:var(--s-4);border-radius:var(--r-md);border:1px solid var(--hairline);
+    background:var(--air);cursor:pointer;transition:border-color var(--d-fast) var(--ease-out),
+    background var(--d-fast) var(--ease-out)}
+  .quiz__opt:hover{border-color:var(--crimson)}
+  .quiz__opt.is-selected{border-color:var(--crimson);background:var(--blush)}
+  .quiz__opt__lab{flex:none;display:flex;align-items:center;justify-content:center;
+    width:1.75rem;height:1.75rem;border-radius:999px;background:var(--sand);
+    font-family:var(--font-mono);font-size:var(--t-micro);font-weight:600;color:var(--graphite)}
+  .quiz__opt.is-selected .quiz__opt__lab{background:var(--crimson);color:#fff}
+  .quiz__opt__text{font-size:var(--t-small);line-height:1.5;color:var(--ink-800)}
+
+  /* Result */
+  .result__breakdown{margin-top:var(--s-6);display:flex;flex-direction:column;gap:var(--s-1)}
+  .result__breakdown p{color:var(--graphite)}
+  .result__breakdown strong{color:var(--ink-800)}
+  .result__limit{margin-top:var(--s-2);font-weight:600;color:var(--crimson)}
+  .metric-row{margin-top:var(--s-6);display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-3)}
+  @media (max-width:760px){.metric-row{grid-template-columns:1fr}}
+  .metric-card{background:var(--air);border-radius:var(--r-lg);padding:var(--s-5);box-shadow:var(--lift-1)}
+  .metric-card:nth-child(2){background:var(--sand)}
+  .metric-card:nth-child(3){background:var(--blush)}
+  .metric-card__lab{display:block;font-family:var(--font-mono);font-size:var(--t-micro);
+    letter-spacing:.13em;text-transform:uppercase;color:var(--stone)}
+  .metric-card__v{margin-top:var(--s-2);font-family:var(--font-display);font-weight:600;
+    font-size:var(--t-h3);color:var(--crimson)}
+  .metric-card__d{margin-top:var(--s-1);font-size:var(--t-small);color:var(--stone)}
+  .result__actions{margin-top:var(--s-6);display:flex;flex-wrap:wrap;gap:var(--s-3);align-items:center}
+
+  /* Lead form (light surface, not the dark .contactform used in the plum CTA card) */
+  .niveauform{margin-top:var(--s-5)}
+  .niveauform__grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s-4)}
+  @media (max-width:760px){.niveauform__grid{grid-template-columns:1fr}}
+  .niveauform .field{display:flex;flex-direction:column;gap:.4rem;margin-top:var(--s-4)}
+  .niveauform .field--full{grid-column:1/-1}
+  .niveauform label{font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.08em;
+    text-transform:uppercase;color:var(--graphite)}
+  .niveauform input,.niveauform select,.niveauform textarea{
+    padding:.85rem 1rem;border-radius:var(--r-sm);border:1px solid var(--hairline);
+    background:var(--air);font:inherit;font-size:var(--t-small);color:var(--ink-900)}
+  .niveauform input:focus-visible,.niveauform select:focus-visible,.niveauform textarea:focus-visible{
+    outline:2px solid var(--crimson);outline-offset:1px}
+  .niveauform textarea{resize:vertical;min-height:5.5rem}
+  .niveauform input[aria-invalid="true"]{border-color:var(--crimson)}
+  .niveauform__hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+  .niveauform__actions{margin-top:var(--s-6)}
+  .niveauform__actions button[disabled]{opacity:.6;cursor:progress}
+  .niveauform__error{margin-top:var(--s-3);color:var(--crimson);font-size:var(--t-small)}
+  .niveauform.is-leaving{opacity:0;transition:opacity var(--d-base) var(--ease-out)}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Spring til indhold</a>
+<nav class="nav" id="nav">
+  <div class="nav__in">
+    <a class="brand" href="/#top"><img class="brand__mark" src="/assets/consid-mark.svg" alt="Consid" width="104" height="26"></a>
+    <div class="nav__links">
+      <a class="nav__link" href="/#niveau">Jeres niveau</a>
+      <a class="nav__link" href="/#principper">Sådan arbejder vi</a>
+      <a class="nav__link" href="/ydelser/">Ydelser</a>
+      <a class="nav__link" href="/viden/">Viden</a>
+      <a class="nav__link" href="/#kontakt">Book en session</a>
+      <a class="btn btn--primary" href="/niveau-tjek">Tag niveau-tjekket <span class="arw">→</span></a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+<section class="stack">
+  <div class="wrap" style="max-width:52rem">
+
+    <h1 style="font-size:var(--t-h2);font-weight:500;max-width:20ch" class="reveal">Hvilket niveau af Agentic Delivery er I på?</h1>
+    <p class="lead reveal" style="margin-top:var(--s-5)">AI forstærker det, der fungerer godt. Også det, der ikke gør. Svar på 6 spørgsmål, og få en konkret vurdering af, hvor jeres organisation reelt står — på under 2 minutter.</p>
+
+    <!-- 1. INTRO -->
+    <section class="niveau-stage is-active" data-stage="intro" style="margin-top:var(--s-6)">
+      <a class="skip-cta reveal" href="/#kontakt" style="margin-top:0">Spring over, book direkte <span class="arw">→</span></a>
+
+
+      <div class="ladder reveal" id="ladder-intro" aria-hidden="true"></div>
+
+      <div style="margin-top:var(--s-7)">
+        <button class="btn btn--primary reveal" type="button" id="start-quiz">Start assessment <span class="arw">→</span></button>
+      </div>
+    </section>
+
+    <!-- 2. QUIZ -->
+    <section class="niveau-stage" data-stage="quiz">
+      <div class="quiz__head">
+        <span id="quiz-progress-lab">Spørgsmål 1 af 6</span>
+        <button class="quiz__back" type="button" id="quiz-back" hidden>← Tilbage</button>
+        <a class="skip-cta skip-cta--corner" href="/#kontakt">Spring over →</a>
+      </div>
+      <div class="quiz__bar"><span id="quiz-bar-fill" style="width:16.66%"></span></div>
+      <h2 class="quiz__q" id="quiz-question" tabindex="-1"></h2>
+      <div class="quiz__opts" id="quiz-options"></div>
+    </section>
+
+    <!-- 3. RESULT -->
+    <section class="niveau-stage" data-stage="result">
+      <div class="ladder" id="ladder-result" aria-hidden="true"></div>
+      <div id="result-content"></div>
+    </section>
+
+    <!-- 4. LEAD FORM -->
+    <section class="niveau-stage" data-stage="leadform">
+      <h2 style="font-size:var(--t-h3)">En uddybende vurdering af jeres organisation</h2>
+      <p class="lead" style="margin-top:var(--s-4)">Udfyld felterne herunder, så gennemgår en af vores AI-praktikere jeres svar personligt og vender tilbage.</p>
+
+      <form id="niveautjek-form" class="niveauform" novalidate>
+        <div class="niveauform__grid">
+          <div class="field">
+            <label for="nt-company">Firma</label>
+            <input id="nt-company" name="company" type="text" maxlength="150">
+          </div>
+          <div class="field">
+            <label for="nt-role">Rolle</label>
+            <input id="nt-role" name="role" type="text" maxlength="120">
+          </div>
+          <div class="field field--full">
+            <label for="nt-org-size">Udviklingsorganisationens omtrentlige størrelse</label>
+            <select id="nt-org-size" name="org_size">
+              <option value="Under 20">Under 20</option>
+              <option value="20-50">20-50</option>
+              <option value="50-150">50-150</option>
+              <option value="150+">150+</option>
+            </select>
+          </div>
+          <div class="field field--full">
+            <label for="nt-ai-usage">Nuværende brug af AI-udviklingsværktøjer</label>
+            <textarea id="nt-ai-usage" name="current_ai_usage" rows="3" maxlength="2000"></textarea>
+          </div>
+          <div class="field field--full">
+            <label for="nt-challenge">Største udfordring i jeres softwarelevering lige nu</label>
+            <textarea id="nt-challenge" name="biggest_challenge" rows="3" maxlength="2000"></textarea>
+          </div>
+          <div class="field field--full">
+            <label for="nt-value">Hvad ville gøre en samtale med os værdifuld for jer?</label>
+            <textarea id="nt-value" name="conversation_value" rows="3" maxlength="2000"></textarea>
+          </div>
+          <div class="field field--full">
+            <label for="nt-email">Email *</label>
+            <input id="nt-email" name="email" type="email" autocomplete="email" maxlength="255" required>
+          </div>
+        </div>
+        <div class="niveauform__hp" aria-hidden="true">
+          <label for="nt-website">Lad dette felt stå tomt</label>
+          <input id="nt-website" name="company_website" type="text" tabindex="-1" autocomplete="off">
+        </div>
+        <p class="niveauform__error" id="nt-error" hidden></p>
+        <div class="niveauform__actions">
+          <button class="btn btn--primary" type="submit" id="nt-submit">Send og book en gennemgang <span class="arw">→</span></button>
+        </div>
+      </form>
+
+      <div id="niveautjek-done" class="niveauform" hidden>
+        <p style="font-size:var(--t-lead);font-weight:500">Tak. Vi gennemgår jeres svar og vender personligt tilbage.</p>
+        <div style="margin-top:var(--s-5)">
+          <a class="btn btn--primary" href="/#kontakt">Book en session <span class="arw">→</span></a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div class="footer__col">
+        <h3>Sitet</h3>
+        <a href="/niveau-tjek">Niveau-tjek</a>
+        <a href="/ydelser/">Ydelser</a>
+        <a href="/viden/">Viden</a>
+      </div>
+      <div class="footer__col">
+        <h3>Kontakt</h3>
+        <a href="/#kontakt">Book en session</a>
+        <a href="mailto:michael.lund-andersen@consid.com">Email</a>
+      </div>
+      <div class="footer__col">
+        <h3>Consid</h3>
+        <a href="https://www.consid.com/" target="_blank" rel="noopener">consid.com</a>
+      </div>
+      <div class="footer__social" role="group" aria-label="Consid på sociale medier">
+        <a href="https://www.facebook.com/consid.se/" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-7.5h2.5l.5-3h-3V8.5c0-.87.24-1.46 1.5-1.46H16.5V4.32C16.17 4.28 15.06 4.18 13.77 4.18c-2.6 0-4.38 1.58-4.38 4.5v2.02H6.9v3h2.5V21h4.1z"/></svg></a>
+        <a href="https://www.instagram.com/consid_ab/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".9" fill="currentColor" stroke="none"/></svg></a>
+        <a href="https://se.linkedin.com/company/consid-ab" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9.5 9h3.8v1.7h.05c.53-1 1.83-2 3.77-2 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.7c0-1.36-.02-3.1-1.9-3.1-1.9 0-2.2 1.48-2.2 3v5.8h-4z"/></svg></a>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <a class="footer__logo" href="https://www.consid.com/" target="_blank" rel="noopener"><img src="/assets/consid-wordmark-white.svg" alt="Consid" width="88" height="22"></a>
+      <div class="footer__legal">
+        <span>© 2026 Consid</span>
+        <a href="https://www.consid.com/legal/privacy-policy/" target="_blank" rel="noopener">Privacy policy</a>
+        <a href="https://www.consid.com/legal/cookie-policy/" target="_blank" rel="noopener">Cookie policy</a>
+      </div>
+    </div>
+  </div>
+</footer>
+<script src="/assets/site.js"></script>
+<script>
+(function(){
+  // ---- Data, ported from the DAD Readiness Assessment prototype -------------
+
+  var QUESTIONS = [
+    {
+      text: "Hvor stor en del af jeres udviklingsarbejde bliver i dag reelt udført af AI-agenter (ikke bare AI-værktøjer brugt af en person)?",
+      options: [
+        "Under 10 %: enkelte medarbejdere bruger AI ad hoc til enkeltopgaver",
+        "Omkring 30 %: agenter accelererer specifikke, veldefinerede opgaver, men teamet fører an",
+        "Omkring 60 %: agenter driver output på definerede områder",
+        "85 % eller derover: agenter eksekverer autonomt inden for kodificeret arkitektur"
+      ]
+    },
+    {
+      text: "Hvordan bliver opgaver specificeret til de AI-agenter, der arbejder hos jer?",
+      options: [
+        "De bliver ikke specificeret systematisk. Den enkelte formulerer sin egen prompt",
+        "Vi skriver specifikationer manuelt fra sag til sag, uden fælles skabelon eller disciplin",
+        "Specifikationer styrer, hvad agenterne producerer, og følger en fælles standard",
+        "Specifikationer og playbooks er kodificerede og vedligeholdes systematisk, når de driver"
+      ]
+    },
+    {
+      text: "Hvem træffer arkitekturbeslutningerne, når AI er involveret i udviklingen?",
+      options: [
+        "Ingen fælles tilgang. Beslutninger tages ad hoc, og ingen validerer, hvad agenten besluttede undervejs",
+        "Beslutningerne ligger hos den enkelte ingeniør, uden fælles arkitekturtjekpunkter",
+        "Der er formelle arkitekturtjekpunkter, før agenter rører nye områder af kodebasen",
+        "Arkitekturen er fuldt kodificeret, og agenter eksekverer inden for den"
+      ]
+    },
+    {
+      text: "Hvordan reviewer I det, agenterne leverer?",
+      options: [
+        "Vi reviewer ikke systematisk. Det er op til den enkelte",
+        "Vi reviewer ad hoc, typisk linje for linje, når nogen når det",
+        "Vi har kvalitetsporte ved de vigtige beslutninger, men de er stadig uformelle, og det er uklart, hvad der må uddelegeres",
+        "Beslutningspunkter for mennesker er eksplicitte og revideres periodisk, efterhånden som systemet ændrer sig"
+      ]
+    },
+    {
+      text: "Hvor konsistent er brugen af AI-agenter på tværs af teamet?",
+      options: [
+        "Hver medarbejder har sin egen måde at bruge AI på, og der er ingen fælles tilgang",
+        "Enkelte teams har fundet en fælles arbejdsgang, men den er ikke organisationens standard",
+        "Der er en fælles governance-model for agentbrug på tværs af de fleste teams",
+        "Governance-modellen er organisationens standard, med driftdetektion og fast kadence for vedligehold"
+      ]
+    },
+    {
+      text: "I hvilket omfang er jeres organisatoriske viden (domæneviden, konventioner, 'sådan gør vi hos os') gjort tilgængelig for agenterne?",
+      options: [
+        "Den ligger i hovedet på enkeltpersoner og deles ikke med agenterne",
+        "Den findes i dokumentation, som agenter kan læse, men bruges ikke systematisk",
+        "Den er operationaliseret i specifikationer, som agenter arbejder efter",
+        "Den er kodificeret i playbooks, der opdateres, når virkeligheden ændrer sig"
+      ]
+    }
+  ];
+
+  var LEVEL_LABELS = ["Værktøjsbruger", "Assisteret", "Forstærket", "Autonom"];
+  var AGENT_SHARE = ["under 10%", "30%", "60%", "85%+"];
+  var STRUCTURE_DIMENSIONS = ["Specifikationsdisciplin", "Arkitekturbeslutninger", "Kvalitetsporte", "Standardisering", "Organisatorisk viden"];
+  var DIMENSION_PRIORITY = ["Arkitekturbeslutninger", "Specifikationsdisciplin", "Kvalitetsporte", "Standardisering", "Organisatorisk viden"];
+
+  var RESULTS = [
+    { heading: "Niveau 0 — Værktøjsbruger", text: "I er der, hvor de fleste organisationer starter. AI bruges til enkeltopgaver (tekst, scripts, en prototype her og der), men der er ingen fælles tilgang, og ingen har valideret, hvad agenten faktisk besluttede undervejs. Det bliver først et problem, når brugen breder sig hurtigere end strukturen omkring den, for så vokser den usynlige del af jeres tekniske gæld i takt med, at flere begynder at bruge AI på deres egen måde. Det næste skridt handler ikke om flere værktøjer, men om en fælles specifikationsdisciplin, som resten kan bygges på." },
+    { heading: "Niveau 1 — Assisteret", text: "Teamet fører an, og agenter accelererer specifikke, veldefinerede opgaver. I har specifikationer, men de er skrevet manuelt fra sag til sag, og arkitekturbeslutningerne ligger stadig hos den enkelte ingeniør. Det virker, indtil det ikke gør, for uden fælles arkitekturtjekpunkter er det tilfældigt, om to teams træffer samme beslutning, når de støder på samme problem. I er assisterede, ikke styrede endnu. Det, der adskiller jer fra Niveau 2, er ikke mere AI, men en specifikationsstandard, der gælder på tværs og ikke kun i det enkelte team." },
+    { heading: "Niveau 2 — Forstærket", text: "Agenter driver output, og specifikationer styrer, hvad de producerer. Mennesker reviewer ved de beslutninger, der betyder noget, ikke linje for linje. Det er et reelt fremskridt, men kvalitetsportene er formentlig stadig uformelle, og det er sandsynligvis uklart internt, hvilke beslutninger der egentlig må uddelegeres til en agent, og hvilke der ikke må. Den uklarhed er ikke synlig i den daglige leverance. Den bliver synlig den dag, noget går galt, og ingen kan pege på, hvornår grænsen blev krydset. Vejen til Niveau 3 handler om at gøre de grænser eksplicitte, før I får brug for dem." },
+    { heading: "Niveau 3 — Autonom", text: "Agenter eksekverer inden for fuldt kodificeret arkitektur og playbooks, og mennesker sætter retningen ved grænserne. De fleste organisationer er ikke her endnu, og hvis I er, handler spørgsmålet ikke længere om, hvorvidt I kan nå dertil, men om hvordan I holder styr på det, når systemet ændrer sig under jer. Playbooks, der var korrekte ved lancering, driver over tid, og den drift er svær at se, før den viser sig i output. Det, der adskiller en holdbar Niveau 3-organisation fra en skrøbelig, er ikke arkitekturen selv, men om nogen løbende reviderer den." }
+  ];
+
+  function computeScores(answers){
+    var andelNiveau = answers[0] || 0;
+    var structure = answers.slice(1, 6);
+    var structSum = structure.reduce(function(a,b){ return a+b }, 0);
+    var strukturNiveau = Math.floor(structSum / (structure.length || 1));
+    var samletNiveau = Math.min(andelNiveau, strukturNiveau);
+    var total = answers.reduce(function(a,b){ return a+b }, 0);
+    var average = total / (answers.length || 1);
+
+    var limitingDimension = null;
+    if (strukturNiveau < andelNiveau) {
+      var lowest = Math.min.apply(null, structure);
+      var candidates = STRUCTURE_DIMENSIONS.filter(function(_, i){ return structure[i] === lowest });
+      limitingDimension = DIMENSION_PRIORITY.filter(function(d){ return candidates.indexOf(d) !== -1 })[0] || candidates[0] || null;
+    }
+    return { andelNiveau: andelNiveau, strukturNiveau: strukturNiveau, samletNiveau: samletNiveau, average: average, limitingDimension: limitingDimension };
+  }
+
+  // ---- Ladder --------------------------------------------------------------
+
+  function renderLadder(container, activeLevel){
+    var html = '';
+    for (var i = 0; i < 4; i++) {
+      var active = activeLevel === i;
+      html += '<div class="ladder__step' + (active ? ' is-active' : '') + '">'
+        + '<span class="ladder__n">' + i + '</span>'
+        + '<span class="ladder__lab">Niveau ' + i + '</span>'
+        + '<span class="ladder__name">' + LEVEL_LABELS[i] + '</span>'
+        + '<span class="ladder__pct">Agenter: ' + AGENT_SHARE[i] + '</span>'
+        + '</div>';
+    }
+    container.innerHTML = html;
+  }
+
+  renderLadder(document.getElementById('ladder-intro'), null);
+
+  // ---- Stage machine ---------------------------------------------------
+
+  var stages = [].slice.call(document.querySelectorAll('.niveau-stage'));
+  function showStage(name){
+    stages.forEach(function(s){ s.classList.toggle('is-active', s.dataset.stage === name); });
+    if (typeof REDUCED === 'undefined' || !REDUCED) {
+      var el = document.querySelector('.niveau-stage[data-stage="' + name + '"]');
+      el.classList.remove('fade-swap'); void el.offsetWidth; el.classList.add('fade-swap');
+    }
+    window.scrollTo({ top: 0 });
+  }
+
+  // ---- Quiz ---------------------------------------------------------------
+
+  var current = 0;
+  var answers = [null, null, null, null, null, null];
+  var progressLab = document.getElementById('quiz-progress-lab');
+  var barFill = document.getElementById('quiz-bar-fill');
+  var backBtn = document.getElementById('quiz-back');
+  var questionEl = document.getElementById('quiz-question');
+  var optionsEl = document.getElementById('quiz-options');
+
+  function renderQuestion(i){
+    var q = QUESTIONS[i];
+    progressLab.textContent = 'Spørgsmål ' + (i + 1) + ' af ' + QUESTIONS.length;
+    barFill.style.width = (((i + 1) / QUESTIONS.length) * 100) + '%';
+    backBtn.hidden = i === 0;
+    questionEl.textContent = q.text;
+    optionsEl.innerHTML = q.options.map(function(opt, idx){
+      var selected = answers[i] === idx;
+      return '<button type="button" class="quiz__opt' + (selected ? ' is-selected' : '') + '" data-idx="' + idx + '">'
+        + '<span class="quiz__opt__lab">' + ['A','B','C','D'][idx] + '</span>'
+        + '<span class="quiz__opt__text">' + opt + '</span>'
+        + '</button>';
+    }).join('');
+    [].slice.call(optionsEl.querySelectorAll('.quiz__opt')).forEach(function(btn){
+      btn.addEventListener('click', function(){ selectAnswer(Number(btn.dataset.idx)); });
+    });
+    questionEl.focus();
+  }
+
+  function selectAnswer(score){
+    answers[current] = score;
+    renderQuestion(current);
+    setTimeout(function(){
+      if (current === QUESTIONS.length - 1) {
+        finishQuiz();
+      } else {
+        current += 1;
+        renderQuestion(current);
+      }
+    }, 180);
+  }
+
+  backBtn.addEventListener('click', function(){
+    if (current > 0) { current -= 1; renderQuestion(current); }
+  });
+
+  document.getElementById('start-quiz').addEventListener('click', function(){
+    current = 0;
+    renderQuestion(0);
+    showStage('quiz');
+  });
+
+  // ---- Result ---------------------------------------------------------
+
+  function finishQuiz(){
+    var scores = computeScores(answers);
+    var result = RESULTS[scores.samletNiveau];
+    renderLadder(document.getElementById('ladder-result'), scores.samletNiveau);
+
+    var nextLevelLink = '';
+    if (scores.samletNiveau < 3) {
+      nextLevelLink = '<a class="btn btn--soft" href="/ydelser/directed-agentic-delivery">Se hvad Niveau ' + (scores.samletNiveau + 1) + ' kræver <span class="arw">→</span></a>';
+    }
+
+    document.getElementById('result-content').innerHTML =
+      '<h1 style="font-size:var(--t-h2);font-weight:500;margin-top:var(--s-6)">' + result.heading + '</h1>'
+      + '<p class="lead" style="margin-top:var(--s-4)">' + result.text + '</p>'
+      + '<div class="result__breakdown">'
+      +   '<p>Andel: <strong>Niveau ' + scores.andelNiveau + '</strong></p>'
+      +   '<p>Struktur: <strong>Niveau ' + scores.strukturNiveau + '</strong></p>'
+      +   (scores.limitingDimension ? '<p class="result__limit">Jeres begrænsning lige nu: ' + scores.limitingDimension + '</p>' : '')
+      + '</div>'
+      + '<div class="metric-row">'
+      +   '<div class="metric-card"><span class="metric-card__lab">Jeres niveau</span><p class="metric-card__v">Niveau ' + scores.samletNiveau + '</p><p class="metric-card__d">' + LEVEL_LABELS[scores.samletNiveau] + '</p></div>'
+      +   '<div class="metric-card"><span class="metric-card__lab">Samlet modenhed</span><p class="metric-card__v">' + scores.average.toFixed(1).replace('.', ',') + ' ud af 3</p><p class="metric-card__d">Gennemsnit af jeres seks svar</p></div>'
+      +   '<div class="metric-card"><span class="metric-card__lab">Næste skridt</span><p class="metric-card__v">' + (scores.samletNiveau < 3 ? 'Niveau ' + (scores.samletNiveau + 1) : 'Vedligehold') + '</p><p class="metric-card__d">' + (scores.samletNiveau < 3 ? LEVEL_LABELS[scores.samletNiveau + 1] : 'Løbende revision af playbooks') + '</p></div>'
+      + '</div>'
+      + '<div class="result__actions">'
+      +   '<button class="btn btn--primary" type="button" id="continue-to-leadform">Få en uddybende vurdering <span class="arw">→</span></button>'
+      +   nextLevelLink
+      +   '<a class="skip-cta" href="/#kontakt" style="margin-top:0">Spring over, book direkte →</a>'
+      + '</div>';
+
+    document.getElementById('continue-to-leadform').addEventListener('click', function(){
+      showStage('leadform');
+    });
+
+    showStage('result');
+  }
+
+  // ---- Lead form -----------------------------------------------------
+
+  var form = document.getElementById('niveautjek-form');
+  var doneEl = document.getElementById('niveautjek-done');
+  var errorEl = document.getElementById('nt-error');
+  var submitBtn = document.getElementById('nt-submit');
+  var submitBtnDefaultHtml = submitBtn.innerHTML;
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    errorEl.hidden = true;
+
+    var email = document.getElementById('nt-email').value.trim();
+    if (!email || email.indexOf('@') === -1) {
+      errorEl.textContent = 'Angiv en gyldig e-mailadresse.';
+      errorEl.hidden = false;
+      return;
+    }
+    if (answers.indexOf(null) !== -1) {
+      errorEl.textContent = 'Gennemfør assessmentet, før du sender.';
+      errorEl.hidden = false;
+      return;
+    }
+
+    var payload = {
+      company: document.getElementById('nt-company').value.trim(),
+      role: document.getElementById('nt-role').value.trim(),
+      org_size: document.getElementById('nt-org-size').value,
+      current_ai_usage: document.getElementById('nt-ai-usage').value.trim(),
+      biggest_challenge: document.getElementById('nt-challenge').value.trim(),
+      conversation_value: document.getElementById('nt-value').value.trim(),
+      email: email,
+      answers: answers,
+      company_website: document.getElementById('nt-website').value
+    };
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = 'Sender…';
+
+    fetch('/api/public/niveau-tjek', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function(res){ return res.json().then(function(data){ return { ok: res.ok, data: data }; }); })
+      .then(function(result){
+        if (!result.ok || !result.data || result.data.ok === false) {
+          throw new Error((result.data && result.data.error) || 'Noget gik galt. Prøv venligst igen.');
+        }
+        form.classList.add('is-leaving');
+        setTimeout(function(){ form.hidden = true; doneEl.hidden = false; }, 200);
+      })
+      .catch(function(err){
+        errorEl.textContent = err.message || 'Noget gik galt. Prøv venligst igen.';
+        errorEl.hidden = false;
+      })
+      .finally(function(){
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = submitBtnDefaultHtml;
+      });
+  });
+})();
+</script>
+</body>
+</html>

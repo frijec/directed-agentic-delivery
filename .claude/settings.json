@@ -1,0 +1,44 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__claude_ai_Lovable__list_projects",
+      "mcp__claude_ai_Lovable__send_message",
+      "Read(~/.claude/**)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/../ai-workbench/foundation/src/wb-workflow/wb-workflow.sh\" guard-check"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/../ai-workbench/foundation/src/wb-workflow/wb-workflow.sh\" agent-start"
+          }
+        ]
+      }
+    ],
+    "TeammateIdle": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/../ai-workbench/foundation/src/wb-workflow/wb-workflow.sh\" idle-check"
+          }
+        ]
+      }
+    ]
+  }
+}

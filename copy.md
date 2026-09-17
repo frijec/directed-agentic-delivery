@@ -21,8 +21,7 @@ Directed Agentic Delivery — Consid
 
 ## Navigation
 
-**Brand subtitle** (next to the logo, hidden on narrow screens)
-Directed Agentic Delivery
+**Brand subtitle** — removed. The nav now shows just the Consid logo, matching consid.com's own header exactly, with no adjacent site-name label.
 
 **Nav link 1**
 Jeres niveau
@@ -33,8 +32,14 @@ Sådan arbejder vi
 **Nav link 3**
 Ydelser
 
-**Nav CTA button**
+**Nav link 4**
+Viden
+
+**Nav link 5** *(links to /#kontakt — plain text link now, not the filled button; it's the secondary action, for people already ready to book)*
 Book en session
+
+**Nav CTA button** *(the site's primary CTA, on every page, links to /niveau-tjek — this is the self-diagnosis the rest of the funnel builds on, so it gets the filled button and the top-right corner, not "Book en session")*
+Tag niveau-tjekket
 
 ---
 
@@ -46,8 +51,8 @@ AI forstærker det, der fungerer **godt**. Også det, der **ikke** gør.
 **Lead paragraph** (in the dark plum card)
 Svage specifikationer og processer giver hurtigere, men stadig svage, resultater. De fleste organisationer sætter AI ind i den gamle proces og får friktion, ikke resultater. Consid bygger fundamentet, der fjerner friktionen. Så kan I sætte farten op.
 
-**Primary button**
-Find jeres niveau
+**Primary button** *(links to /niveau-tjek)*
+Tag niveau-tjekket
 
 **Secondary button**
 Se hvad vi tilbyder
@@ -61,8 +66,7 @@ Fundamentet afgør resultatet
 
 **Lead paragraph**
 To organisationer kan bruge det samme AI værktøj og få vidt forskellige resultater.
-Forskellen er sjældent modellen, men fundamentet: et klart udgangspunkt og specifikationer, agenten kan arbejde efter.
-Og mennesker ved hver beslutning, der ændrer kurs. Ikke kontrol bagefter — styring bygget ind fra starten
+Forskellen er fundamentet: et klart udgangspunkt og specifikationer, agenten kan arbejde efter, med mennesker ved hver beslutning, der ændrer kurs. Styringen er bygget ind fra starten.
 
 ### Card A (Rubik's-cube illustration)
 **Eyebrow**
@@ -73,7 +77,7 @@ Værktøjsbrugeren
 
 **Body**
 Folk bruger AI hver dag, hver på sin måde. Output bliver kopieret ind i
-dokumenter og kode. Det går hurtigere — men resultatet ligner det, I
+dokumenter og kode. Det går hurtigere, men resultatet ligner det, I
 lavede i forvejen.
 
 ### Card B (Arrows illustration)
@@ -84,7 +88,7 @@ Hvor de færreste er
 Løsningsbyggeren
 
 **Body**
-Ikke fordi de har bedre AI. Fordi de har en leverancemodel: arkitektur
+Forskellen er leverancemodellen: arkitektur
 før agenten starter, specifikationer den arbejder efter, og et
 menneske ved de beslutninger, der betyder noget.
 
@@ -99,7 +103,10 @@ Fire niveauer. I skal kun kende ét.
 Vælg det, der ligner jer mest. Vi viser, hvor I er, hvad vi ser der typisk gør ondt og hvad vi gør ved det. Agenterne eksekverer inden for den retning, I sætter.
 
 **Closing note** (below the four tabs/panel)
-I starter, hvor I er, niveau 0 til 2, typisk. Niveau 3 er ikke et mål i sig selv. Det er der, hvor agenterne kan eksekvere alene, fordi fundamentet bærer det.
+I starter, hvor I er, niveau 0 til 2, typisk. Niveau 3 er der, hvor agenterne kan eksekvere alene, fordi fundamentet bærer det.
+
+**Panel footer buttons** (rendered per tab, in `renderPanel()`; `${i}` is the selected niveau 0-3 — this is JS, not per-tab hand-written copy, so it's documented once here rather than under each tab below)
+"Er det jeres niveau? Tag testen →" *(links to /niveau-tjek)*, next to "Se ydelser på niveau ${i} →" *(links to #ydelser)*.
 
 ### Niveau 0 — Værktøjsbruger (tab)
 **Tab name**
@@ -220,8 +227,8 @@ Fem principper, der gælder på alle niveauer
 Tænk, før I handler
 
 **Body**
-Fart uden retning er ikke produktivitet. Før en agent rører en linje
-kode, skal I vide, hvad I bygger og hvorfor — klart nok til at kunne
+Før en agent rører en linje
+kode, skal I vide, hvad I bygger og hvorfor, klart nok til at kunne
 vurdere, om resultatet er rigtigt.
 
 ### Princip 02
@@ -230,15 +237,15 @@ Skriv intentionen ned
 
 **Body**
 Tanker, der ikke er skrevet ned, findes ikke for en agent.
-Specifikationer, arkitekturbeskrivelser og beslutningslog er ikke
-overhead. Det er partituret, orkestret spiller efter.
+Specifikationer, arkitekturbeskrivelser og beslutningslog er
+partituret, orkestret spiller efter.
 
 ### Princip 03
 **H3**
 Gør viden operationel
 
 **Body**
-Viden, der ikke er skrevet ned, findes ikke for en agent. Når praksis står i en specifikation, er den tilgængelig, ikke kun for én person, men for alle, der arbejder med den.
+Praksis, der kun findes i folks hoveder, er utilgængelig for en agent. Når den står i en specifikation, kan alle, der arbejder med den, bruge den.
 
 ### Princip 04
 **H3**
@@ -400,7 +407,7 @@ udviklingen.
 Vi efterlader mere end en leverance
 
 **Lead paragraph**
-Directed Agentic Delivery er ikke et salgsargument, det er sådan, vi selv arbejder. Det, vi bygger hos jer, bliver hos jer: en ny arbejdsgang og et værktøj, jeres folk kan fortsætte med.
+Directed Agentic Delivery er sådan, vi selv arbejder. Det, vi bygger hos jer, bliver hos jer: en ny arbejdsgang og et værktøj, jeres folk kan fortsætte med.
 
 ### Person 1
 **Navn**
@@ -443,7 +450,7 @@ Det, I nok tænker lige nu.
 Vi har ikke styr på arkitekturen. Er vi for sent på den?
 
 **A**
-Nej. De fleste starter præcis der. Pointen med niveauerne er, at I ikke
+Ikke nødvendigvis. De fleste starter præcis der. Pointen med niveauerne er, at I ikke
 skal have styr på alt, før I begynder — I skal bare vide, hvilket ét
 skridt der giver mening som det næste.
 
@@ -484,7 +491,7 @@ Hvordan forholder det sig til EU AI Act?
 **A**
 Styring og compliance er den samme øvelse set fra to sider. Når
 beslutninger, ejerskab og specifikationer er skrevet ned, kan I svare
-på hvem, hvad og hvorfor — også bagudrettet. Det er indholdet i vores
+bagudrettet på hvem der besluttede hvad, og hvorfor. Det er indholdet i vores
 AI Compliance Review.
 
 ---
@@ -522,11 +529,11 @@ Consid i tal
 ## Closing CTA
 
 **H2**
-Dirigér jeres næste program med agenterne. Ikke udenom dem.
+Dirigér jeres næste program med agenterne.
 
 **Lead paragraph**
 45 minutters arbejdssession med en af vores AI-praktikere. Vi
-kortlægger, hvor Directed Agentic Delivery giver mening hos jer — og
+kortlægger, hvor Directed Agentic Delivery giver mening hos jer, og
 hvor I starter.
 
 **Primary button**
