@@ -1,5 +1,6 @@
+# Pre-launch sandbox — nothing here should be crawled or indexed.
+# Every page also sends a noindex meta tag and X-Robots-Tag header.
+# To launch: restore "Allow: /" plus the Disallow on /admin/, put the
+# Sitemap line back, and drop the noindex from pages.ts and the pages.
 User-agent: *
-Allow: /
-Disallow: /admin/
-
-Sitemap: https://directed-agentic-delivery.consid.engineering/sitemap.xml
+Disallow: /
