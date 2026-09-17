@@ -85,6 +85,7 @@
   --measure:64ch;
   --gutter:clamp(1.1rem,4.5vw,4rem);
   --maxw:1300px;
+  --nav-height:85px;
 }
 
 /* ConsidSans — Consid's brand typeface, used across the whole site. */
@@ -209,7 +210,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .nav__in{
   position:relative;z-index:1;
   display:flex;align-items:center;gap:var(--s-5);
-  padding:1.5rem var(--gutter);
+  height:var(--nav-height);padding-inline:40px;
 }
 .brand{display:flex;align-items:center;text-decoration:none;flex:none;position:relative}
 .brand__mark{height:32px;width:auto;display:block;transition:opacity var(--d-fast) var(--ease-out)}
@@ -225,7 +226,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   padding:.5rem .75rem;border-radius:var(--r-pill);
   transition:color var(--d-fast) var(--ease-out),background-color var(--d-fast) var(--ease-out)}
 .nav__link{color:var(--nav-fg)}
-.nav__link:hover{background:rgba(255,255,255,.1)}
+.nav__link:hover{background:rgba(255,255,255,.2)}
 .nav__cta{color:var(--nav-cta);margin-left:auto;padding:.5rem 1.25rem;border:2px solid var(--nav-cta)}
 .nav__cta:hover{opacity:.7}
 @media (max-width:900px){.nav__links .nav__link{display:none}}
@@ -386,7 +387,17 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
    stacking context — .ydelse__illus's z-index:-1 needs to be scoped
    locally, behind this header's text but above its own background,
    not resolved against some ancestor context further up the page. */
-.ydelse__head{position:relative;z-index:0;overflow:hidden;background:var(--plum);border-radius:0 0 var(--r-xl) var(--r-xl);padding-top:clamp(3.5rem,8vw,7rem);padding-bottom:clamp(2.5rem,6vw,4rem)}
+/* .nav is sticky, not fixed — at rest it reserves its own space in
+   flow rather than overlapping whatever comes next, so without this
+   the plum background would start BELOW the nav, leaving the page's
+   own (light) background showing through the transparent nav above
+   it instead of plum. Pulling the head up by exactly the nav's height
+   and adding that same amount back as padding keeps the actual
+   content (h1/lead/meta) sitting at the same visual position as
+   before, while the plum itself now extends up behind the nav. */
+.ydelse__head{position:relative;z-index:0;overflow:hidden;background:var(--plum);border-radius:0 0 var(--r-xl) var(--r-xl);
+  margin-top:calc(-1 * var(--nav-height));
+  padding-top:calc(var(--nav-height) + clamp(3.5rem,8vw,7rem));padding-bottom:clamp(2.5rem,6vw,4rem)}
 .ydelse__head h1{color:#fff}
 .ydelse__head .lead{color:rgba(255,255,255,.78)}
 .ydelse__meta{display:flex;gap:var(--s-6);flex-wrap:wrap;align-items:center;justify-content:space-between;margin-top:var(--s-7)}

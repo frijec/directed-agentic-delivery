@@ -113,6 +113,7 @@
   --measure:64ch;
   --gutter:clamp(1.1rem,4.5vw,4rem);
   --maxw:1300px;
+  --nav-height:85px;
 }
 
 /* ConsidSans — Consid's brand typeface, used across the whole site. */
@@ -237,7 +238,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .nav__in{
   position:relative;z-index:1;
   display:flex;align-items:center;gap:var(--s-5);
-  padding:1.5rem var(--gutter);
+  height:var(--nav-height);padding-inline:40px;
 }
 .brand{display:flex;align-items:center;text-decoration:none;flex:none;position:relative}
 .brand__mark{height:32px;width:auto;display:block;transition:opacity var(--d-fast) var(--ease-out)}
@@ -249,7 +250,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   padding:.5rem .75rem;border-radius:var(--r-pill);
   transition:color var(--d-fast) var(--ease-out),background-color var(--d-fast) var(--ease-out)}
 .nav__link{color:var(--nav-fg)}
-.nav__link:hover{background:rgba(255,255,255,.1)}
+.nav__link:hover{background:rgba(255,255,255,.2)}
 .nav__cta{color:var(--nav-cta);margin-left:auto;padding:.5rem 1.25rem;border:2px solid var(--nav-cta)}
 .nav__cta:hover{opacity:.7}
 @media (max-width:900px){.nav__links .nav__link{display:none}}
@@ -257,7 +258,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* HERO --------------------------------------------------- */
 .hero{
   padding-block:clamp(3rem,8vw,6rem) 0;position:relative;overflow:hidden;
-  min-height:100vh;margin-top:calc(-1 * var(--nav-h, 76px));
+  min-height:100vh;margin-top:calc(-1 * var(--nav-h, var(--nav-height)));
   display:flex;flex-direction:column;gap:var(--s-6);
 }
 #heroGrid{
