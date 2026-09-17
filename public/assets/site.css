@@ -26,13 +26,17 @@
   --coral:#F49E88;
   --hairline:rgba(27,27,29,.08);
 
-  --font-display:"Onest","Helvetica Neue",Helvetica,Arial,sans-serif;
-  --font-body:"Onest","Helvetica Neue",Helvetica,Arial,sans-serif;
-  --font-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
-  --font-wordmark:"EB Garamond","Times New Roman",serif;
-  /* ConsidSans is scoped to the nav and footer only — matching consid.com's
-     own global chrome exactly — the rest of the site keeps Onest/EB Garamond. */
-  --font-considsans:"ConsidSans","Onest","Helvetica Neue",Helvetica,Arial,sans-serif;
+  /* ConsidSans is the site's one and only typeface — headings, body copy,
+     nav, footer, and every meta/label style all share it, matching Consid's
+     own typography system (see ui.consid.dev's "Jakarta" type docs, which
+     this brand face stands in for). It only ships Regular/Medium/SemiBold
+     (400/500/600) — nothing heavier — so anything that used to ask for a
+     700/900 weight is capped at 600 (semibold) instead. */
+  --font-considsans:"ConsidSans",-apple-system,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --font-display:var(--font-considsans);
+  --font-body:var(--font-considsans);
+  --font-mono:var(--font-considsans);
+  --font-wordmark:var(--font-considsans);
 
   /* consid.com's real nav/footer values, read from its live computed styles:
      header/footer background #1C1C1C, nav link colour #B5223F. Kept as their
@@ -67,9 +71,7 @@
   --maxw:1300px;
 }
 
-/* ConsidSans — Consid's brand typeface, used for the nav and footer only,
-   to match consid.com's own global chrome. Regular/Medium/SemiBold cover
-   every weight actually used there (400 nav links, 600 footer links/headings). */
+/* ConsidSans — Consid's brand typeface, used across the whole site. */
 @font-face{font-family:"ConsidSans";src:url("/assets/fonts/ConsidSans-Regular.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
 @font-face{font-family:"ConsidSans";src:url("/assets/fonts/ConsidSans-Italic.woff2") format("woff2");font-weight:400;font-style:italic;font-display:swap}
 @font-face{font-family:"ConsidSans";src:url("/assets/fonts/ConsidSans-Medium.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap}
@@ -85,10 +87,11 @@ body{
   -webkit-font-smoothing:antialiased;font-synthesis-weight:none;overflow-x:hidden;
 }
 h1,h2,h3,h4{font-family:var(--font-display);margin:0;font-weight:600;letter-spacing:-.026em}
-h1{font-size:var(--t-display);line-height:.99;letter-spacing:-.042em;font-weight:500}
-h2{font-size:var(--t-h2);line-height:1.04;letter-spacing:-.034em;font-weight:700}
-h3{font-size:var(--t-h3);line-height:1.25;font-weight:500}
+h1{font-size:var(--t-display);line-height:.99;letter-spacing:-.042em}
+h2{font-size:var(--t-h2);line-height:1.04;letter-spacing:-.034em}
+h3{font-size:var(--t-h3);line-height:1.25}
 p{margin:0}
+strong,b{font-weight:600}
 a{color:inherit}
 img,svg{display:block;max-width:100%}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
@@ -246,7 +249,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .ocard:nth-child(5n+4){background:var(--blush)}
 .ocard__tag{display:flex;align-items:center;gap:.4em;font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:.09em;text-transform:uppercase;color:var(--stone)}
 .oicon{width:15px;height:15px;flex:none;stroke:currentColor}
-.ocard h3{font-size:1.25rem;letter-spacing:-.028em;font-weight:700;transition:color var(--d-fast) var(--ease-out)}
+.ocard h3{font-size:1.25rem;letter-spacing:-.028em;font-weight:600;transition:color var(--d-fast) var(--ease-out)}
 .rail__spacer{flex:0 0 var(--gutter)}
 .ocard:hover h3{color:var(--wine)}
 .ocard p{font-size:var(--t-small);color:var(--graphite);line-height:1.6}
@@ -349,7 +352,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .article__body p{margin-top:var(--s-5);color:var(--ink-700);line-height:1.75;font-size:var(--t-body)}
 .article__body p:first-of-type{margin-top:0}
 .article__body hr{border:0;border-top:1px solid var(--hairline);margin:var(--s-8) 0}
-.article__body strong{font-weight:700;color:var(--ink-900)}
+.article__body strong{color:var(--ink-900)}
 .article__body h3{font-size:clamp(1.15rem,1.9vw,1.4rem);margin-top:var(--s-7)}
 .article__body ul{margin-top:var(--s-5);padding-left:1.2em;display:flex;flex-direction:column;gap:var(--s-3)}
 .article__body li{color:var(--ink-700);line-height:1.75;font-size:var(--t-body)}
