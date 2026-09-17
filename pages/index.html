@@ -251,8 +251,25 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   transition:color var(--d-fast) var(--ease-out),background-color var(--d-fast) var(--ease-out)}
 .nav__link{color:var(--nav-fg)}
 .nav__link:hover{background:rgba(255,255,255,.2)}
-.nav__cta{color:var(--nav-cta);margin-left:auto;padding:.5rem 1.25rem;border:2px solid var(--nav-cta)}
-.nav__cta:hover{opacity:.7}
+.nav__cta{color:var(--nav-cta);margin-left:auto;padding:.5rem 1.25rem;border:2px solid var(--nav-cta);position:relative}
+/* CTA outline draw — consid.com's own .btn-outline-anim interaction (see
+   ui.consid.dev "Blocks / CTA"); full explanation in assets/site.css. */
+.nav__cta.has-outline-anim{border-color:transparent}
+.nav__cta .cta-outline{
+  position:absolute;inset:0;overflow:visible;pointer-events:none;
+  stroke:currentColor;stroke-width:2;fill:none;
+  stroke-dasharray:var(--button-animation-perimeter),0;
+  stroke-dashoffset:calc(var(--button-animation-offset) + 20);
+  transform:rotateX(180deg);
+  transition:stroke-dasharray .9s cubic-bezier(.43,.195,.02,1),
+             stroke-dashoffset .9s cubic-bezier(.43,.195,.02,1),
+             stroke var(--d-fast) var(--ease-out);
+}
+.nav__cta:hover .cta-outline{
+  stroke-dasharray:var(--button-animation-perimeter),var(--button-animation-perimeter);
+  stroke-dashoffset:var(--button-animation-offset);
+}
+@media (prefers-reduced-motion:reduce){.nav__cta .cta-outline{transition:none}}
 @media (max-width:900px){.nav__links .nav__link{display:none}}
 
 /* HERO --------------------------------------------------- */
@@ -1437,6 +1454,39 @@ const setNavH=()=>document.documentElement.style.setProperty('--nav-h',nav.offse
 setNavH();
 addEventListener('resize',setNavH,{passive:true});
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(setNavH);
+
+/* CTA outline — consid.com's .btn-outline-anim interaction; see
+   assets/site.js for the full explanation (kept in sync by hand). */
+const initCtaOutline=el=>{
+  const w=el.offsetWidth,h=el.offsetHeight;
+  if(!w||!h)return;
+  const straight=w-h,perimeter=2*straight+Math.PI*h;
+  let svg=el.querySelector('.cta-outline');
+  if(!svg){
+    const NS='http://www.w3.org/2000/svg';
+    svg=document.createElementNS(NS,'svg');
+    svg.setAttribute('class','cta-outline');
+    svg.setAttribute('aria-hidden','true');
+    svg.appendChild(document.createElementNS(NS,'rect'));
+    el.appendChild(svg);
+    el.classList.add('has-outline-anim');
+  }
+  const rect=svg.firstChild;
+  svg.setAttribute('viewBox',`0 0 ${w} ${h}`);
+  rect.setAttribute('width','100%');
+  rect.setAttribute('height','100%');
+  rect.setAttribute('rx',h/2);
+  rect.setAttribute('ry',h/2);
+  svg.style.setProperty('--button-animation-perimeter',perimeter);
+  svg.style.setProperty('--button-animation-offset',perimeter-straight);
+};
+const ctas=document.querySelectorAll('.nav__cta');
+if(ctas.length){
+  const sizeCtas=()=>ctas.forEach(initCtaOutline);
+  sizeCtas();
+  addEventListener('resize',sizeCtas,{passive:true});
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(sizeCtas);
+}
 
 /* Hero wave grid — a from-scratch WebGL2 port of franky-adl's
    "3d-wave-grid" (https://github.com/franky-adl/3d-wave-grid).
