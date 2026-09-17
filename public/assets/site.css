@@ -178,53 +178,56 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .btn:disabled,.btn[aria-disabled="true"]{opacity:.5;cursor:default;pointer-events:none}
 
 /* NAV -----------------------------------------------------
-   Matches consid.com's own global header exactly, including the part
-   that matters most: it's a transparent overlay that reads its
-   contrast from whatever's behind it, not a permanently-dark bar.
-
-   Two independent things toggle:
-   - .nav--onDark (set per-page, same as before): the page's own top
-     section is dark (Ydelser's plum band), so at rest the nav is
-     transparent with white text/logo/button, like consid.com over its
-     own dark photo hero.
-   - [data-stuck="true"] (added by site.js once you scroll): a light,
-     blurred backdrop fades in — the same blur/mask technique this file
-     already used — and the colour scheme becomes consid.com's "over
-     light content" state (red text/logo/button) regardless of onDark,
-     since scrolling past a dark hero means light content is now behind
-     the nav either way.
-   --nav-fg / --nav-fg-contrast drive both the text colour and the
-   outline button, so the two stay in sync without duplicating rules. */
+   Matches consid.com's own real header exactly — measured directly off
+   the live site's computed styles and DOM (not guessed from a screenshot):
+   - Nav links are plain text, Dark (#1C1C1C) by default, no border/pill on
+     the CTA at all — "Contact us" is just red text, same weight/size as
+     every other link.
+   - Two independent things toggle the colour scheme:
+     .nav--onDark (set per-page, unchanged): the page's own top section is
+     dark (Ydelser's plum band), so at rest the nav shows white text/logo,
+     matching consid.com over its own dark photo hero.
+     [data-stuck="true"] (site.js, on scroll): a `.nav-backdrop`-style
+     white/blurred bar slides down from behind the nav — real values are
+     rgba(255,255,255,.8) + backdrop-filter:saturate(1.8) blur(5px),
+     revealed via `transform` (not opacity), exactly as consid.com does it.
+   --nav-fg drives regular link + logo colour; --nav-cta drives just the
+   CTA, since on consid.com the CTA is red whenever content is light but
+   turns white (matching the other links) over a dark hero. */
 .nav{position:sticky;top:0;z-index:50;font-family:var(--font-considsans);
-  --nav-fg:var(--consid-red);--nav-fg-contrast:#fff}
+  --nav-fg:var(--consid-dark);--nav-cta:var(--consid-red)}
 .nav::before{
-  content:"";position:absolute;inset:-1px 0 0;
-  backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);
-  background-image:linear-gradient(to bottom, rgba(245,243,241,.86) 0%, rgba(245,243,241,0) 100%);
-  mask-image:linear-gradient(to bottom, #000 0%, #000 45%, transparent 100%);
-  -webkit-mask-image:linear-gradient(to bottom, #000 0%, #000 45%, transparent 100%);
-  pointer-events:none;opacity:0;transition:opacity var(--d-base) var(--ease-out);
+  content:"";position:absolute;inset:0;
+  background:rgba(255,255,255,.8);
+  backdrop-filter:saturate(1.8) blur(5px);-webkit-backdrop-filter:saturate(1.8) blur(5px);
+  transform:translateY(-100%);
+  transition:transform .3s cubic-bezier(.43,.195,.02,1);
+  pointer-events:none;
 }
-.nav[data-stuck="true"]::before{opacity:1}
-.nav--onDark:not([data-stuck="true"]){--nav-fg:#fff;--nav-fg-contrast:var(--consid-red)}
+.nav[data-stuck="true"]::before{transform:translateY(0)}
+.nav--onDark:not([data-stuck="true"]){--nav-fg:#fff;--nav-cta:#fff}
 .nav__in{
   position:relative;z-index:1;
   display:flex;align-items:center;gap:var(--s-5);
   padding:1.5rem var(--gutter);
 }
-.brand{display:flex;align-items:center;gap:var(--s-3);text-decoration:none;flex:none}
-.brand__mark{height:26px;width:auto;display:block;transition:filter var(--d-fast) var(--ease-out)}
-.nav--onDark:not([data-stuck="true"]) .brand__mark{filter:brightness(0) invert(1)}
-.nav__links{display:flex;gap:var(--s-5);margin-left:auto;align-items:center}
-.nav__link{text-decoration:none;font-size:16px;font-weight:600;color:var(--nav-fg);transition:color var(--d-fast) var(--ease-out)}
-.nav__link:hover{opacity:.7}
-/* consid.com's nav CTA is an outline pill that fills solid on hover, never
-   the site's own filled .btn--primary — overridden here at higher
-   specificity rather than changing the class on 26 pages. */
-.nav .btn{background:transparent;border:2px solid var(--nav-fg);color:var(--nav-fg);
-  box-shadow:none;padding:.55rem 1.5rem;font-family:var(--font-considsans);font-weight:600;font-size:16px;
-  transition:background-color var(--d-fast) var(--ease-out),color var(--d-fast) var(--ease-out)}
-.nav .btn:hover{background:var(--nav-fg);color:var(--nav-fg-contrast);transform:none;box-shadow:none}
+.brand{display:flex;align-items:center;text-decoration:none;flex:none;position:relative}
+.brand__mark{height:32px;width:auto;display:block;transition:opacity var(--d-fast) var(--ease-out)}
+.brand__mark--light{position:absolute;left:0;top:0;opacity:0}
+.nav--onDark:not([data-stuck="true"]) .brand__mark--dark{opacity:0}
+.nav--onDark:not([data-stuck="true"]) .brand__mark--light{opacity:1}
+/* Links sit right after the logo (not pushed to the far right); the CTA
+   is the one pushed to the end, via its own margin-left:auto inside this
+   same flex row — .nav__links needs flex:1 so that auto-margin has real
+   space to push into. */
+.nav__links{display:flex;gap:var(--s-1);align-items:center;flex:1}
+.nav__link,.nav__cta{text-decoration:none;font-size:16px;font-weight:600;
+  padding:.5rem .75rem;border-radius:var(--r-pill);
+  transition:color var(--d-fast) var(--ease-out),background-color var(--d-fast) var(--ease-out)}
+.nav__link{color:var(--nav-fg)}
+.nav__link:hover{background:rgba(255,255,255,.1)}
+.nav__cta{color:var(--nav-cta);margin-left:auto;padding:.5rem 1.25rem;border:2px solid var(--nav-cta)}
+.nav__cta:hover{opacity:.7}
 @media (max-width:900px){.nav__links .nav__link{display:none}}
 
 /* RAIL + CARD system (Ydelser + Viden share this) --------- */
@@ -311,29 +314,29 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .ctacard .lead{margin-inline:auto;margin-top:var(--s-5);text-align:center;color:rgba(255,255,255,.72)}
 .ctacard__actions{display:flex;gap:var(--s-3);flex-wrap:wrap;justify-content:center;margin-top:var(--s-7)}
 /* FOOTER ----------------------------------------------------
-   Matches consid.com's own footer: solid #1C1C1C, white ConsidSans,
-   underlined link columns, a social-icon row, and a bottom bar with the
-   wordmark plus legal links — same structure, our own real links. */
+   Matches consid.com's own real footer — measured directly off its live
+   DOM/computed styles: solid #1C1C1C, three plain link columns (no
+   separate header — the first link in each column is styled exactly like
+   the rest, just first), a row of 30px white circular social icons
+   pinned to the end of the same row, and a bottom row with the logo and
+   two legal links — no copyright line, no divider border. */
 .footer{background:var(--consid-dark);color:#fff;font-family:var(--font-considsans);
   padding-top:var(--s-8);padding-bottom:var(--s-6)}
-.footer__grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s-6) var(--s-5)}
-@media (max-width:900px){.footer__grid{grid-template-columns:repeat(2,1fr)}}
-@media (max-width:560px){.footer__grid{grid-template-columns:1fr}}
-.footer__col{display:flex;flex-direction:column;gap:var(--s-3)}
-.footer__col h3{font-size:var(--t-micro);text-transform:uppercase;letter-spacing:.08em;font-weight:400;color:rgba(255,255,255,.5);margin:0}
+.footer__grid{display:flex;flex-wrap:wrap;gap:var(--s-6) var(--s-5)}
+.footer__col{display:flex;flex-direction:column;gap:var(--s-3);flex:1 1 200px}
 .footer__col a{color:#fff;font-size:18px;font-weight:600;text-decoration:underline;text-underline-offset:.15em;text-decoration-color:rgba(255,255,255,.35);transition:text-decoration-color var(--d-fast) var(--ease-out)}
 .footer__col a:hover{text-decoration-color:#fff}
-.footer__social{display:flex;gap:var(--s-3);align-items:flex-start}
-.footer__social a{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:999px;background:rgba(255,255,255,.1);color:#fff;transition:background-color var(--d-fast) var(--ease-out)}
-.footer__social a:hover{background:rgba(255,255,255,.2)}
+.footer__social{display:flex;gap:var(--s-3);align-items:flex-start;margin-left:auto;flex:0 0 auto}
+.footer__social a{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:999px;background:#fff;color:var(--consid-dark);transition:opacity var(--d-fast) var(--ease-out)}
+.footer__social a:hover{opacity:.8}
 .footer__social svg{width:16px;height:16px}
-.footer__bottom{margin-top:var(--s-8);padding-top:var(--s-5);border-top:1px solid rgba(255,255,255,.14);
+.footer__bottom{margin-top:var(--s-6);
   display:flex;flex-wrap:wrap;gap:var(--s-4);align-items:center;justify-content:space-between}
-.footer__logo{display:block;height:22px}
+.footer__logo{display:block;height:32px}
 .footer__logo img{height:100%;width:auto;display:block}
-.footer__legal{display:flex;flex-wrap:wrap;gap:var(--s-5);align-items:center;font-size:var(--t-small);color:rgba(255,255,255,.55)}
-.footer__legal a{color:rgba(255,255,255,.55);text-decoration:underline;text-decoration-color:rgba(255,255,255,.3);transition:color var(--d-fast) var(--ease-out)}
-.footer__legal a:hover{color:#fff}
+.footer__legal{display:flex;flex-wrap:wrap;gap:var(--s-5);align-items:center;font-size:18px;color:#fff}
+.footer__legal a{color:#fff;text-decoration:none;transition:opacity var(--d-fast) var(--ease-out)}
+.footer__legal a:hover{opacity:.7}
 
 /* REVEAL --------------------------------------------------- */
 .reveal{opacity:0;transform:translateY(16px)}
