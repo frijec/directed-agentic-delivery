@@ -22,6 +22,11 @@ const htmlResponse = (html: string, status = 200) =>
     headers: {
       'Content-Type': 'text/html; charset=utf-8',
       'Cache-Control': 'public, max-age=0, must-revalidate',
+      // This site is a pre-launch sandbox, so nothing here should reach a
+      // search index. Every page also carries a noindex meta tag; the header
+      // is the belt to that braces, since it applies even when the HTML is
+      // never parsed. Remove both, and the Disallow in robots.txt, to launch.
+      'X-Robots-Tag': 'noindex, nofollow',
     },
   })
 
